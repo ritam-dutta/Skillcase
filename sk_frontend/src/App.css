@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+::-webkit-scrollbar{
+    width: 10px;
+}
+::-webkit-scrollbar-thumb {
+    background: #d49e09; /* color of the scrollbar handle */
+    /* background: linear-gradient(to top,#fdba02,#d49e09); */
+    border-radius: 5px; /* rounded corners of the scrollbar handle */
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555; /* color of the scrollbar handle on hover */
+  }
+
+
+
+
+  .choose::after{
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 0.1rem;
+    left: 0px;
+    bottom: 0px;
+    background-color: rgb(31, 30, 30);
+    cursor: pointer;
+    transform: scale(0,1);
+    transition: transform 0.5s ease;
+}
+.choose:hover::after{
+    transform: scale(1,1);
+}
+.head_text::after{
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 0.1rem;
+  left: 0px;
+  bottom: 0px;
+  background-color: black;
+  cursor: pointer;
+  transform: scale(0,1);
+  transition: transform 0.4s ease;
+}
+.head_text:hover::after{
+  transform: scale(1,1);
+}
+
+.btn_sign:hover a{
+  color: black;
+}
+
+.text:hover .choose{
+  color: rgb(22, 22, 22);
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome, Safari and Opera */
+}
+
+.no-scrollbar {
+  overflow: auto; /* Enable scrolling */
+  -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+}
+.no-scrollbar{
+  box-shadow: 1px 1px 10px rgba(0,0,0,0.8);
+}
+.stat{
+  box-shadow:1px 1px 10px rgba(221, 175, 6, 0.8) ;
+}
