@@ -197,7 +197,7 @@ const getCurrentFreelancer = asyncHandler(async (req, res) => {
 });
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
-    const {fullname, dob, education, industry, phone} = req.body;
+    const {fullname, dob, education, industry, phone,about} = req.body;
 
     if(!fullname || !dob || !education || !industry || !phone){
         throw new ApiError(400, 'All fields are required');
@@ -206,7 +206,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     const freelancer = await Freelancer.findByIdAndUpdate(
         req.user?._id,
         {
-            $set: {fullname, dob, education, industry, phone}
+            $set: {fullname, dob, education, industry, phone,about}
         },
         {
             new: true

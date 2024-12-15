@@ -28,8 +28,8 @@ const Profile : React.FC<Profile> = ({})=>{
                         Authorization: `Bearer ${accessToken}`,
                     },
                 });
-                const freelancer = response.data;
-                console.log(freelancer)
+                const freelancer = response.data?.data?.freelancer;
+                // console.log(freelancer)
                 setUser(freelancer);
                 setFollowing(freelancer?.following || 0);
                 setFollowers(freelancer?.followers || 0);
@@ -58,8 +58,8 @@ const Profile : React.FC<Profile> = ({})=>{
             <div className="h-[90%] w-[20%] bg-yellow-400 z-10 translate-y-[-10%] flex flex-col justify-between items-center border-[2px] border-yellow-800 rounded-md">
                 <div className="h-[35%] w-[100%] bg-yellow-300 flex flex-col justify-center items-center rounded-md">
                   <div className="h-[50%] w-[30%] rounded-full bg-yellow-400 border-[2px] border-yellow-800 flex justify-center items-center "><img src="../images/user.png" alt="" className="h-[80px] w-[80px]" /></div>
-                  <p className="text-yellow-900">{user.data.freelancer.fullname}</p>
-                  <p className="text-yellow-900">{user.data.freelancer.username}</p>
+                  <p className="text-yellow-900">{user.fullname}</p>
+                  <p className="text-yellow-900">{user.username}</p>
                 </div>
                 <div className="h-[70%] w-[100%] bg-yellow-300 rounded-md">
                     <div className="flex justify-between px-3">

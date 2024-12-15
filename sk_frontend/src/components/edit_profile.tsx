@@ -74,7 +74,7 @@ const Edit : React.FC<Edit> = ({})=>{
         }
         // const token = user.data.accessToken;
         console.log(token)
-        const id = user._id;
+        // const id = user._id;
         // const data = {
         //     fullname,
         //     phone,
@@ -182,7 +182,7 @@ const Edit : React.FC<Edit> = ({})=>{
                             <div>
                             <p className="text-yellow-700">About</p>
                             <textarea name="" id="" className="h-[80%] w-[90%] rounded-md focus:outline-none p-1 bg-yellow-400 border-[2px] border-yellow-700 text-yellow-950" 
-                            value={skills} 
+                            value={about} 
                             onChange={(e) => setAbout(e.target.value)}
                             ></textarea>
                             </div>

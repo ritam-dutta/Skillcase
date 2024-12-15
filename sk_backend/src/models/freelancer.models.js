@@ -36,6 +36,14 @@ const freelancerSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    about:{
+        type: String,
+        required: false,
+    },
+    skills:{
+        type: Array,
+        required: false,
+    },
     refreshToken:{
         type: String,
         required: false,
