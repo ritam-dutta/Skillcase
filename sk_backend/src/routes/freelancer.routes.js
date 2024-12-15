@@ -37,5 +37,5 @@ freelancerRouter.route("/change_password").post(verifyJWT, changeCurrentPassword
 
 freelancerRouter.route("/current_freelancer").get(verifyJWT, getCurrentFreelancer);
 
-freelancerRouter.route("/update_account").patch(verifyJWT, updateAccountDetails);
+freelancerRouter.route("/update_account").post(verifyJWT, updateAccountDetails);
 export default freelancerRouter;

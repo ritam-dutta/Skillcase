@@ -15,40 +15,66 @@ const Edit : React.FC<Edit> = ({})=>{
     const [industry, setIndustry] = useState("");
     const [about, setAbout] = useState(""); 
     const [skills, setSkills] = useState("");
-
+    const [token, setToken] = useState("");
+  
     useEffect(() => {
-        const fetcheduser =  localStorage.getItem("user");
-        if (!fetcheduser) {
-            navigate("/login");
-        } else {
-            setUser(JSON.parse(fetcheduser));
-            const parsedUser = JSON.parse(fetcheduser);
-            setFullname(parsedUser?.data?.freelancer?.fullname || "");
-            setPhone(parsedUser?.data?.freelancer?.phone || "");
-            setUsername(parsedUser?.data?.freelancer?.username || "");
-            setDob(parsedUser?.data?.freelancer?.dob || "");
-            setEducation(parsedUser?.data?.freelancer?.education || "");
-            setIndustry(parsedUser?.data?.freelancer?.industry || "");
-            setAbout(parsedUser?.data?.freelancer?.about || "");
-            setSkills(parsedUser?.data?.freelancer?.skills || "");
+        const accessToken = localStorage.getItem("accessToken");
+        if(!accessToken){
+            console.log("Access token not found")	
+            navigate("/profile")
         }
-    }, [navigate]);
+        // console.log(accessToken)
+        if (accessToken) {
+            setToken(accessToken);
+        }
 
-
-
-
-    
+        const fetchUserData = async () => {
+            try {
+                const response = await axios.get("http://localhost:8000/api/v1/freelancer/current_freelancer", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+                const fetchedUser = response.data?.data?.freelancer;
+                console.log(fetchedUser)
+                console.log(response.data)
+                if(!fetchedUser){
+                    navigate("/profile");
+                }
+                setUser(fetchedUser);
+                setFullname(fetchedUser?.fullname || "");
+                setPhone(fetchedUser?.phone || "");
+                setUsername(fetchedUser?.username || "");
+                setDob(fetchedUser?.dob || "");
+                setEducation(fetchedUser?.education || "");
+                setIndustry(fetchedUser?.industry || "");
+                setAbout(fetchedUser?.about || "");
+                setSkills(fetchedUser?.skills || "");
+                console.log("done axios")
+                // console.log(freelancer)
+                // setUser(freelancer);
+                // setFollowing(freelancer?.following || 0);
+                // setFollowers(freelancer?.followers || 0);
+                // setAbout(freelancer?.about || "")    
+            } catch (error) {
+                console.error("error fetching user data",error);
+                navigate("/profile");
+            }
+        };
+        fetchUserData();
+    }, [navigate]); 
 
     const handleEdit = async () => {
     
         // console.log(user.data.accessToken)
-        if (!user || !user.data || !user.data.accessToken) {
+        // console.log("handleedit")
+        if (!user) {
             console.error("User token is missing or invalid.");
             return;
         }
-        const token = user.data.accessToken;
+        // const token = user.data.accessToken;
         console.log(token)
-        const id = user.data.freelancer._id;
+        const id = user._id;
         // const data = {
         //     fullname,
         //     phone,
@@ -60,16 +86,16 @@ const Edit : React.FC<Edit> = ({})=>{
         //     skills
         // };
         try {
-            
-            const response = await axios.post("http://localhost:8000/api/v1/freelancer/update_freelancer", {
-                username: username || user.data.freelancer.username,
-                dob: dob || user.data.freelancer.dob,
-                education: education || user.data.freelancer.education,
-                industry: industry || user.data.freelancer.industry,
-                phone: phone || user.data.freelancer.phone,
-                fullname: fullname || user.data.freelancer.fullname,
-                about: about || user.data.freelancer.about,
-                skills: skills || user.data.freelancer.skills
+            console.log("update enter")
+            const response = await axios.post("http://localhost:8000/api/v1/freelancer/update_account", {
+                username: username || user.username,
+                dob: dob || user.dob,
+                education: education || user.education,
+                industry: industry || user.industry,
+                phone: phone || user.phone,
+                fullname: fullname || user.fullname,
+                about: about || user.about,
+                skills: skills || user.skills
             },
             {
                 headers: {
@@ -79,7 +105,8 @@ const Edit : React.FC<Edit> = ({})=>{
                 }
             }
         );
-            console.log(response.data);
+            // console.log(response.data);
+            console.log("check")
             localStorage.setItem("user", JSON.stringify(response.data));
             navigate("/profile");
         } catch (error) {

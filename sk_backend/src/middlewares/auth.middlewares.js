@@ -5,10 +5,11 @@ import { Client } from "../models/client.models.js";
 import jwt from "jsonwebtoken";
 
 export const verifyJWT = asyncHandler(async (req, _, next) => {
-    try {
-        const token = req.cookies?.accessToken || req.header
-        ('Authorization')?.replace('Bearer ', '');
-    
+    // console.log("hello")
+    // try {
+        let token =req.headers.authorization?.split(' ')[1] || req.cookies?.accessToken
+        // console.log(token)
+        token = token.slice(1,token.length-1)    
         if(!token) {
            throw new ApiError(401, 'Unauthorized');
         }
@@ -34,9 +35,9 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
             next();
         }
     
-    } catch (error) {
-        throw new ApiError(401, 'Unauthorized');
+    // } catch (error) {
+    //     throw new ApiError(401, 'Unauthorized');
         
-    }
+    // }
 
 })

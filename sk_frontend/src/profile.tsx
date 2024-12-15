@@ -23,17 +23,17 @@ const Profile : React.FC<Profile> = ({})=>{
 
         const fetchUserData = async () => {
             try {
-                console.log("ritu")
                 const response = await axios.get("http://localhost:8000/api/v1/freelancer/current_freelancer", {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                     },
                 });
-                const {freelancer} = response.data;
+                const freelancer = response.data;
+                console.log(freelancer)
                 setUser(freelancer);
-                setFollowing(freelancer.following || 0);
-                setFollowers(freelancer.followers || 0);
-                setAbout(freelancer.about || "")    
+                setFollowing(freelancer?.following || 0);
+                setFollowers(freelancer?.followers || 0);
+                setAbout(freelancer?.about || "")    
             } catch (error) {
                 console.error("error fetching user data",error);
                 navigate("/login");
