@@ -41,7 +41,11 @@ const freelancerSchema = new mongoose.Schema({
         required: false,
     },
     skills:{
-        type: Array,
+        type: [String],
+        required: false,
+    },
+    avatar:{
+        type: String,
         required: false,
     },
     refreshToken:{

@@ -6,11 +6,12 @@ import {
     refreshAccessToken,
     changeCurrentPassword,
     getCurrentFreelancer,
-    updateAccountDetails
+    updateAccountDetails,
+    updateFreelancerAvatar
 } from "../controllers/freelancer.controllers.js";
 import {upload} from "../middlewares/multer.middlewares.js"
 import { verifyJWT } from "../middlewares/auth.middlewares.js";
-import { get } from "mongoose";
+// import { get } from "mongoose";
 
 const freelancerRouter = Router();
 
@@ -38,4 +39,6 @@ freelancerRouter.route("/change_password").post(verifyJWT, changeCurrentPassword
 freelancerRouter.route("/current_freelancer").get(verifyJWT, getCurrentFreelancer);
 
 freelancerRouter.route("/update_account").post(verifyJWT, updateAccountDetails);
+
+freelancerRouter.route("/update_avatar").post(verifyJWT, upload.single("avatar"), updateFreelancerAvatar);
 export default freelancerRouter;

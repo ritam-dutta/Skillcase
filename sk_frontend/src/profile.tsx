@@ -2,6 +2,7 @@ import React,{ useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Header from "./components/header";
+import Footer from "./components/footer";
 import axios from "axios";
 import "./App.css"
 interface Profile {}
@@ -10,7 +11,8 @@ const Profile : React.FC<Profile> = ({})=>{
     const[following, setFollowing]=useState(0);
     const[followers, setFollowers]=useState(0);
     const[about,setAbout]=useState("")
-    const[flag,setFlag]=useState(false)
+    const [skills, setSkills] = useState([""]);
+    // const[flag,setFlag]=useState(false)
 
     const navigate = useNavigate();
 
@@ -33,7 +35,8 @@ const Profile : React.FC<Profile> = ({})=>{
                 setUser(freelancer);
                 setFollowing(freelancer?.following || 0);
                 setFollowers(freelancer?.followers || 0);
-                setAbout(freelancer?.about || "")    
+                setAbout(freelancer?.about || "")  
+                setSkills(freelancer?.skills || [""])  
             } catch (error) {
                 console.error("error fetching user data",error);
                 navigate("/login");
@@ -76,14 +79,16 @@ const Profile : React.FC<Profile> = ({})=>{
                         <div className="flex justify-between px-2 w-[100%] h-[15%]">
                             <p className="text-yellow-900">About</p>
                         </div>
-                        <div className=" h-[40%] w-[90%] rounded-md">
-                            <textarea id="myInput" readOnly value={about} className="focus:outline-none h-[100%] w-[100%] rounded-md p-2 bg-yellow-400 border-[2px] border-yellow-700 text-yellow-950"/>
+                        <div className=" h-[40%] w-[90%] rounded-md ">                       
+                            <textarea id="myInput" readOnly value={about} className="focus:outline-none h-[100%] w-[100%] rounded-md p-2 bg-yellow-400 border-[2px] border-yellow-700 text-yellow-950 resize-none"/>
                         </div>
                         <div className="flex justify-between px-2 w-[100%] h-[20%] mt-3">
                             <p className="text-yellow-900">Skills</p>   
                         </div>
                         <div className=" h-[40%] w-[90%] rounded-md">
-                            <textarea id="myInput" readOnly className="focus:outline-none h-[100%] w-[100%] rounded-md p-2 bg-yellow-400 border-[2px] border-yellow-700 text-yellow-950"/>
+                            <textarea id="myInput" readOnly className="focus:outline-none h-[100%] w-[100%] rounded-md p-2 bg-yellow-400 border-[2px] border-yellow-700 text-yellow-950 resize-none"
+                            value={skills.join("\n")}
+                            />
                         </div>
                         <div className="w-[30%] h-[20%] bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 border-[2px] border-yellow-800 mt-2 rounded-md flex justify-center items-center"> <Link to="/edit">Edit profile</Link></div>
 
@@ -121,9 +126,9 @@ const Profile : React.FC<Profile> = ({})=>{
                     </div>
                 </div>
                 <div className="h-[5%]"></div>
-
             </div>
         </div>
+
     </>
   )
 }

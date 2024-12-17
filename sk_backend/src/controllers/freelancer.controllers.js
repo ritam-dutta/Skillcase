@@ -197,7 +197,7 @@ const getCurrentFreelancer = asyncHandler(async (req, res) => {
 });
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
-    const {fullname, dob, education, industry, phone,about} = req.body;
+    const {fullname, dob, education, industry, phone,about,skills} = req.body;
 
     if(!fullname || !dob || !education || !industry || !phone){
         throw new ApiError(400, 'All fields are required');
@@ -206,7 +206,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     const freelancer = await Freelancer.findByIdAndUpdate(
         req.user?._id,
         {
-            $set: {fullname, dob, education, industry, phone,about}
+            $set: {fullname, dob, education, industry, phone,about,skills}	
         },
         {
             new: true
@@ -217,30 +217,32 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {freelancer}, 'Account details updated successfully'));
 });
 
-// const updateFreelancerAvatar = asyncHandler(async (req, res) => {
-//     const avatarLocalPath = req.file?.path;
-//     if (!avatarLocalPath) {
-//         throw new ApiError(400, 'Avatar file is missing');
-//     }
-//     const avatar = await uploadOnCloudinary(avatarLocalPath);
+const updateFreelancerAvatar = asyncHandler(async (req, res) => {
+    // console.log(req)
+    const avatarLocalPath = req.file?.path
+    // console.log(avatarLocalPath)
+    if (!avatarLocalPath) {
+        throw new ApiError(400, 'Avatar file is missing');
+    }
+    const avatar = await uploadOnCloudinary(avatarLocalPath);
 
-//     if (!avatar) {
-//         throw new ApiError(400, 'error uploading avatar');
-//     }
+    if (!avatar) {
+        throw new ApiError(400, 'error uploading avatar');
+    }
 
-//     const freelancer = await Freelancer.findByIdAndUpdate(
-//         req.user?._id,
-//         {
-//             $set: {avatar: avatar.url}
-//         },
-//         {
-//             new: true
-//         }
-//     ).select('-password -refreshToken');
-//     return res
-//     .status(200)
-//     .json(new ApiResponse(200, {freelancer}, 'Avatar updated successfully'));
-// });
+    const freelancer = await Freelancer.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {avatar: avatar.url}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {freelancer}, 'Avatar updated successfully'));
+});
 
 // const updateFreelancerCoverImage = asyncHandler(async (req, res) => {
 //     const coverImageLocalPath = req.file?.path;
@@ -276,7 +278,7 @@ export {
     refreshAccessToken,
     changeCurrentPassword,
     getCurrentFreelancer,
-    updateAccountDetails
-    // updateFreelancerAvatar,
+    updateAccountDetails,
+    updateFreelancerAvatar
     // updateFreelancerCoverImage
 }
