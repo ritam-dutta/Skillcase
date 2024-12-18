@@ -233,7 +233,7 @@ const updateFreelancerAvatar = asyncHandler(async (req, res) => {
     const freelancer = await Freelancer.findByIdAndUpdate(
         req.user?._id,
         {
-            $set: {avatar: avatar.url}
+            $set: {avatar: avatar.secure_url}
         },
         {
             new: true

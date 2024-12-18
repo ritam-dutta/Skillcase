@@ -71,22 +71,14 @@ const Edit : React.FC<Edit> = ({})=>{
         fetchUserData();
     }, [navigate]); 
 
-    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             setAvatarFile(file);
         }
-    };
-
-    const changeAvatar = async () => {
-        if(!avatar){
-            console.log("Avatar not found")
-            return;
-        }
-        try {
-            const formData = new FormData();
-            if (avatarFile) {
-                formData.append("avatar", avatarFile);
+        const formData = new FormData();
+            if (file) {
+                formData.append("avatar", file);
             }
             const response = await axios.post("http://localhost:8000/api/v1/freelancer/update_avatar",formData,
             {
@@ -95,8 +87,24 @@ const Edit : React.FC<Edit> = ({})=>{
                     "Content-Type": "multipart/form-data",
                 }
             });
+            const updatedAvatar = response.data?.data?.freelancer?.avatar || "../images/user.png";
             console.log("Avatar updated");
-            if(avatarFile) setAvatar(URL.createObjectURL(avatarFile))
+            if(avatarFile) setAvatar(updatedAvatar);
+    };
+
+    const changeAvatar = async () => {
+        if(!avatar){
+            console.log("Avatar not found")
+            return;
+        }
+        try {
+            const input = document.createElement("input");
+            input.type = "file";
+            input.accept = "image/*";
+            input.onchange = (e) => {handleAvatarChange(e as unknown as React.ChangeEvent<HTMLInputElement>)};
+            document.body.appendChild(input);
+            input.click();
+            input.remove();
         } catch (error) {
             console.error("Error updating avatar", error);
             
@@ -148,12 +156,15 @@ const Edit : React.FC<Edit> = ({})=>{
             <div className="h-[100%] w-[40%] bg-yellow-300 z-10 translate-y-[-15%]  rounded-md flex flex-col gap-[-10px] border-[2px] border-yellow-700">
                 <div className="h-[100%] w-[100%] bg-yellow-300 flex justify-evenly items-center rounded-md">
                     <div className="h-[80%] w-[40%] flex flex-col justify-center items-center gap-5">
-                        <div className=" h-[30%] w-[53%] bg-yellow-500 rounded-full flex items-center justify-center border-[2px] border-yellow-800"> <input 
+                        <div className=" h-[30%] w-[53%] bg-black rounded-full flex items-center justify-center border-[2px] border-yellow-800"> 
+                            {/* <input 
                             type="file" 
                             id="avatarInput" 
                             accept="image/*" 
-                            onChange={(e) => {handleAvatarChange}} 
-                            /></div>
+                            onChange={handleAvatarChange} 
+                            /> */}
+                        <img src={avatar} alt="" className="h-[98%] w-[98%] rounded-full"/>
+                            </div>
                         <button className="h-[8%] w-[60%] bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-md border-[2px] border-yellow-800" 
                         onClick={changeAvatar}>
                             Change Photo

@@ -12,6 +12,7 @@ const Profile : React.FC<Profile> = ({})=>{
     const[followers, setFollowers]=useState(0);
     const[about,setAbout]=useState("")
     const [skills, setSkills] = useState([""]);
+    const [avatar, setAvatar] = useState("");
     // const[flag,setFlag]=useState(false)
 
     const navigate = useNavigate();
@@ -36,7 +37,8 @@ const Profile : React.FC<Profile> = ({})=>{
                 setFollowing(freelancer?.following || 0);
                 setFollowers(freelancer?.followers || 0);
                 setAbout(freelancer?.about || "")  
-                setSkills(freelancer?.skills || [""])  
+                setSkills(freelancer?.skills || [""]) 
+                setAvatar(freelancer?.avatar || "../public/images/user.png") 
             } catch (error) {
                 console.error("error fetching user data",error);
                 navigate("/login");
@@ -60,7 +62,7 @@ const Profile : React.FC<Profile> = ({})=>{
             <div className="h-[80%] w-[10%]"></div>
             <div className="h-[90%] w-[20%] bg-yellow-400 z-10 translate-y-[-10%] flex flex-col justify-between items-center border-[2px] border-yellow-800 rounded-md">
                 <div className="h-[35%] w-[100%] bg-yellow-300 flex flex-col justify-center items-center rounded-md">
-                  <div className="h-[50%] w-[30%] rounded-full bg-yellow-400 border-[2px] border-yellow-800 flex justify-center items-center "><img src="../images/user.png" alt="" className="h-[80px] w-[80px]" /></div>
+                  <div className="h-[50%] w-[30%] rounded-full bg-black border-[2px] border-yellow-800 flex justify-center items-center "><img src={avatar} alt="" className="h-[99%] w-[99%] rounded-full" /></div>
                   <p className="text-yellow-900">{user.fullname}</p>
                   <p className="text-yellow-900">{user.username}</p>
                 </div>
