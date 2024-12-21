@@ -6,6 +6,7 @@ import {
     refreshAccessToken,
     changeCurrentPassword,
     getCurrentClient,
+    getLoggedInClient,
     updateAccountDetails
 } from "../controllers/client.controllers.js"
 import { verifyJWT } from "../middlewares/auth.middlewares.js";
@@ -23,6 +24,8 @@ clientRouter.route("/refresh_token").post(refreshAccessToken);
 clientRouter.route("/change_password").post(verifyJWT, changeCurrentPassword);
 
 clientRouter.route("/:username").get(verifyJWT, getCurrentClient);
+
+clientRouter.route("/loggedInClient").get(verifyJWT, getLoggedInClient);
 
 clientRouter.route("/:username/update_account").patch(verifyJWT, updateAccountDetails);
 

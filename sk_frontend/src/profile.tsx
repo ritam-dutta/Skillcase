@@ -17,7 +17,7 @@ const Profile : React.FC<Profile> = ({})=>{
     else if(url.includes("client")){
         userType="client"
     }
-
+    const[fullname,setFullname]=useState("");
     const[following, setFollowing]=useState(0);
     const[followers, setFollowers]=useState(0);
     const[about,setAbout]=useState("");
@@ -33,31 +33,47 @@ const Profile : React.FC<Profile> = ({})=>{
 
     useEffect(() => {
         const accessToken = localStorage.getItem("accessToken");
-        // console.log(accessToken)
+        console.log("fetched token",accessToken)
         if (!accessToken) {
             navigate(`/${role}/login`);
         } 
 
         const fetchUserData = async () => {
             try {
-                console.log(username)
-                const response = await axios.get(`http://localhost:8000/api/v1/${role}/${username}`, {
+                const responseLoggedUser = await axios.get(`http://localhost:8000/api/v1/${role}/loggedIn${role[0].toUpperCase()}${role.slice(1)}`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                     },
                 });
+
+                const responseCurrentUser = await axios.get(`http://localhost:8000/api/v1/${role}/${username}`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+
+                let currentUser ;
+                let loggedInUser;
                 let fetchedUser;
                 if(role==="freelancer"){
-                    fetchedUser = response.data?.data?.freelancer;
+                    currentUser = responseCurrentUser.data?.data?.freelancer;
+                    loggedInUser = responseLoggedUser.data?.data?.freelancer;
                 }
                 else if(role==="client"){
-                    fetchedUser = response.data?.data?.client;
+                    currentUser = responseCurrentUser.data?.data?.client;
+                    loggedInUser = responseLoggedUser.data?.data?.client;
                 }   
-                if(username!==fetchedUser.username){
-                    navigate(`/${role}/${fetchedUser.username}`)
+                console.log("currentUser",currentUser)
+                console.log("loggedInUser",loggedInUser)
+                if(loggedInUser.username === currentUser.username){
+                    fetchedUser = loggedInUser;
                 }
-                console.log(fetchedUser);
+                else{
+                    fetchedUser = currentUser;
+                }
+                console.log(fetchedUser)
                 setUser(fetchedUser);
+                setFullname(fetchedUser?.fullname || "");
                 setFollowing(fetchedUser?.following || 0);
                 setFollowers(fetchedUser?.followers || 0);
                 setAbout(fetchedUser?.about || "")  
@@ -89,8 +105,8 @@ const Profile : React.FC<Profile> = ({})=>{
                 <div className="h-[35%] w-[100%] bg-yellow-300 flex flex-col justify-center items-center rounded-md">
                     <p>{role}</p>
                   <div className="h-[50%] w-[30%] rounded-full bg-yellow-400 border-[2px] border-yellow-800 flex justify-center items-center "><img src={avatar || "/images/freelancer.png"} alt="" className="h-[99%] w-[99%] rounded-full" /></div>
-                  <p className="text-yellow-900">{user.fullname}</p>
-                  <p className="text-yellow-900">{user.username}</p>
+                  <p className="text-yellow-900">{fullname}</p>
+                  <p className="text-yellow-900">{username}</p>
                 </div>
                 <div className="h-[70%] w-[100%] bg-yellow-300 rounded-md">
                     <div className="flex justify-between px-3">

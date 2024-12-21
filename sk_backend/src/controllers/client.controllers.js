@@ -179,7 +179,18 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 });
 
 const getCurrentClient = asyncHandler(async (req, res) => {
+    const {username} = req.params;
+    const client = await Client.findOne({username}).select('-password -refreshToken');
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {client}, 'Client details'));
+});
+
+const getLoggedInClient = asyncHandler(async (req, res) => {
     const client = await Client.findById(req.user?._id).select('-password -refreshToken');
+    if (!client) {
+        throw new ApiError(404, 'Client not found');
+    }
     return res
     .status(200)
     .json(new ApiResponse(200, {client}, 'Client details'));
@@ -210,7 +221,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     ).select('-password -refreshToken');
     return res
     .status(200)
-    .json(new ApiResponse(200, {freelancer}, 'Account details updated successfully'));
+    .json(new ApiResponse(200, {client}, 'Account details updated successfully'));
 });
 
 export {
@@ -220,5 +231,6 @@ export {
     refreshAccessToken,
     changeCurrentPassword,
     getCurrentClient,
+    getLoggedInClient,
     updateAccountDetails
 }

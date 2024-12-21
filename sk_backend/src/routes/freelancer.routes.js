@@ -6,8 +6,9 @@ import {
     refreshAccessToken,
     changeCurrentPassword,
     getCurrentFreelancer,
+    getLoggedInFreelancer,
     updateAccountDetails,
-    updateFreelancerAvatar
+    updateFreelancerAvatar,
 } from "../controllers/freelancer.controllers.js";
 import {upload} from "../middlewares/multer.middlewares.js"
 import { verifyJWT } from "../middlewares/auth.middlewares.js";
@@ -37,6 +38,8 @@ freelancerRouter.route("/refresh_token").post(refreshAccessToken);
 freelancerRouter.route("/change_password").post(verifyJWT, changeCurrentPassword);
 
 freelancerRouter.route("/:username").get(verifyJWT, getCurrentFreelancer);
+
+freelancerRouter.route("/loggedInFreelancer").get(verifyJWT, getLoggedInFreelancer);
 
 freelancerRouter.route("/:username/update_account").post(verifyJWT, updateAccountDetails);
 

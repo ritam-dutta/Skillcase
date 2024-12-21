@@ -54,6 +54,7 @@ const Edit : React.FC<Edit> = ({})=>{
                 if(!fetchedUser){
                     navigate(`/${role}/${username}`);
                 }
+                console.log(username, fetchedUser.username)
                 if(username!==fetchedUser.username){
                     navigate(`/${role}/${fetchedUser.username}`)
                 }

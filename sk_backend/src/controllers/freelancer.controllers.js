@@ -84,11 +84,14 @@ const registerFreelancer = asyncHandler(async (req,res) => {
 })
 
 const loginFreelancer = asyncHandler( async (req,res) => {
+    console.log("logging in");
     const {username, password} = req.body;
+    console.log(username, password);
     if(!username || !password) {
         throw new ApiError(400, 'All fields are required');
     }
     const freelancer = await Freelancer.findOne({ username : username });
+    console.log(freelancer);
     if(!freelancer) {
         return res.status(400).json(new ApiResponse(400, null, 'No such freelancer found'));
     }
@@ -117,9 +120,8 @@ const loginFreelancer = asyncHandler( async (req,res) => {
 });
 
 const logoutFreelancer = asyncHandler(async (req, res) => {
-    const {username} = req.params;
-    Freelancer.findOneAndUpdate(
-        {username}, 
+    Freelancer.findByIdAndUpdate(
+        req.user._id, 
         {
             $set: {refreshToken: undefined}
         },
@@ -179,9 +181,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 const changeCurrentPassword = asyncHandler(async (req, res) => {
-    const {username} = req.params;
     const {currentPassword, newPassword} = req.body;
-    const freelancer = await Freelancer.findOne({username}).select('+password');
+    const freelancer = await Freelancer.findByIdAndUpdate(req.user?._id).select('+password');
     const isPasswordValid = await freelancer.isPasswordCorrect(currentPassword);
     if (!isPasswordValid) {
         throw new ApiError(400, 'Invalid current password');
@@ -195,7 +196,17 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 
 const getCurrentFreelancer = asyncHandler(async (req, res) => {
     const {username} = req.params;
-    const freelancer = await Freelancer.findOne({ username }).select('-password -refreshToken');
+    const freelancer = await Freelancer.findOne({username}).select('-password -refreshToken');
+    if (!freelancer) {
+        throw new ApiError(404, 'Freelancer not found');
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {freelancer}, 'Freelancer details'));
+});
+
+const getLoggedInFreelancer = asyncHandler(async (req, res) => {
+    const freelancer = await Freelancer.findById(req.user?._id).select('-password -refreshToken');
     if (!freelancer) {
         throw new ApiError(404, 'Freelancer not found');
     }
@@ -205,15 +216,14 @@ const getCurrentFreelancer = asyncHandler(async (req, res) => {
 });
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
-    const {username} = req.params;
     const {fullname, dob, education, industry, phone,about,skills} = req.body;
 
     if(!fullname || !dob || !education || !industry){
         throw new ApiError(400, 'All fields are required');
     }
 
-    const freelancer = await Freelancer.findOneAndUpdate(
-        { username },
+    const freelancer = await Freelancer.findByIdAndUpdate(
+        req.user?._id,
         {
             $set: {fullname, dob, education, industry, phone,about,skills}	
         },
@@ -227,15 +237,14 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 });
 
 const updateFreelancerAvatar = asyncHandler(async (req, res) => {
-    const {username} = req.params;
     let avatarLocalPath = req.file?.path;
     // if (!avatarLocalPath) {
     //     avatarLocalPath = '../sk_frontend/public/images/user.png';
     // }
     // console.log(avatarLocalPath);
     if (!avatarLocalPath) {
-        const freelancer = await Freelancer.findOneAndUpdate(
-            {username},
+        const freelancer = await Freelancer.findByIdAndUpdate(
+            req._id,
             {
                 $set: {avatar: null}
             },
@@ -253,8 +262,8 @@ const updateFreelancerAvatar = asyncHandler(async (req, res) => {
         throw new ApiError(400, 'error uploading avatar');
     }
 
-    const freelancer = await Freelancer.findOneAndUpdate(
-        {username},
+    const freelancer = await Freelancer.findByIdAndUpdate(
+        req._id,
         {
             $set: {avatar: avatar.secure_url}
         },
@@ -301,6 +310,7 @@ export {
     refreshAccessToken,
     changeCurrentPassword,
     getCurrentFreelancer,
+    getLoggedInFreelancer,
     updateAccountDetails,
     updateFreelancerAvatar
     // updateFreelancerCoverImage
