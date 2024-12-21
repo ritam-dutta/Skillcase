@@ -194,7 +194,7 @@ const Edit : React.FC<Edit> = ({})=>{
                 }
             }
         );
-            // console.log(response.data?.data?.freelancer.fullname);
+            console.log(response.data?.data?.freelancer.fullname);
             // console.log("check")
             navigate(`/${role}/profile/${username}`);
         } catch (error) {
