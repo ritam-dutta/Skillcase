@@ -39,25 +39,41 @@ const Edit : React.FC<Edit> = ({})=>{
 
         const fetchUserData = async () => {
             try {
-                const response = await axios.get(`http://localhost:8000/api/v1/${role}/${username}`, {
+                const responseLoggedUser = await axios.get(`http://localhost:8000/api/v1/${role}/loggedIn${role[0].toUpperCase()}${role.slice(1)}`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                     },
                 });
+
+                const responseCurrentUser = await axios.get(`http://localhost:8000/api/v1/${role}/profile/${username}`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+                
+                let currentUser;
+                let loggedInUser;
                 let fetchedUser;
                 if(role==="freelancer"){
-                    fetchedUser = response.data?.data?.freelancer;
+                    currentUser = responseCurrentUser.data?.data?.freelancer;
+                    loggedInUser = responseLoggedUser.data?.data?.freelancer;
                 }
                 else if(role==="client"){
-                    fetchedUser = response.data?.data?.client;
+                    currentUser = responseCurrentUser.data?.data?.client;
+                    loggedInUser = responseLoggedUser.data?.data?.client;
                 }
+
+                if(loggedInUser.username === currentUser.username){
+                    fetchedUser = loggedInUser;
+                }
+                else{
+                    navigate(`/${role}/profile/${username}`);
+                }
+
                 if(!fetchedUser){
-                    navigate(`/${role}/${username}`);
+                    navigate(`/${role}/profile/${username}`);
                 }
-                console.log(username, fetchedUser.username)
-                if(username!==fetchedUser.username){
-                    navigate(`/${role}/${fetchedUser.username}`)
-                }
+                // console.log(username, fetchedUser.username)
                 setUser(fetchedUser);
                 setFullname(fetchedUser?.fullname || "");
                 setPhone(fetchedUser?.phone || "");
@@ -68,7 +84,7 @@ const Edit : React.FC<Edit> = ({})=>{
                 setAbout(fetchedUser?.about || "");
                 setSkills(fetchedUser?.skills || "");
                 setAvatar(fetchedUser?.avatar || "/images/freelancer.png");
-                console.log("done axios")
+                // console.log("done axios")
                 // console.log(freelancer)
                 // setUser(freelancer);
                 // setFollowing(freelancer?.following || 0);
@@ -76,7 +92,7 @@ const Edit : React.FC<Edit> = ({})=>{
                 // setAbout(freelancer?.about || "")    
             } catch (error) {
                 console.error("error fetching user data",error);
-                navigate(`/${role}/${username}`);
+                navigate(`/${role}/profile/${username}`);
             }
         };
         fetchUserData();
@@ -94,7 +110,7 @@ const Edit : React.FC<Edit> = ({})=>{
             if (file) {
                 formData.append("avatar", file);
             }
-            const response = await axios.post(`http://localhost:8000/api/v1/${role}/${username}/update_avatar`,formData,
+            const response = await axios.post(`http://localhost:8000/api/v1/${role}/update_avatar/${username}`,formData,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -102,7 +118,7 @@ const Edit : React.FC<Edit> = ({})=>{
                 }
             });
             const updatedAvatar = response.data?.data?.freelancer?.avatar || "/images/freelancer.png";
-            console.log("Avatar updated");
+            // console.log("Avatar updated");
             if(avatarFile) setAvatar(updatedAvatar);
     };
 
@@ -127,13 +143,13 @@ const Edit : React.FC<Edit> = ({})=>{
 
     const removeAvatar = async () => {
         try {
-            console.log(avatar)
+            // console.log(avatar)
             if(avatar=="/images/freelancer.png" || !avatar) return;
             if(!window.confirm("Are you sure you want to remove your avatar?")){
                 return;
             } 
             await axios.post(
-                `http://localhost:8000/api/v1/${role}/${username}/update_avatar`,
+                `http://localhost:8000/api/v1/${role}/update_avatar/${username}`,
                 { avatar: null },
                 {
                     headers: {
@@ -159,7 +175,7 @@ const Edit : React.FC<Edit> = ({})=>{
         
         try {
             // console.log("update enter")
-            const response = await axios.post(`http://localhost:8000/api/v1/${role}/${username}/update_account`, {
+            const response = await axios.post(`http://localhost:8000/api/v1/${role}/update_account/${username}`, {
                 username: username || user.username,
                 dob: dob || user.dob,
                 education: education || user.education,
@@ -178,9 +194,9 @@ const Edit : React.FC<Edit> = ({})=>{
                 }
             }
         );
-            console.log(response.data?.data?.freelancer.fullname);
+            // console.log(response.data?.data?.freelancer.fullname);
             // console.log("check")
-            navigate(`/${role}/${username}`);
+            navigate(`/${role}/profile/${username}`);
         } catch (error) {
             console.log(error);
         }

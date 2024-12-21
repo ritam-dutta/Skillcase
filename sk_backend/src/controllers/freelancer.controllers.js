@@ -206,7 +206,9 @@ const getCurrentFreelancer = asyncHandler(async (req, res) => {
 });
 
 const getLoggedInFreelancer = asyncHandler(async (req, res) => {
+    console.log("entered getLoggedInFreelancer");
     const freelancer = await Freelancer.findById(req.user?._id).select('-password -refreshToken');
+    console.log("loggedin freelancer",freelancer);
     if (!freelancer) {
         throw new ApiError(404, 'Freelancer not found');
     }

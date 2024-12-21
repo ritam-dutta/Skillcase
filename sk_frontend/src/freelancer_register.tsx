@@ -56,6 +56,7 @@ const Freelancer_reg : React.FC<Freelancer_reg> = ({})=>{
             console.log("Regsiter Successful:", response.data);
 
             localStorage.setItem("accessToken", JSON.stringify(accessToken));
+            localStorage.setItem("role", "freelancer");
             navigate("/profile")
         } catch (error) {
             console.error("Login Error:", error);

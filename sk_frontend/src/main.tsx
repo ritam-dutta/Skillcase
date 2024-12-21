@@ -20,10 +20,10 @@ const router= createBrowserRouter(
       <Route path='client/register' element={<Client_reg/>}> </Route>
       <Route path='freelancer/register' element={<Freelancer_reg/>}> </Route>
       <Route path='' element={<Connector/>}> </Route>
-      <Route path='freelancer/:username' element={<Profile/>}> </Route>
-      <Route path='client/:username' element={<Profile/>}> </Route>
-      <Route path='freelancer/:username/edit' element={<Edit/>}> </Route>
-      <Route path='client/:username/edit' element={<Edit/>}> </Route>
+      <Route path='freelancer/profile/:username' element={<Profile/>}> </Route>
+      <Route path='client/profile/:username' element={<Profile/>}> </Route>
+      <Route path='freelancer/edit/:username' element={<Edit/>}> </Route>
+      <Route path='client/edit/:username' element={<Edit/>}> </Route>
       <Route path="*" element={<Not_found/>}></Route>
     </Route>
   )

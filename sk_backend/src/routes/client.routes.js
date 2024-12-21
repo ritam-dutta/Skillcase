@@ -23,11 +23,11 @@ clientRouter.route("/refresh_token").post(refreshAccessToken);
 
 clientRouter.route("/change_password").post(verifyJWT, changeCurrentPassword);
 
-clientRouter.route("/:username").get(verifyJWT, getCurrentClient);
-
 clientRouter.route("/loggedInClient").get(verifyJWT, getLoggedInClient);
 
-clientRouter.route("/:username/update_account").post(verifyJWT, updateAccountDetails);
+clientRouter.route("/profile/:username").get(verifyJWT, getCurrentClient);
+
+clientRouter.route("/update_account/:username").post(verifyJWT, updateAccountDetails);
 
 // clientRouter.route("/:username/update_avatar").post(verifyJWT, upload.single("avatar"), updateClientAvatar);
 

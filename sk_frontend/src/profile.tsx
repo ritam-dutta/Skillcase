@@ -17,37 +17,37 @@ const Profile : React.FC<Profile> = ({})=>{
     else if(url.includes("client")){
         userType="client"
     }
+
     const[fullname,setFullname]=useState("");
     const[following, setFollowing]=useState(0);
     const[followers, setFollowers]=useState(0);
     const[about,setAbout]=useState("");
     const [skills, setSkills] = useState([""]);
     const [avatar, setAvatar] = useState("");
-    const[role,setRole]=useState(userType);
+    const[currentRole,setRole]=useState(userType);
     const {username} = useParams<{ username: string }>();
-    // const[flag,setFlag]=useState(false)
-
-    
 
     const navigate = useNavigate();
 
     useEffect(() => {
         const accessToken = localStorage.getItem("accessToken");
-        console.log("fetched token",accessToken)
+        const loggedInRole = localStorage.getItem("role") || "";
+        // console.log("fetched token",accessToken)
         if (!accessToken) {
-            navigate(`/${role}/login`);
+            navigate(`/${currentRole}/login`);
         } 
 
         const fetchUserData = async () => {
             try {
-                console.log(`loggedIn${role[0].toUpperCase()}${role.slice(1)}`)
-                const responseLoggedUser = await axios.get(`http://localhost:8000/api/v1/${role}/loggedIn${role[0].toUpperCase()}${role.slice(1)}`, {
+                // console.log(`loggedIn${loggedInRole[0].toUpperCase()}${loggedInRole.slice(1)}`)
+                // console.log(currentRole,loggedInRole)
+                const responseLoggedUser = await axios.get(`http://localhost:8000/api/v1/${loggedInRole}/loggedIn${loggedInRole[0].toUpperCase()}${loggedInRole.slice(1)}`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                     },
                 });
 
-                const responseCurrentUser = await axios.get(`http://localhost:8000/api/v1/${role}/${username}`, {
+                const responseCurrentUser = await axios.get(`http://localhost:8000/api/v1/${currentRole}/profile/${username}`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                     },
@@ -57,23 +57,35 @@ const Profile : React.FC<Profile> = ({})=>{
                 let currentUser ;
                 let loggedInUser;
                 let fetchedUser;
-                if(role==="freelancer"){
-                    currentUser = responseCurrentUser.data?.data?.freelancer;
-                    loggedInUser = responseLoggedUser.data?.data?.freelancer;
+                if(currentRole===loggedInRole){
+                    if(currentRole==="freelancer"){
+                        currentUser = responseCurrentUser.data?.data?.freelancer;
+                        loggedInUser = responseLoggedUser.data?.data?.freelancer;
+                    }
+                    else if(currentRole==="client"){
+                        currentUser = responseCurrentUser.data?.data?.client;
+                        loggedInUser = responseLoggedUser.data?.data?.client;
+                    } 
                 }
-                else if(role==="client"){
-                    currentUser = responseCurrentUser.data?.data?.client;
-                    loggedInUser = responseLoggedUser.data?.data?.client;
-                }   
-                console.log("currentUser",currentUser)
-                console.log("loggedInUser",loggedInUser)
+                else{
+                    if(currentRole==="freelancer"){
+                        currentUser = responseCurrentUser.data?.data?.freelancer;
+                        loggedInUser = responseLoggedUser.data?.data?.client;
+                    }
+                    else if(currentRole==="client"){
+                        currentUser = responseCurrentUser.data?.data?.client;
+                        loggedInUser = responseLoggedUser.data?.data?.freelancer;
+                    }
+                }  
+                // console.log("currentUser",currentUser)
+                // console.log("loggedInUser",loggedInUser)
                 if(loggedInUser.username === currentUser.username){
                     fetchedUser = loggedInUser;
                 }
                 else{
                     fetchedUser = currentUser;
                 }
-                console.log(fetchedUser)
+                // console.log(fetchedUser)
                 setUser(fetchedUser);
                 setFullname(fetchedUser?.fullname || "");
                 setFollowing(fetchedUser?.following || 0);
@@ -84,7 +96,7 @@ const Profile : React.FC<Profile> = ({})=>{
                 setRole(fetchedUser?.role || "")
             } catch (error) {
                 console.error("error fetching user data",error);
-                navigate(`/${role}/login`);
+                navigate(`/${currentRole}/login`);
             }
         };
         fetchUserData();
@@ -105,7 +117,7 @@ const Profile : React.FC<Profile> = ({})=>{
             <div className="h-[80%] w-[10%]"></div>
             <div className="h-[90%] w-[20%] bg-yellow-400 z-10 translate-y-[-10%] flex flex-col justify-between items-center border-[2px] border-yellow-800 rounded-md">
                 <div className="h-[35%] w-[100%] bg-yellow-300 flex flex-col justify-center items-center rounded-md">
-                    <p>{role}</p>
+                    <p>{currentRole}</p>
                   <div className="h-[50%] w-[30%] rounded-full bg-yellow-400 border-[2px] border-yellow-800 flex justify-center items-center "><img src={avatar || "/images/freelancer.png"} alt="" className="h-[99%] w-[99%] rounded-full" /></div>
                   <p className="text-yellow-900">{fullname}</p>
                   <p className="text-yellow-900">{username}</p>
@@ -136,7 +148,7 @@ const Profile : React.FC<Profile> = ({})=>{
                             value={skills.join("\n")}
                             />
                         </div>
-                        <div className="w-[30%] h-[20%] bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 border-[2px] border-yellow-800 mt-2 rounded-md flex justify-center items-center"> <Link to={`/${userType}/${username}/edit`}>Edit profile</Link></div>
+                        <div className="w-[30%] h-[20%] bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 border-[2px] border-yellow-800 mt-2 rounded-md flex justify-center items-center"> <Link to={`/${userType}/edit/${username}`}>Edit profile</Link></div>
 
                     </div>
                 </div>

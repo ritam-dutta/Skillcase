@@ -16,7 +16,6 @@ const Login : React.FC<Login> = ({})=>{
     else{
         role="client"
     } 
-    console.log(url)
     const navigate = useNavigate()
 
     const handleLogin = async () => {
@@ -27,13 +26,13 @@ const Login : React.FC<Login> = ({})=>{
                 password: password,
             });
             const accessToken = response.data.data.accessToken;
-            console.log("hi")
-            console.log("accessToken",accessToken)
+            // console.log("accessToken",accessToken)
             console.log("Login Successful:", response.data);
             localStorage.setItem("accessToken", JSON.stringify(accessToken));
-            console.log(username)
+            localStorage.setItem("role", role);
+            // console.log(username)
 
-            navigate(`/${role}/${username}`);
+            navigate(`/${role}/profile/${username}`);
 
         } catch (error) {
             console.error("Login Error:", error);
@@ -42,7 +41,7 @@ const Login : React.FC<Login> = ({})=>{
     };
   return(
     <>
-      <div className="container h-lvh w-lvw flex flex-col justify-between items-center bg-cover bg-center gap-0 overflow-hidden bg-[url(../images/background.jpg)] ">
+      <div className="container h-lvh w-lvw flex flex-col justify-between items-center bg-cover bg-center gap-0 overflow-hidden bg-[url(/images/background.jpg)] ">
         <div className="navbar h-[9-vw] w-lvw relative flex flex-row justify-between items-center">
             <div id="logo" className="h-[60px] w-[200px] ml-[30px]"><img src="/images/logo.png" alt="" id="logo_img" className="h-[60px] w-[200px]"/></div>
             <div className="sign h-[100%] w-[20%] flex flex-row justify-end items-center mr-10">

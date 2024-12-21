@@ -57,6 +57,7 @@ const Client_reg : React.FC<Client_reg> = ({})=>{
             const clientData = response.data;
             console.log("Register Successful:", response.data);
             localStorage.setItem("user", JSON.stringify(clientData));
+            localStorage.setItem("role", "client");
             navigate(`/${username}`)
         } catch (error) {
             console.error("Login Error:", error);

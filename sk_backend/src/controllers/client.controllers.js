@@ -20,7 +20,7 @@ const generateAccessAndRefreshToken = async (clientId) => {
 }
 
 const registerClient = asyncHandler(async (req,res) => {
-    console.log("registering");
+    // console.log("registering");
     const {
         email,
         username,
@@ -33,7 +33,7 @@ const registerClient = asyncHandler(async (req,res) => {
         phone,
         role,
     }= req.body;
-    console.log("registering2");
+    // console.log("registering2");
     const alreadyExistsWithEmail =  await Client.findOne({email});
     // console.log(alreadyExistsWithEmail);
     if(alreadyExistsWithEmail) {
@@ -179,6 +179,7 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 });
 
 const getCurrentClient = asyncHandler(async (req, res) => {
+    console.log("entered getCurrentClient");
     const {username} = req.params;
     const client = await Client.findOne({username}).select('-password -refreshToken');
     return res

@@ -37,11 +37,11 @@ freelancerRouter.route("/refresh_token").post(refreshAccessToken);
 
 freelancerRouter.route("/change_password").post(verifyJWT, changeCurrentPassword);
 
-freelancerRouter.route("/:username").get(verifyJWT, getCurrentFreelancer);
+freelancerRouter.route("/profile/:username").get(verifyJWT, getCurrentFreelancer);
 
 freelancerRouter.route("/loggedInFreelancer").get(verifyJWT, getLoggedInFreelancer);
 
-freelancerRouter.route("/:username/update_account").post(verifyJWT, updateAccountDetails);
+freelancerRouter.route("/update_account/:username").post(verifyJWT, updateAccountDetails);
 
-freelancerRouter.route("/:username/update_avatar").post(verifyJWT, upload.single("avatar"), updateFreelancerAvatar);
+freelancerRouter.route("/update_avatar/:username").post(verifyJWT, upload.single("avatar"), updateFreelancerAvatar);
 export default freelancerRouter;
