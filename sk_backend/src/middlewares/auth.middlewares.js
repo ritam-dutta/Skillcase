@@ -5,11 +5,10 @@ import { Client } from "../models/client.models.js";
 import jwt from "jsonwebtoken";
 
 export const verifyJWT = asyncHandler(async (req, _, next) => {
-    // console.log("hello")
     // try {
         let token =req.headers.authorization?.split(' ')[1] || req.cookies?.accessToken
-        // console.log(token)
         token = token.slice(1,token.length-1)    
+        // console.log(token)
         if(!token) {
            throw new ApiError(401, 'Unauthorized');
         }
@@ -17,8 +16,8 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
         const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
         const role = decodedToken?.role;
-
         if(role === 'freelancer'){
+            console.log("entered freelancer")
             const freelancer = await Freelancer.findById(decodedToken?._id).select('-password -refreshToken');
             if(!freelancer){
                 throw new ApiError(401, 'Invalid access token');
@@ -27,7 +26,9 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
             next();
         }
         else if(role === 'client'){
+            console.log("entered client")
             const client = await Client.findById(decodedToken?._id).select('-password -refreshToken');
+            // console.log(client)
             if(!client){
                 throw new ApiError(401, 'Invalid access token');
             }

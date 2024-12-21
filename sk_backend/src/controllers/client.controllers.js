@@ -187,6 +187,7 @@ const getCurrentClient = asyncHandler(async (req, res) => {
 });
 
 const getLoggedInClient = asyncHandler(async (req, res) => {
+    console.log("entered getLoggedInClient");
     const client = await Client.findById(req.user?._id).select('-password -refreshToken');
     if (!client) {
         throw new ApiError(404, 'Client not found');
@@ -206,7 +207,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
         phone,
     }= req.body;
 
-    if(!fullname || !dob || !companyname || !industry || !phone || !department){
+    if(!fullname || !dob || !industry || !phone){
         throw new ApiError(400, 'All fields are required');
     }
 

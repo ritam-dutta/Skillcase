@@ -27,7 +27,7 @@ clientRouter.route("/:username").get(verifyJWT, getCurrentClient);
 
 clientRouter.route("/loggedInClient").get(verifyJWT, getLoggedInClient);
 
-clientRouter.route("/:username/update_account").patch(verifyJWT, updateAccountDetails);
+clientRouter.route("/:username/update_account").post(verifyJWT, updateAccountDetails);
 
 // clientRouter.route("/:username/update_avatar").post(verifyJWT, upload.single("avatar"), updateClientAvatar);
 

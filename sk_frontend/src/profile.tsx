@@ -40,6 +40,7 @@ const Profile : React.FC<Profile> = ({})=>{
 
         const fetchUserData = async () => {
             try {
+                console.log(`loggedIn${role[0].toUpperCase()}${role.slice(1)}`)
                 const responseLoggedUser = await axios.get(`http://localhost:8000/api/v1/${role}/loggedIn${role[0].toUpperCase()}${role.slice(1)}`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
@@ -51,7 +52,8 @@ const Profile : React.FC<Profile> = ({})=>{
                         Authorization: `Bearer ${accessToken}`,
                     },
                 });
-
+                // console.log("respone of current user",responseCurrentUser)
+                // console.log("response of logged in user",responseLoggedUser)
                 let currentUser ;
                 let loggedInUser;
                 let fetchedUser;
