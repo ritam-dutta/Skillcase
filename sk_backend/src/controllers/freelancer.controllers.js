@@ -31,6 +31,7 @@ const registerFreelancer = asyncHandler(async (req,res) => {
         education,
         industry,
         phone,
+        role,
     }= req.body;
     const alreadyExistsWithEmail =  await Freelancer.findOne({email});
     if(alreadyExistsWithEmail) {
@@ -60,6 +61,7 @@ const registerFreelancer = asyncHandler(async (req,res) => {
         education, 
         industry,  
         phone,
+        role,
     });
 
     const createdFreelancer = await Freelancer.findById(freelancer._id).select(
@@ -115,8 +117,9 @@ const loginFreelancer = asyncHandler( async (req,res) => {
 });
 
 const logoutFreelancer = asyncHandler(async (req, res) => {
-    Freelancer.findByIdAndUpdate(
-        req.user._id, 
+    const {username} = req.params;
+    Freelancer.findOneAndUpdate(
+        {username}, 
         {
             $set: {refreshToken: undefined}
         },
@@ -176,8 +179,9 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 const changeCurrentPassword = asyncHandler(async (req, res) => {
+    const {username} = req.params;
     const {currentPassword, newPassword} = req.body;
-    const freelancer = await Freelancer.findById(req.user?._id).select('+password');
+    const freelancer = await Freelancer.findOne({username}).select('+password');
     const isPasswordValid = await freelancer.isPasswordCorrect(currentPassword);
     if (!isPasswordValid) {
         throw new ApiError(400, 'Invalid current password');
@@ -190,21 +194,26 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 });
 
 const getCurrentFreelancer = asyncHandler(async (req, res) => {
-    const freelancer = await Freelancer.findById(req.user?._id).select('-password -refreshToken');
+    const {username} = req.params;
+    const freelancer = await Freelancer.findOne({ username }).select('-password -refreshToken');
+    if (!freelancer) {
+        throw new ApiError(404, 'Freelancer not found');
+    }
     return res
     .status(200)
     .json(new ApiResponse(200, {freelancer}, 'Freelancer details'));
 });
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
+    const {username} = req.params;
     const {fullname, dob, education, industry, phone,about,skills} = req.body;
 
-    if(!fullname || !dob || !education || !industry || !phone){
+    if(!fullname || !dob || !education || !industry){
         throw new ApiError(400, 'All fields are required');
     }
 
-    const freelancer = await Freelancer.findByIdAndUpdate(
-        req.user?._id,
+    const freelancer = await Freelancer.findOneAndUpdate(
+        { username },
         {
             $set: {fullname, dob, education, industry, phone,about,skills}	
         },
@@ -218,11 +227,25 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 });
 
 const updateFreelancerAvatar = asyncHandler(async (req, res) => {
-    // console.log(req)
-    const avatarLocalPath = req.file?.path
-    // console.log(avatarLocalPath)
+    const {username} = req.params;
+    let avatarLocalPath = req.file?.path;
+    // if (!avatarLocalPath) {
+    //     avatarLocalPath = '../sk_frontend/public/images/user.png';
+    // }
+    // console.log(avatarLocalPath);
     if (!avatarLocalPath) {
-        throw new ApiError(400, 'Avatar file is missing');
+        const freelancer = await Freelancer.findOneAndUpdate(
+            {username},
+            {
+                $set: {avatar: null}
+            },
+            {
+                new: true
+            }
+        ).select('-password -refreshToken');
+        return res
+        .status(200)
+        .json(new ApiResponse(200, {freelancer}, 'Avatar updated successfully'));
     }
     const avatar = await uploadOnCloudinary(avatarLocalPath);
 
@@ -230,8 +253,8 @@ const updateFreelancerAvatar = asyncHandler(async (req, res) => {
         throw new ApiError(400, 'error uploading avatar');
     }
 
-    const freelancer = await Freelancer.findByIdAndUpdate(
-        req.user?._id,
+    const freelancer = await Freelancer.findOneAndUpdate(
+        {username},
         {
             $set: {avatar: avatar.secure_url}
         },

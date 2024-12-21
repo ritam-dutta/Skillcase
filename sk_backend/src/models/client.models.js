@@ -16,6 +16,7 @@ const clientSchema = new mongoose.Schema({
     username:{
         type: String,
         required: true,
+        unique: true,
     },
     fullname:{
         type: String,
@@ -44,6 +45,14 @@ const clientSchema = new mongoose.Schema({
     about:{
         type: String,
         required: false,
+    },
+    avatar:{
+        type: String || null,
+        required: false,
+    },
+    role:{
+        type: String,
+        required: true,
     },
     refreshToken:{
         type: String,

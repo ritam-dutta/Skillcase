@@ -20,6 +20,7 @@ const generateAccessAndRefreshToken = async (clientId) => {
 }
 
 const registerClient = asyncHandler(async (req,res) => {
+    console.log("registering");
     const {
         email,
         username,
@@ -30,12 +31,14 @@ const registerClient = asyncHandler(async (req,res) => {
         industry,
         department,
         phone,
+        role,
     }= req.body;
+    console.log("registering2");
     const alreadyExistsWithEmail =  await Client.findOne({email});
+    // console.log(alreadyExistsWithEmail);
     if(alreadyExistsWithEmail) {
         return res.status(400).json( new ApiResponse(400,null, "Client with email already exists"));
     }
-
     const client = await Client.create({
         email,
         username, 
@@ -46,6 +49,7 @@ const registerClient = asyncHandler(async (req,res) => {
         industry, 
         department, 
         phone,
+        role,
     });
 
     const createdClient = await Client.findById(client._id).select(

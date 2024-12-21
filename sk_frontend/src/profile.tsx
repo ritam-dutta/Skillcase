@@ -1,47 +1,72 @@
 import React,{ useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Header from "./components/header";
-import Footer from "./components/footer";
+// import Footer from "./components/footer";
 import axios from "axios";
 import "./App.css"
 interface Profile {}
 const Profile : React.FC<Profile> = ({})=>{
     const [user, setUser] = useState<any>();
+
+    const url = window.location.href;
+    let userType="";
+    if(url.includes("freelancer")){
+        userType="freelancer"
+    }
+    else if(url.includes("client")){
+        userType="client"
+    }
+
     const[following, setFollowing]=useState(0);
     const[followers, setFollowers]=useState(0);
-    const[about,setAbout]=useState("")
+    const[about,setAbout]=useState("");
     const [skills, setSkills] = useState([""]);
     const [avatar, setAvatar] = useState("");
+    const[role,setRole]=useState(userType);
+    const {username} = useParams<{ username: string }>();
     // const[flag,setFlag]=useState(false)
+
+    
 
     const navigate = useNavigate();
 
     useEffect(() => {
         const accessToken = localStorage.getItem("accessToken");
-        console.log(accessToken)
+        // console.log(accessToken)
         if (!accessToken) {
-            navigate("/login");
+            navigate(`/${role}/login`);
         } 
 
         const fetchUserData = async () => {
             try {
-                const response = await axios.get("http://localhost:8000/api/v1/freelancer/current_freelancer", {
+                console.log(username)
+                const response = await axios.get(`http://localhost:8000/api/v1/${role}/${username}`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                     },
                 });
-                const freelancer = response.data?.data?.freelancer;
-                // console.log(freelancer)
-                setUser(freelancer);
-                setFollowing(freelancer?.following || 0);
-                setFollowers(freelancer?.followers || 0);
-                setAbout(freelancer?.about || "")  
-                setSkills(freelancer?.skills || [""]) 
-                setAvatar(freelancer?.avatar || "../public/images/user.png") 
+                let fetchedUser;
+                if(role==="freelancer"){
+                    fetchedUser = response.data?.data?.freelancer;
+                }
+                else if(role==="client"){
+                    fetchedUser = response.data?.data?.client;
+                }   
+                if(username!==fetchedUser.username){
+                    navigate(`/${role}/${fetchedUser.username}`)
+                }
+                console.log(fetchedUser);
+                setUser(fetchedUser);
+                setFollowing(fetchedUser?.following || 0);
+                setFollowers(fetchedUser?.followers || 0);
+                setAbout(fetchedUser?.about || "")  
+                setSkills(fetchedUser?.skills || [""]) 
+                setAvatar(fetchedUser?.avatar || "/images/freelancer.png") 
+                setRole(fetchedUser?.role || "")
             } catch (error) {
                 console.error("error fetching user data",error);
-                navigate("/login");
+                navigate(`/${role}/login`);
             }
         };
         fetchUserData();
@@ -62,7 +87,8 @@ const Profile : React.FC<Profile> = ({})=>{
             <div className="h-[80%] w-[10%]"></div>
             <div className="h-[90%] w-[20%] bg-yellow-400 z-10 translate-y-[-10%] flex flex-col justify-between items-center border-[2px] border-yellow-800 rounded-md">
                 <div className="h-[35%] w-[100%] bg-yellow-300 flex flex-col justify-center items-center rounded-md">
-                  <div className="h-[50%] w-[30%] rounded-full bg-black border-[2px] border-yellow-800 flex justify-center items-center "><img src={avatar} alt="" className="h-[99%] w-[99%] rounded-full" /></div>
+                    <p>{role}</p>
+                  <div className="h-[50%] w-[30%] rounded-full bg-yellow-400 border-[2px] border-yellow-800 flex justify-center items-center "><img src={avatar || "/images/freelancer.png"} alt="" className="h-[99%] w-[99%] rounded-full" /></div>
                   <p className="text-yellow-900">{user.fullname}</p>
                   <p className="text-yellow-900">{user.username}</p>
                 </div>
@@ -92,7 +118,7 @@ const Profile : React.FC<Profile> = ({})=>{
                             value={skills.join("\n")}
                             />
                         </div>
-                        <div className="w-[30%] h-[20%] bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 border-[2px] border-yellow-800 mt-2 rounded-md flex justify-center items-center"> <Link to="/edit">Edit profile</Link></div>
+                        <div className="w-[30%] h-[20%] bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 border-[2px] border-yellow-800 mt-2 rounded-md flex justify-center items-center"> <Link to={`/${userType}/${username}/edit`}>Edit profile</Link></div>
 
                     </div>
                 </div>

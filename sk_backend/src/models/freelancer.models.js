@@ -15,6 +15,7 @@ const freelancerSchema = new mongoose.Schema({
     username:{
         type: String,
         required: true,
+        unique: true,
     },
     fullname:{
         type: String,
@@ -45,8 +46,12 @@ const freelancerSchema = new mongoose.Schema({
         required: false,
     },
     avatar:{
-        type: String,
+        type: String || null,
         required: false,
+    },
+    role:{
+        type: String,
+        required: true,
     },
     refreshToken:{
         type: String,
