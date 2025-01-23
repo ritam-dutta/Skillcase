@@ -1,38 +1,35 @@
-import { useNavigate, useParams} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Footer from "./footer"; 
 import axios from "axios";
-import "../App.css"
-interface Edit {}
+import "../App.css";
 
-const Edit : React.FC<Edit> = ({})=>{
-    const {username} = useParams<{ username: string }>();
+interface Edit {}
+const Edit: React.FC<Edit> = ({})=> {
+    const { username } = useParams<{ username: string }>();
     const navigate = useNavigate();
-    const[user,setUser]=useState<any>();
-    const [fullname, setFullname] = useState("");	
+    const [user, setUser] = useState<any>();
+    const [fullname, setFullname] = useState("");
     const [phone, setPhone] = useState("");
-    // const [username, setUsername] = useState("");
     const [dob, setDob] = useState("");
     const [education, setEducation] = useState("");
     const [industry, setIndustry] = useState("");
-    const [about, setAbout] = useState(""); 
+    const [about, setAbout] = useState("");
     const [skills, setSkills] = useState([""]);
     const [searchedSkill, setSearchedSkill] = useState("");
     const [avatar, setAvatar] = useState<string | null>("/images/freelancer.png");
-    const [avatarFile, setAvatarFile] = useState<File | null>(null); 
-
+    const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [token, setToken] = useState("");
 
     const url = window.location.href;
     const role = url.includes("freelancer") ? "freelancer" : "client";
-  
+
     useEffect(() => {
         const accessToken = localStorage.getItem("accessToken");
-        if(!accessToken){
-            console.log("Access token not found")	
-            navigate(`/${role}/${username}`)
+        if (!accessToken) {
+            console.log("Access token not found");
+            navigate(`/${role}/${username}`);
         }
-        // console.log(accessToken)
         if (accessToken) {
             setToken(accessToken);
         }
@@ -50,104 +47,90 @@ const Edit : React.FC<Edit> = ({})=>{
                         Authorization: `Bearer ${accessToken}`,
                     },
                 });
-                
+
                 let currentUser;
                 let loggedInUser;
                 let fetchedUser;
-                if(role==="freelancer"){
+                if (role === "freelancer") {
                     currentUser = responseCurrentUser.data?.data?.freelancer;
                     loggedInUser = responseLoggedUser.data?.data?.freelancer;
-                }
-                else if(role==="client"){
+                } else if (role === "client") {
                     currentUser = responseCurrentUser.data?.data?.client;
                     loggedInUser = responseLoggedUser.data?.data?.client;
                 }
 
-                if(loggedInUser.username === currentUser.username){
+                if (loggedInUser.username === currentUser.username) {
                     fetchedUser = loggedInUser;
-                }
-                else{
+                } else {
                     navigate(`/${role}/profile/${username}`);
                 }
 
-                if(!fetchedUser){
+                if (!fetchedUser) {
                     navigate(`/${role}/profile/${username}`);
                 }
-                // console.log(username, fetchedUser.username)
+
                 setUser(fetchedUser);
                 setFullname(fetchedUser?.fullname || "");
                 setPhone(fetchedUser?.phone || "");
-                // setUsername(fetchedUser?.username || "");
                 setDob(fetchedUser?.dob || "");
                 setEducation(fetchedUser?.education || "");
                 setIndustry(fetchedUser?.industry || "");
                 setAbout(fetchedUser?.about || "");
                 setSkills(fetchedUser?.skills || "");
                 setAvatar(fetchedUser?.avatar || "/images/freelancer.png");
-                // console.log("done axios")
-                // console.log(freelancer)
-                // setUser(freelancer);
-                // setFollowing(freelancer?.following || 0);
-                // setFollowers(freelancer?.followers || 0);
-                // setAbout(freelancer?.about || "")    
             } catch (error) {
-                console.error("error fetching user data",error);
+                console.error("Error fetching user data", error);
                 navigate(`/${role}/profile/${username}`);
             }
         };
         fetchUserData();
-    }, [navigate]); 
+    }, [navigate]);
 
     const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if(!file){
-            return <div> loading...</div>
+        if (!file) {
+            return;
         }
-        if (file) {
-            setAvatarFile(file);
-        }
+        setAvatarFile(file);
         const formData = new FormData();
-            if (file) {
-                formData.append("avatar", file);
-            }
-            const response = await axios.post(`http://localhost:8000/api/v1/${role}/update_avatar/${username}`,formData,
+        formData.append("avatar", file);
+
+        const response = await axios.post(
+            `http://localhost:8000/api/v1/${role}/update_avatar/${username}`,
+            formData,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "multipart/form-data",
-                }
-            });
-            const updatedAvatar = response.data?.data?.freelancer?.avatar || "/images/freelancer.png";
-            // console.log("Avatar updated");
-            if(avatarFile) setAvatar(updatedAvatar);
+                },
+            }
+        );
+        const updatedAvatar = response.data?.data?.freelancer?.avatar || "/images/freelancer.png";
+        if (avatarFile) setAvatar(updatedAvatar);
     };
 
     const changeAvatar = async () => {
-        if(!avatar){
-            console.log("Avatar not found")
-            return;
-        }
         try {
             const input = document.createElement("input");
             input.type = "file";
             input.accept = "image/*";
-            input.onchange = (e) => {handleAvatarChange(e as unknown as React.ChangeEvent<HTMLInputElement>)};
+            input.onchange = (e) => {
+                handleAvatarChange(e as unknown as React.ChangeEvent<HTMLInputElement>);
+            };
             document.body.appendChild(input);
             input.click();
             input.remove();
         } catch (error) {
             console.error("Error updating avatar", error);
-            
         }
-    }
+    };
 
     const removeAvatar = async () => {
         try {
-            // console.log(avatar)
-            if(avatar=="/images/freelancer.png" || !avatar) return;
-            if(!window.confirm("Are you sure you want to remove your avatar?")){
+            if (avatar === "/images/freelancer.png" || !avatar) return;
+            if (!window.confirm("Are you sure you want to remove your avatar?")) {
                 return;
-            } 
+            }
             await axios.post(
                 `http://localhost:8000/api/v1/${role}/update_avatar/${username}`,
                 { avatar: null },
@@ -161,219 +144,188 @@ const Edit : React.FC<Edit> = ({})=>{
         } catch (error) {
             console.error("Error removing avatar:", error);
         }
-    }
-
+    };
 
     const handleEdit = async () => {
-    
-        // console.log(user.data.accessToken)
-        // console.log("handleedit")
         if (!user) {
             console.error("User token is missing or invalid.");
             return;
         }
-        
+
         try {
-            // console.log("update enter")
-            const response = await axios.post(`http://localhost:8000/api/v1/${role}/update_account/${username}`, {
-                username: username || user.username,
-                dob: dob || user.dob,
-                education: education || user.education,
-                industry: industry || user.industry,
-                phone: phone || user.phone,
-                fullname: fullname || user.fullname,
-                about: about || user.about,
-                skills: skills || user.skills,
-                avatar: avatar || user.avatar,
-            },
-            {
-                headers: {
-                
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json"
+            await axios.post(
+                `http://localhost:8000/api/v1/${role}/update_account/${username}`,
+                {
+                    username: username || user.username,
+                    dob: dob || user.dob,
+                    education: education || user.education,
+                    industry: industry || user.industry,
+                    phone: phone || user.phone,
+                    fullname: fullname || user.fullname,
+                    about: about || user.about,
+                    skills: skills || user.skills,
+                    avatar: avatar || user.avatar,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
                 }
-            }
-        );
-            console.log(response.data?.data?.freelancer.fullname);
-            // console.log("check")
+            );
             navigate(`/${role}/profile/${username}`);
         } catch (error) {
             console.log(error);
         }
     };
-    
-  return(
-    <>
-        <div className="h-[12vh] w-lvw bg-gradient-to-r from-yellow-500 via-yellow-300 to-yellow-500 "><p className="flex justify-center items-center text-8xl text-yellow-800 font-serif">Edit Profile</p></div>
-        <div className="h-[88vh] w-lvw flex flex-col justify-center items-center relative bg-yellow-200 ">
-            <div className="h-[100%] w-[40%] bg-yellow-300 z-10 translate-y-[-2%]  rounded-md flex flex-col gap-[-10px] border-[2px] border-yellow-700">
-                <div className="h-[100%] w-[100%] bg-yellow-300 flex justify-evenly items-center rounded-md">
-                    <div className="h-[80%] w-[40%] flex flex-col justify-center items-center gap-5">
-                        <div className=" h-[30%] w-[56%] bg-yellow-500 rounded-full flex items-center justify-center border-[2px] border-yellow-800"> 
-                            {/* <input 
-                            type="file" 
-                            id="avatarInput" 
-                            accept="image/*" 
-                            onChange={handleAvatarChange} 
-                            /> */}
-                        <img src={avatar || "/images/freelancer.png"} alt="" className="h-[98%] w-[98%] rounded-full"/>
-                            </div>
-                        <button className="h-[8%] w-[60%] bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-md border-[2px] border-yellow-800" 
-                        onClick={changeAvatar}>
-                            Change Photo
-                        </button>
-                        <button className="h-[8%] w-[60%] bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-md border-[2px] border-yellow-800" 
-                        onClick={removeAvatar}>
-                            Remove Photo	
-                        </button>
-                    </div>
-                    <div className="w-[0.5px] h-[80%] bg-yellow-900"></div>
-                    <div className="h-[80%] w-[44%]  flex flex-col gap-2 justify-center overflow-y-auto ">
-                        <div className=" flex flex-col gap-3">
-                            <div>
-                                <input className="focus:outline-none bg-transparent placeholder-yellow-700 text-yellow-950" type="text" placeholder="Full name" 
-                                value={fullname}
-                                onChange={(e) => setFullname(e.target.value)}
-                                />
-                                <div className="w-[80%] h-[0.5px] bg-red-900"></div>
-                            </div>
 
-                            {/* <div>
-                                <input className="focus:outline-none bg-transparent placeholder-yellow-700 text-yellow-950" type="email" placeholder="Email"/>
-                                <div className="w-[80%] h-[0.5px] bg-red-900"></div>
-                            </div> */}
+    const cancelChanges = () => {
+        if(window.confirm("Are you sure you want to discard the changes?")){
+            navigate(`/${role}/profile/${username}`);
+        }
+    }
 
-                            <div>
-                                <input className="focus:outline-none bg-transparent placeholder-yellow-700 text-yellow-950" type="text" placeholder="Phone number"
-                                value={phone}
-                                onChange={(e) => setPhone(e.target.value)}
-                                />
-                                <div className="w-[80%] h-[0.5px] bg-red-900"></div>
+    return (
+        <>
+            <div className="h-[12vh] w-full bg-gradient-to-r from-indigo-700 via-indigo-500 to-indigo-700 shadow-lg">
+                <p className="flex justify-center items-center text-4xl font-semibold text-gray-50 py-4">Edit Profile</p>
+            </div>
+            <div className="min-h-[88vh] w-full flex flex-col items-center bg-gray-50 py-6">
+                <div className="w-11/12 lg:w-3/5 bg-white shadow-lg rounded-lg p-8">
+                    <div className="flex justify-between items-start">
+                        <div className="w-1/3 flex flex-col items-center gap-4">
+                            <div className="h-32 w-32 rounded-full overflow-hidden border border-gray-300">
+                                <img src={avatar || "/images/freelancer.png"} alt="Avatar" className="h-full w-full object-cover" />
                             </div>
-
-                            {/* <div>
-                                <input className="focus:outline-none bg-transparent placeholder-yellow-700 text-yellow-950" type="text" placeholder="Username"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                />
-                                <div className="w-[80%] h-[0.5px] bg-red-900"></div>
-                            </div> */}
-
-                            <div>
-                                <input className="focus:outline-none bg-transparent placeholder-yellow-700 text-yellow-950" type="date" placeholder=""
-                                value={dob}
-                                onChange={(e) => setDob(e.target.value)}
-                                />
-                                <div className="w-[80%] h-[0.5px] bg-red-900"></div>
-                            </div>
-
-                            <div>
-                                <input className="focus:outline-none bg-transparent placeholder-yellow-700 text-yellow-950" type="text" placeholder="education"
-                                value={education}
-                                onChange={(e) => setEducation(e.target.value)}
-                                />
-                                <div className="w-[80%] h-[0.5px] bg-red-900"></div>
-                            </div>
-
-                            <div>
-                                <input className="focus:outline-none bg-transparent placeholder-yellow-700 text-yellow-950" type="text" placeholder="Industry"
-                                value={industry}
-                                onChange={(e) => setIndustry(e.target.value)}
-                                />
-                                <div className="w-[80%] h-[0.5px] bg-red-900"></div>
-                            </div>
-                            <div>
-                            <p className="text-yellow-700">About</p>
-                            <textarea name="" id="" className="h-[80%] w-[90%] rounded-md focus:outline-none p-1 bg-yellow-400 border-[2px] border-yellow-700 text-yellow-950 resize-none" 
-                            value={about} 
-                            onChange={(e) => setAbout(e.target.value)}
-                            ></textarea>
-                            </div>
-                            <div>
-                            <p className="text-yellow-700">Skills</p>
-                            <div className="border-black bg-yellow-600 bg-opacity-55 placeholder-yellow-700 text-yellow-950 h-7 w-56 p-2 flex justify-left items-center rounded-md">
-                                <input className="w-[100%] bg-transparent placeholder-yellow-800 text-yellow-950 focus:outline-none text-sm" type="text" placeholder="Type your skill and press enter " 
-                                value={searchedSkill}
-                                onChange={(e) => {
-                                    setSearchedSkill(e.target.value);
-                                }}
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter" && searchedSkill) {
-                                        setSkills([...skills, searchedSkill]);
-                                        setSearchedSkill("");
-                                    }
-                                }}
-                                />
-                            </div>
-                            {/* <textarea name="" id="" readOnly className="h-[80%] w-[90%] rounded-md focus:outline-none p-1 bg-yellow-400 border-[2px] border-yellow-700 text-yellow-950 mt-1 "
-                            value={skills.join("\n")}
-                            {...skills.map((skill, index) => (
-                                <div key={index} className="flex justify-between items-center">
-                                    <span>{skill}</span>
-                                    <button
-                                        className="ml-2 bg-red-500 text-white rounded px-2"
-                                        onClick={() => {
-                                            const newSkills = skills.filter((_, i) => i !== index);
-                                            setSkills(newSkills);
-                                        }}
-                                    >
-                                        Remove
-                                    </button>
+                            <button 
+                                className="w-[75%] px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                                onClick={changeAvatar}>
+                                Change Photo
+                            </button>
+                            <button 
+                                className="w-[75%] px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                                onClick={removeAvatar}>
+                                Remove Photo
+                            </button>
+                        </div>
+                        <div className="w-2/3 px-6">
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Full Name</label>
+                                    <input 
+                                        type="text" 
+                                        className="mt-1 block w-full rounded-md border-gray-300 border-b-[2px] shadow-sm  focus:outline-none  focus:shadow-md px-1" 
+                                        value={fullname}
+                                        onChange={(e) => setFullname(e.target.value)}
+                                    />
                                 </div>
-                            ))}
-                            ></textarea> */}
-                            <div className="h-[80%] w-[90%] rounded-md focus:outline-none p-1 bg-yellow-400 border-[2px] border-yellow-700 text-yellow-950 mt-1 overflow-y-auto">
-                                {skills.map((skill, index) => (
-                                    <div key={index} className="flex justify-between items-center p-1 border-b border-yellow-500">
-                                        <span>{skill}</span>
-                                        <button
-                                            className=" bg-transparent text-red-600 rounded-md p-1 text-sm"
-                                            onClick={() => {
-                                                const newSkills = skills.filter((_, i) => i !== index);
-                                                setSkills(newSkills);
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+                                    <input 
+                                        type="text" 
+                                        className="mt-1 block w-full rounded-md border-gray-300 border-b-[2px] shadow-sm  focus:outline-none  focus:shadow-md px-1" 
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
+                                    <input 
+                                        type="date" 
+                                        className="mt-1 block w-full rounded-md border-gray-300 border-b-[2px] shadow-sm  focus:outline-none  focus:shadow-md px-1" 
+                                        value={dob}
+                                        onChange={(e) => setDob(e.target.value)}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Education</label>
+                                    <input 
+                                        type="text" 
+                                        className="mt-1 block w-full rounded-md border-gray-300 border-b-[2px] shadow-sm  focus:outline-none  focus:shadow-md px-1" 
+                                        value={education}
+                                        onChange={(e) => setEducation(e.target.value)}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Industry</label>
+                                    <input 
+                                        type="text" 
+                                        className="mt-1 block w-full rounded-md border-gray-300 border-b-[2px] shadow-sm  focus:outline-none  focus:shadow-md px-1" 
+                                        value={industry}
+                                        onChange={(e) => setIndustry(e.target.value)}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">About</label>
+                                    <textarea 
+                                        className="mt-1 block w-full rounded-md border-gray-300 border-b-[2px] shadow-sm  focus:outline-none  focus:shadow-md px-1" 
+                                        value={about} 
+                                        onChange={(e) => setAbout(e.target.value)}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Skills</label>
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <input 
+                                            type="text" 
+                                            className="flex-1 rounded-md border-gray-300 border-b-[2px] shadow-sm  focus:outline-none  focus:shadow-md px-1" 
+                                            placeholder="Add a skill"
+                                            value={searchedSkill}
+                                            onChange={(e) => setSearchedSkill(e.target.value)}
+                                            onKeyDown={(                                            e) => {
+                                                if (e.key === "Enter" && searchedSkill.trim() !== "") {
+                                                    setSkills([...skills, searchedSkill.trim()]);
+                                                    setSearchedSkill("");
+                                                }
                                             }}
-                                        >
-                                            remove
+                                        />
+                                        <button 
+                                            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                                            onClick={() => {
+                                                if (searchedSkill.trim() !== "") {
+                                                    setSkills([...skills, searchedSkill.trim()]);
+                                                    setSearchedSkill("");
+                                                }
+                                            }}>
+                                            Add
                                         </button>
                                     </div>
-                                ))}
+                                    <div className="flex flex-wrap gap-2">
+                                        {skills.map((skill, index) => (
+                                            <div 
+                                                key={index} 
+                                                className="flex items-center gap-2 bg-gray-200 px-3 py-1 rounded-full">
+                                                <span>{skill}</span>
+                                                <button 
+                                                    className="text-red-500 hover:text-red-700"
+                                                    onClick={() => setSkills(skills.filter((_, i) => i !== index))}>
+                                                    &times;
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
+                            <div className="mt-6 flex justify-end gap-4">
+                                <button 
+                                    className="px-6 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500"
+                                    onClick={cancelChanges}>
+                                    Cancel
+                                </button>
+                                <button 
+                                    className="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                                    onClick={handleEdit}>
+                                    Save Changes
+                                </button>
                             </div>
-                            </div>
+                        </div>
                     </div>
-                    
-                    
-                </div>
-
-                <div className="w-[83%] h-[7%]  bg-yellow-300  flex justify-end items-end">
-                    <button  className="h-[100%] w-[25%] bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-md border-[2px] border-yellow-800 -translate-y-7" onClick={handleEdit}>Save changes
-                    </button>
-                </div>
-    
-            </div>
-            <Footer></Footer>
-            {/* <div className="footer h-[1vh] w-[100vw] flex flex-row justify-between">
-            <div className="foot1 h-[100%] w-[30%] flex flex-row justify-center items-center"><p id="foot_text" className="font-sans font-bold text-xl text-yellow-700">©SkillCase 2024 | Ritam Dutta</p></div>
-            
-            <div className="foot2 h-[100%] w-[30%] flex flex-row justify-evenly items-center">
-                <div className=" group relative font-segoe-ui text-lg text-yellow-400">
-                    <Link to="" className="foot_text2 font-sans text-yellow-700 text-[17px] relative hover:after:scale-x-[1] hover:after:scale-y-[1] ">Contact us</Link>
-                    <div className="absolute bottom-0 left-0 w-full h-px bg-yellow-700 cursor-pointer transform scale-x-0 transition-transform duration-300 ease-in-out group-hover:scale-x-100"></div>
-                </div>
-                <div className=" group relative font-segoe-ui text-lg text-yellow-400">
-                    <Link to="" className="foot_text2 font-sans text-yellow-700 text-[17px] relative hover:after:scale-x-[1] hover:after:scale-y-[1] ">About us</Link>
-                    <div className="absolute bottom-0 left-0 w-full h-px bg-yellow-700 cursor-pointer transform scale-x-0 transition-transform duration-300 ease-in-out group-hover:scale-x-100"></div>
-                </div>
-                <div className=" group relative font-segoe-ui text-lg text-yellow-400">
-                    <Link to="" className="foot_text2 font-sans text-yellow-700 text-[17px] relative hover:after:scale-x-[1] hover:after:scale-y-[1] ">Privacy</Link>
-                    <div className="absolute bottom-0 left-0 w-full h-px bg-yellow-700 cursor-pointer transform scale-x-0 transition-transform duration-300 ease-in-out group-hover:scale-x-100"></div>
                 </div>
             </div>
-            </div> */}
-        </div>
-        
-    </>
-  )
-}
+            <Footer />  
+        </>
+    );
+};
 
-export default Edit
+export default Edit;
+

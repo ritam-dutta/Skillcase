@@ -2,6 +2,12 @@ import React,{ useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Header from "./components/header";
+import ProfileStats from "./components/profileStats";
+import ProjectList from "./components/projectList";
+import { Button } from "./components/ui/button";
+import { Badge } from "./components/ui/badge";
+import { Avatar } from "./components/ui/avatar";
+import { Progress } from "./components/ui/progress";
 // import Footer from "./components/footer";
 import axios from "axios";
 import "./App.css"
@@ -111,81 +117,105 @@ const Profile : React.FC<Profile> = ({})=>{
     // })
   return(
     <>
-        <Header></Header>
-        <div className="h-[18vh] w-lvw bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 "></div>
-        <div className="h-[75vh] w-lvw flex justify-between relative bg-slate-100">
-            <div className="h-[80%] w-[10%]"></div>
-            <div className="h-[90%] w-[20%] bg-yellow-400 z-10 translate-y-[-10%] flex flex-col justify-between items-center border-[2px] border-yellow-800 rounded-md">
-                <div className="h-[35%] w-[100%] bg-yellow-300 flex flex-col justify-center items-center rounded-md">
-                    <p>{currentRole}</p>
-                  <div className="h-[50%] w-[30%] rounded-full bg-yellow-400 border-[2px] border-yellow-800 flex justify-center items-center "><img src={avatar || "/images/freelancer.png"} alt="" className="h-[99%] w-[99%] rounded-full" /></div>
-                  <p className="text-yellow-900">{fullname}</p>
-                  <p className="text-yellow-900">{username}</p>
-                </div>
-                <div className="h-[70%] w-[100%] bg-yellow-300 rounded-md">
-                    <div className="flex justify-between px-3">
-                        <p className="text-yellow-900">Following</p>
-                        <p>{following}</p>
-                    </div>
-                    <div className=" flex justify-center"><div className="h-[1.5px] w-[95%] bg-yellow-700"></div></div>
-                    <div className="flex justify-between px-3 mt-3">
-                        <p className="text-yellow-900">Followers</p>
-                        <p>{followers}</p>
-                    </div>
-                    <div className=" flex justify-center"><div className="h-[1.5px] w-[95%] bg-yellow-700"></div></div>
-                    <div className="mt-4 h-[75%] w-[100%] flex flex-col items-center ">
-                        <div className="flex justify-between px-2 w-[100%] h-[15%]">
-                            <p className="text-yellow-900">About</p>
-                        </div>
-                        <div className=" h-[40%] w-[90%] rounded-md ">                       
-                            <textarea id="myInput" readOnly value={about} className="focus:outline-none h-[100%] w-[100%] rounded-md p-2 bg-yellow-400 border-[2px] border-yellow-700 text-yellow-950 resize-none"/>
-                        </div>
-                        <div className="flex justify-between px-2 w-[100%] h-[20%] mt-3">
-                            <p className="text-yellow-900">Skills</p>   
-                        </div>
-                        <div className=" h-[40%] w-[90%] rounded-md">
-                            <textarea id="myInput" readOnly className="focus:outline-none h-[100%] w-[100%] rounded-md p-2 bg-yellow-400 border-[2px] border-yellow-700 text-yellow-950 resize-none"
-                            value={skills.join("\n")}
-                            />
-                        </div>
-                        <div className="w-[30%] h-[20%] bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 border-[2px] border-yellow-800 mt-2 rounded-md flex justify-center items-center"> <Link to={`/${userType}/edit/${username}`}>Edit profile</Link></div>
+        
+        <div className="min-h-screen w-full bg-gray-100">
+      {/* Header */}
+      <Header></Header>
+      <div className="h-[18vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-start px-8">
+        <h1 className="text-3xl text-white font-bold mt-6">Profile</h1>
+      </div>
 
-                    </div>
-                </div>
+      <div className="flex flex-row justify-center mt-[-10vh]">
+        {/* Sidebar Profile Card */}
+        <div className="w-[25%] bg-white shadow-lg rounded-lg p-6 flex flex-col items-center border border-gray-200">
+
+          <div className="bg-gray-100 rounded-full w-24 h-24 flex items-center justify-center border border-gray-300">
+            <img
+              src={avatar || "/images/freelancer.png"}
+              alt="Profile Avatar"
+              className="w-full h-full rounded-full object-cover"
+            />
+          </div>
+          <p className="text-xl font-semibold mt-4">{fullname}</p>
+          <p className="text-gray-600">@{username}</p>
+          <p className="text-gray-500 mt-2">{userType[0].toUpperCase()+userType.slice(1,)}</p>
+
+          <div className="flex justify-between w-full mt-6 text-center">
+            <div>
+              <p className="font-semibold text-gray-700">{following}</p>
+              <p className="text-gray-500 text-sm">Projects</p>
             </div>
-            <div className=" h-[97%] w-[65%] bg-slate-100 overflow-auto px-4 py-2 my-2 rounded-md">
-                <p className=" pt-2 text-xl font-sans text-">Stats</p>
-                <div className="h-[20%] w-[100%]  flex justify-evenly">
-                    <div className="stat h-[100%] w-[25%] bg-yellow-200 rounded-md ">
-
-                    </div>
-                    <div className="stat h-[100%] w-[25%] bg-yellow-200 rounded-md ">
-
-                    </div>
-                    <div className="stat h-[100%] w-[25%] bg-yellow-200 rounded-md ">
-                    </div>
-                </div>
-                <div className=" h-[60%] w-[100%]  mt-4">
-                    <p className=" text-xl font-sans pb-1">Paid projects</p>
-                    <div className="h-[91%] w-[100%] flex justify-center items-center">
-                        <div className="no-scrollbar h-[100%] w-[97%] bg-gray-400 border-[1px] border-[black] rounded-md">
-                            
-                        </div>
-
-                    </div>
-                </div>
-                <div className=" h-[60%] w-[100%]  mt-4">
-                    <p className=" text-xl font-sans pb-1">Unpaid projects</p>
-                    <div className="h-[91%] w-[100%] flex justify-center items-center">
-                        <div className="no-scrollbar h-[100%] w-[97%] bg-gray-400 border-[1px] border-[black] rounded-md">
-                            
-                        </div>
-
-                    </div>
-                </div>
-                <div className="h-[5%]"></div>
+            <div>
+              <p className="font-semibold text-gray-700">{following}</p>
+              <p className="text-gray-500 text-sm">Following</p>
             </div>
+            <div>
+              <p className="font-semibold text-gray-700">{followers}</p>
+              <p className="text-gray-500 text-sm">Followers</p>
+            </div>
+          </div>
+
+          <div className="w-full mt-6">
+            <h3 className="font-semibold text-gray-800">About</h3>
+            <textarea
+              readOnly
+              value={about}
+              className="w-full mt-2 p-3 text-sm bg-gray-50 border border-gray-200 rounded-md resize-none"
+            ></textarea>
+          </div>
+
+          <div className="w-full mt-6">
+            <h3 className="font-semibold text-gray-800">Skills</h3>
+            <textarea
+              readOnly
+              value={skills.join("\n")}
+              className="w-full mt-2 p-3 text-sm bg-gray-50 border border-gray-200 rounded-md resize-none"
+            ></textarea>
+          </div>
+
+          <Link
+            to={`/${userType}/edit/${username}`}
+            className="mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"
+          >
+            Edit Profile
+          </Link>
         </div>
+
+        {/* Main Content Area */}
+        <div className="w-[65%] bg-white shadow-lg rounded-lg p-8 ml-6 border border-gray-200">
+          <h2 className="text-2xl font-bold mb-4">Stats</h2>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-3 gap-6 mb-8">
+            <div className="bg-gray-50 p-4 shadow-sm border border-gray-200 rounded-lg">
+              <h3 className="text-lg font-semibold text-gray-700">Stat 1</h3>
+            </div>
+            <div className="bg-gray-50 p-4 shadow-sm border border-gray-200 rounded-lg">
+              <h3 className="text-lg font-semibold text-gray-700">Stat 2</h3>
+            </div>
+            <div className="bg-gray-50 p-4 shadow-sm border border-gray-200 rounded-lg">
+              <h3 className="text-lg font-semibold text-gray-700">Stat 3</h3>
+            </div>
+          </div>
+
+          {/* Paid Projects */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold mb-3">Paid Projects</h2>
+            <div className="bg-gray-100 h-40 rounded-lg flex items-center justify-center border border-gray-200">
+              <p className="text-gray-600">No data available</p>
+            </div>
+          </div>
+
+          {/* Unpaid Projects */}
+          <div>
+            <h2 className="text-xl font-semibold mb-3">Unpaid Projects</h2>
+            <div className="bg-gray-100 h-40 rounded-lg flex items-center justify-center border border-gray-200">
+              <p className="text-gray-600">No data available</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     </>
   )

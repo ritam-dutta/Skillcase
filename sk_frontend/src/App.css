@@ -6,7 +6,7 @@
     width: 10px;
 }
 ::-webkit-scrollbar-thumb {
-    background: #d49e09; /* color of the scrollbar handle */
+    background: #ffffff00; /* color of the scrollbar handle */
     /* background: linear-gradient(to top,#fdba02,#d49e09); */
     border-radius: 5px; /* rounded corners of the scrollbar handle */
   }

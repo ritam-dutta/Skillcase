@@ -16,15 +16,16 @@ const Client_reg : React.FC<Client_reg> = ({})=>{
     const [phone,setPhone]=useState('')
     const [confirmPassword,setConfirmPassword]=useState('')
     const [fullname,setFullname]=useState('')
+    // const [role,setRole]=useState('client')
 
-    // const url = window.location.href;
-    // let role="";
-    // if(url.includes("freelancer")){
-    //     role="freelancer"
-    // }
-    // else{
-    //     role="client"
-    // } 
+    const url = window.location.href;
+    let role="";
+    if(url.includes("freelancer")){
+        role="freelancer"
+    }
+    else{
+        role="client"
+    } 
 
     const navigate = useNavigate()
     const handleRegister = async () => {
@@ -58,7 +59,7 @@ const Client_reg : React.FC<Client_reg> = ({})=>{
             console.log("Register Successful:", response.data);
             localStorage.setItem("user", JSON.stringify(clientData));
             localStorage.setItem("role", "client");
-            navigate(`/${username}`)
+            navigate(`/${role}/profile/${username}`)
         } catch (error) {
             console.error("Login Error:", error);
         }
@@ -66,97 +67,87 @@ const Client_reg : React.FC<Client_reg> = ({})=>{
 
   return(
     <>
-        <div className="container h-lvh w-lvw flex flex-col justify-between items-center bg-[url(../images/background.jpg)] bg-cover bg-center gap-0 overflow-hidden">
-        <div className="navbar h-[9vh] w-[100vw] relative flex flex-row justify-between items-center">
-            <div id="logo" className="h-[60px] w-[200px] ml-[30px]"><img src="/images/logo.png" alt="" id="logo_img" className="h-[60px] w-[200px]"/></div>
-            <div className="sign h-[100%] w-[20%] flex flex-row justify-evenly items-center">
-                <button className="btn_sign hover:bg-[rgb(241,186,6,0.7)] h-[80%] w-[40%] rounded-[30px] bg-transparent border-[3px] border-[rgb(241,186,6)] transition duration-500 ease-in-out"><Link to="/client/login" className="head_text text-lg font-sans text-[rgb(241,186,6)] text-[17px] relative">Sign In</Link></button>
-                {/* <button className="btn_sign hover:bg-[rgb(241,186,6,0.7)] h-[80%] w-[40%] rounded-[30px] bg-transparent border-[3px] border-[rgb(241,186,6)] transition duration-500 ease-in-out"><a href="connector.html" className="head_text text-lg font-sans text-[rgb(241,186,6)] text-[17px] relative" >Sign Up</a></button> */}
-            </div>
+        <div className="container h-lvh w-lvw flex flex-col justify-center items-center bg-gradient-to-b from-slate-200 to-slate-400 gap-5 overflow-hidden">
+    {/* Navbar */}
+    <div className="navbar h-[10vh] w-full px-6 flex justify-between items-center bg-gradient-to-r from-blue-400 to-blue-600 shadow-md">
+        <div className="flex items-center">
+          <img src="/images/logo.png" alt="Logo" className="h-12 w-auto" />
         </div>
-        <div className="boxes w-[26vw] h-[7vh] inline-flex justify-end gap-[2px] mr-[20px] relative z-0">
-            <div className="box h-[100%] w-[13%] inline-block rounded-[5px] transition duration-300 ease-in-out translate-y-[95%] hover:translate-y-[60%]"><Link to="https://www.facebookcom"><img src="/images/fb.png" alt="" className="img h-[55px] w-[55px]"/></Link></div>
-            <div className="box h-[100%] w-[13%] inline-block rounded-[5px] transition duration-300 ease-in-out translate-y-[95%] hover:translate-y-[60%]"><Link to="https://www.twitter.com"><img src="/images/twitter.png" alt="" className="img h-[55px] w-[55px]" id="twitter"/></Link></div>
-            <div className="box h-[100%] w-[13%] inline-block rounded-[5px] transition duration-300 ease-in-out translate-y-[95%] hover:translate-y-[60%]"><Link to="https://www.google.com"><img src="/images/google.png" alt="" className="img h-[55px] w-[55px]"/></Link></div>
+        <div className="flex items-center space-x-4">
+          <Link
+            to={`/${role}/login`}
+            className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-full shadow hover:bg-blue-400 transition duration-300"
+          >
+            Sign In
+          </Link>
+          <Link
+            to="/"
+            className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-full shadow hover:bg-blue-400 transition duration-300"
+          >
+            Select Role
+          </Link>
         </div>
-        <div className="login w-[27vw] h-[65vh] border-[1px] border-black rounded-[5px] backdrop-blur-[25px]">
-            <div className="login1 w-[100%] h-[10%] flex flex-row justify-between">
-                <div className="sign_in h-[100%] w-[80%] ml-[5%] flex items-center"><p className="font-medium text-xl font-sans text-[rgb(241,186,6)]">Client</p></div>
+      </div>
+
+    {/* Registration Form */}
+    <div className="register-container w-[30vw] h-auto bg-slate-200 rounded-[10px] border-[1px] border-blue-400 shadow-sm shadow-blue-900 hover:shadow-2xl hover:shadow-blue-400 transition duration-300 p-8">
+        <h2 className="text-center text-blue-600 text-3xl font-semibold mb-6">
+            Create Your Account As a Client
+        </h2>
+        <p className="text-center text-gray-600 mb-8">Welcome to Skillcase! Fill out the form below to get started.</p>
+        <form className="space-y-6 h-[45vh] overflow-y-auto">
+            {/* Input Fields */}
+            {[
+                { placeholder: "Full Name", value: fullname, setValue: setFullname, type: "text",Image : "/images/user.png" },
+                { placeholder: "Username", value: username, setValue: setUsername, type: "text", Image : "/images/user.png" },
+                { placeholder: "Email Address", value: email, setValue: setEmail, type: "email", Image : "/images/email.png" },
+                { placeholder: "Date of Birth", value: dob, setValue: setDob, type: "date", Image : "/images/dob.png" },
+                { placeholder: "Company", value: company, setValue: setCompany, type: "text", Image : "/images/company.png" },
+                { placeholder: "Department", value: department, setValue: setDepartment, type: "text", Image : "/images/department.png" },
+                { placeholder: "Industry", value: industry, setValue: setIndustry, type: "text", Image : "/images/industry.png" },
+                { placeholder: "Phone", value: phone, setValue: setPhone, type: "text", Image : "/images/phn.png" },
+                { placeholder: "Set Password", value: password, setValue: setPassword, type: "password", Image : "/images/pwd.png" },
+                { placeholder: "Confirm Password", value: confirmPassword, setValue: setConfirmPassword, type: "password", Image : "/images/pwd.png" },
+            ].map(({ placeholder, value, setValue, type, Image }, index) => (
+                <div className="relative flex items-center" key={index}>
+                    <div className="absolute left-3">
+                        <img src={Image} alt="User Icon" className="h-5 w-5" />
+                     </div>
+                    <input
+                        type={type}
+                        placeholder={placeholder}
+                        value={value}
+                        onChange={(e) => setValue(e.target.value)}
+                        required
+                        className="input w-full pl-10 pr-4 py-3 bg-white border-[1px] border-gray-400 rounded-md text-gray-700 focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
+                    />
+                </div>
+            ))}
+
+            {/* Sign Up Button */}
+            <div className="text-center">
+                <button
+                    type="button"
+                    onClick={handleRegister}
+                    className="btn w-full py-3 bg-blue-600 text-white font-semibold rounded-[30px] hover:bg-blue-700 transition duration-300"
+                >
+                    Sign Up
+                </button>
             </div>
-            <div className="welcome h-[12%] w-[100%] flex justify-center items-center font-sans font-bold text-lg"><p className="text-[rgb(241,186,6)] text-[22px]">Welcome to Skillcase!</p></div>
-            <div className="info h-[40%] w-[100%] flex flex-col justify-start items-center gap-[25px] overflow-y-scroll overflow-x-hidden">
-                <div className="about h-[30%] w-[90%] border-[1px] border-black flex flex-row rounded-[5px] hover:border-[2px] hover:bg-[rgb(241,186,6,0.5)]">
-                    <div className="icon h-[100%] w-[16%] rounded-bl-[5px] rounded-tl-[5px] bg-[rgb(241,186,6)] flex justify-center items-center"><img src="/images/user.png" alt="" className="info_img h-[25px] w-[25px]"/></div>
-                    <div className="input h-[100%] w-[85%] flex items-end"><input type="text" className="take_info h-[100%] w-[100%] pl-[10px] border-none rounded-tl-[5px] rounded-br-[5px] bg-transparent backdrop-blur-[100%] focus:outline-none focus:border-none" placeholder="*Full name" name="full name" 
-                    value={fullname} onChange={(e) => setFullname(e.target.value)}
-                    required/></div>
-                </div>
-                <div className="about h-[30%] w-[90%] border-[1px] border-black flex flex-row rounded-[5px] hover:border-[2px] hover:bg-[rgb(241,186,6,0.5)]">
-                    <div className="icon h-[100%] w-[16%] rounded-bl-[5px] rounded-tl-[5px] bg-[rgb(241,186,6)] flex justify-center items-center"><img src="/images/user.png" alt="" className="info_img h-[25px] w-[25px]"/></div>
-                    <div className="input h-[100%] w-[85%] flex items-end"><input type="text" className="take_info h-[100%] w-[100%] pl-[10px] border-none rounded-tl-[5px] rounded-br-[5px] bg-transparent backdrop-blur-[100%] focus:outline-none focus:border-none" placeholder="*Username" name="username" 
-                    value={username} onChange={(e) => setUsername(e.target.value)}
-                    required/></div>
-                </div>
-                <div className="about h-[30%] w-[90%] border-[1px] border-black flex flex-row rounded-[5px] hover:border-[2px] hover:bg-[rgb(241,186,6,0.5)]">
-                    <div className="icon h-[100%] w-[16%] rounded-bl-[5px] rounded-tl-[5px] bg-[rgb(241,186,6)] flex justify-center items-center"><img src="/images/email.png" alt="" className="info_img h-[25px] w-[25px]"/></div>
-                    <div className="input h-[100%] w-[85%] flex items-end"><input type="email" className="take_info h-[100%] w-[100%] pl-[10px] border-none rounded-tl-[5px] rounded-br-[5px] bg-transparent backdrop-blur-[100%] focus:outline-none focus:border-none" placeholder="*Email Address" name="email" 
-                    value={email} onChange={(e) => setEmail(e.target.value)}
-                    required/></div>
-                </div>
-                <div className="about h-[30%] w-[90%] border-[1px] border-black flex flex-row rounded-[5px] hover:border-[2px] hover:bg-[rgb(241,186,6,0.5)]">
-                    <div className="icon h-[100%] w-[16%] rounded-bl-[5px] rounded-tl-[5px] bg-[rgb(241,186,6)] flex justify-center items-center"><img src="/images/dob.png" alt="" className="info_img h-[25px] w-[25px]"/></div>
-                    <div className="input h-[100%] w-[85%] flex items-end"><input type="date" className="take_info h-[100%] w-[100%] pl-[10px] border-none rounded-tl-[5px] rounded-br-[5px] bg-transparent backdrop-blur-[100%] focus:outline-none focus:border-none" placeholder="*Date of birth" name="dob" 
-                    value={dob} onChange={(e) => setDob(e.target.value)}
-                    required/></div>
-                </div>
-                <div className="about h-[30%] w-[90%] border-[1px] border-black flex flex-row rounded-[5px] hover:border-[2px] hover:bg-[rgb(241,186,6,0.5)]">
-                    <div className="icon h-[100%] w-[16%] rounded-bl-[5px] rounded-tl-[5px] bg-[rgb(241,186,6)] flex justify-center items-center"><img src="/images/company.png" alt="" className="info_img h-[25px] w-[25px]"/></div>
-                    <div className="input h-[100%] w-[85%] flex items-end"><input type="text" className="take_info h-[100%] w-[100%] pl-[10px] border-none rounded-tl-[5px] rounded-br-[5px] bg-transparent backdrop-blur-[100%] focus:outline-none focus:border-none" placeholder="Company Name" name="company"
-                    value={company} onChange={(e) => setCompany(e.target.value)}
-                    /></div>
-                </div>/
-                <div className="about h-[30%] w-[90%] border-[1px] border-black flex flex-row rounded-[5px] hover:border-[2px] hover:bg-[rgb(241,186,6,0.5)]">
-                    <div className="icon h-[100%] w-[16%] rounded-bl-[5px] rounded-tl-[5px] bg-[rgb(241,186,6)] flex justify-center items-center"><img src="/images/department.png" alt="" className="info_img h-[25px] w-[25px]"/></div>
-                    <div className="input h-[100%] w-[85%] flex items-end"><input type="text" className="take_info h-[100%] w-[100%] pl-[10px] border-none rounded-tl-[5px] rounded-br-[5px] bg-transparent backdrop-blur-[100%] focus:outline-none focus:border-none" placeholder="Department" name="department"
-                    value={department} onChange={(e) => setDepartment(e.target.value)}
-                    /></div>
-                </div>
-                <div className="about h-[30%] w-[90%] border-[1px] border-black flex flex-row rounded-[5px] hover:border-[2px] hover:bg-[rgb(241,186,6,0.5)]">
-                    <div className="icon h-[100%] w-[16%] rounded-bl-[5px] rounded-tl-[5px] bg-[rgb(241,186,6)] flex justify-center items-center"><img src="/images/industry.png" alt="" className="info_img h-[25px] w-[25px]"/></div>
-                    <div className="input h-[100%] w-[85%] flex items-end"><input type="text" className="take_info h-[100%] w-[100%] pl-[10px] border-none rounded-tl-[5px] rounded-br-[5px] bg-transparent backdrop-blur-[100%] focus:outline-none focus:border-none" placeholder="Industry" name="industry"
-                    value={industry} onChange={(e) => setIndustry(e.target.value)}
-                    /></div>
-                </div>
-                <div className="about h-[30%] w-[90%] border-[1px] border-black flex flex-row rounded-[5px] hover:border-[2px] hover:bg-[rgb(241,186,6,0.5)]">
-                    <div className="icon h-[100%] w-[16%] rounded-bl-[5px] rounded-tl-[5px] bg-[rgb(241,186,6)] flex justify-center items-center"><img src="/images/phn.png" alt="" className="info_img h-[25px] w-[25px]"/></div>
-                    <div className="input h-[100%] w-[85%] flex items-end"><input type="text" className="take_info h-[100%] w-[100%] pl-[10px] border-none rounded-tl-[5px] rounded-br-[5px] bg-transparent backdrop-blur-[100%] focus:outline-none focus:border-none" placeholder="*Phone number" name="Phone number"
-                    value={phone} onChange={(e) => setPhone(e.target.value)}
-                    /></div>
-                </div>
-                <div className="about h-[30%] w-[90%] border-[1px] border-black flex flex-row rounded-[5px] hover:border-[2px] hover:bg-[rgb(241,186,6,0.5)]">
-                    <div className="icon h-[100%] w-[16%] rounded-bl-[5px] rounded-tl-[5px] bg-[rgb(241,186,6)] flex justify-center items-center"><img src="/images/pwd.png" alt="" className="info_img h-[25px] w-[25px]"/></div>
-                    <div className="input h-[100%] w-[85%] flex items-end"><input type="password" className="take_info h-[100%] w-[100%] pl-[10px] border-none rounded-tl-[5px] rounded-br-[5px] bg-transparent backdrop-blur-[100%] focus:outline-none focus:border-none" placeholder="*Set password" name="set passowrd" 
-                    value={password} onChange={(e) => setPassword(e.target.value)}
-                    required/></div>
-                </div>
-                <div className="about h-[30%] w-[90%] border-[1px] border-black flex flex-row rounded-[5px] hover:border-[2px] hover:bg-[rgb(241,186,6,0.5)]">
-                    <div className="icon h-[100%] w-[16%] rounded-bl-[5px] rounded-tl-[5px] bg-[rgb(241,186,6)] flex justify-center items-center"><img src="/images/tick.png" alt="" className="info_img h-[25px] w-[25px]"/></div>
-                    <div className="input h-[100%] w-[85%] flex items-end"><input type="password" className="take_info h-[100%] w-[100%] pl-[10px] border-none rounded-tl-[5px] rounded-br-[5px] bg-transparent backdrop-blur-[100%] focus:outline-none focus:border-none" placeholder="*Confirm passowrd" name="confirm passowrd" 
-                    value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
-                    required/></div>
-                </div>
-            </div>
-            <div className="login_submit h-[20%] w-[100%] mt-[10px] flex justify-center items-center">
-                <button className="submit w-[25%] h-[40%] bg-[rgb(241,186,6)] border-none rounded-[20px] text-[17px] font-sans"
-                onClick={handleRegister}
-                >Sign Up</button>
-            </div>
-            <div className="last w-[100%] h-[10%] flex flex-col items-center justify-start">
-                <p className="font-sans text-[rgb(255,225,2)]">Already have an account? <Link to="/client/login" className="text font-sans text-[#a1f6fc] text-lg" >Sign In</Link></p>
-            </div>
+        </form>
+
+        {/* Already Have Account */}
+        <div className="mt-6 text-center">
+            <p className="text-gray-600">
+                Already have an account?{' '}
+                <Link to="/client/login" className="text-blue-600 hover:underline">
+                    Sign In
+                </Link>
+            </p>
         </div>
-        <Footer></Footer>
     </div>
+    <Footer />
+</div>
     </>
 
   )
