@@ -10,16 +10,16 @@ const Header: React.FC<Header> = ({}) => {
   const url = window.location.href;
   const role = url.includes("freelancer") ? "freelancer" : "client";
   let activeTab = "";
-    if(url.includes("projects")){
+    if(url.includes("/projects")){
       activeTab="projects"
     }
-    else if(url.includes("profile")){
+    else if(url.includes("/profile")){
       activeTab="profile"
     }
-    else if(url.includes("upload")){
+    else if(url.includes("/upload")){
       activeTab="upload"
     }
-    else if(url.includes("contact")){
+    else if(url.includes("/contact")){
       activeTab="contact"
     }
     else{

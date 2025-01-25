@@ -15,8 +15,55 @@ const UploadProject: React.FC<UploadProject> = () => {
   const [status, setStatus] = useState("");
   const navigate = useNavigate();
   const { username } = useParams<{ username: string }>();
+  const url = window.location.href;
+  const role = url.includes("freelancer") ? "freelancer" : "client";
+  const accessToken = localStorage.getItem("accessToken");
 
   useEffect(() => {
+
+    const fetchUserData = async () => {
+      try {
+          const responseLoggedUser = await axios.get(`http://localhost:8000/api/v1/${role}/loggedIn${role[0].toUpperCase()}${role.slice(1)}`, {
+              headers: {
+                  Authorization: `Bearer ${accessToken}`,
+              },
+          });
+
+          const responseCurrentUser = await axios.get(`http://localhost:8000/api/v1/${role}/profile/${username}`, {
+              headers: {
+                  Authorization: `Bearer ${accessToken}`,
+              },
+          });
+
+          let currentUser;
+          let loggedInUser;
+          let fetchedUser;
+          if (role === "freelancer") {
+              currentUser = responseCurrentUser.data?.data?.freelancer;
+              loggedInUser = responseLoggedUser.data?.data?.freelancer;
+          } else if (role === "client") {
+              currentUser = responseCurrentUser.data?.data?.client;
+              loggedInUser = responseLoggedUser.data?.data?.client;
+          }
+          console.log(currentUser, loggedInUser);
+
+          if (loggedInUser.username === currentUser.username) {
+              fetchedUser = loggedInUser;
+          } else {
+              navigate(`/${role}/profile/${username}`);
+          }
+
+          if (!fetchedUser) {
+              navigate(`/${role}/profile/${username}`);
+          }
+
+      } catch (error) {
+          console.error("Error fetching user data", error);
+          navigate(`/${role}/profile/${username}`);
+      }
+    };
+  fetchUserData();
+
     const fetchIndustries = async () => {
       try {
         const response = await axios.get("https://api.smartrecruiters.com/v1/industries");
@@ -171,8 +218,11 @@ const UploadProject: React.FC<UploadProject> = () => {
                 required
                 >
                 <option value="">Select a status</option>
-                <option value="Open">Open</option>
-                <option value="Closed">Closed</option>
+                <option value="Not Started">Not Started</option>
+                <option value="In Progress">In Progress</option>
+                <option value="On Hold">On Hold</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
                 </select>
             </div>
 

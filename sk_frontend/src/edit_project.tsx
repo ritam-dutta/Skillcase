@@ -16,7 +16,54 @@ const EditProject: React.FC<EditProject> = () => {
   const { username } = useParams<{ username: string }>();
   const [project, setProject] = useState<any>();
   const projectId = localStorage.getItem("projectId");
+  const accessToken = localStorage.getItem("accessToken");
+  const url = window.location.href;
+  let role = url.includes("freelancer") ? "freelancer" : "client";
     useEffect(() => {
+
+        const fetchUserData = async () => {
+            try {
+                const responseLoggedUser = await axios.get(`http://localhost:8000/api/v1/${role}/loggedIn${role[0].toUpperCase()}${role.slice(1)}`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+
+                const responseCurrentUser = await axios.get(`http://localhost:8000/api/v1/${role}/profile/${username}`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+
+                let currentUser;
+                let loggedInUser;
+                let fetchedUser;
+                if (role === "freelancer") {
+                    currentUser = responseCurrentUser.data?.data?.freelancer;
+                    loggedInUser = responseLoggedUser.data?.data?.freelancer;
+                } else if (role === "client") {
+                    currentUser = responseCurrentUser.data?.data?.client;
+                    loggedInUser = responseLoggedUser.data?.data?.client;
+                }
+                console.log(currentUser, loggedInUser);
+
+                if (loggedInUser.username === currentUser.username) {
+                    fetchedUser = loggedInUser;
+                } else {
+                    navigate(`/${role}/profile/${username}`);
+                }
+
+                if (!fetchedUser) {
+                    navigate(`/${role}/profile/${username}`);
+                }
+
+            } catch (error) {
+                console.error("Error fetching user data", error);
+                navigate(`/${role}/profile/${username}`);
+            }
+        };
+        fetchUserData();
+
         const fetchIndustries = async () => {
         try {
             const response = await axios.get("https://api.smartrecruiters.com/v1/industries");
@@ -55,6 +102,9 @@ const EditProject: React.FC<EditProject> = () => {
         }
 
         fetchProjectData();
+
+        
+
     }, []);
         
     const handleEditProject = async () => {
@@ -69,6 +119,7 @@ const EditProject: React.FC<EditProject> = () => {
             },{
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                    projectId: projectId,
                 },
             });
             // const projectData = response.data;
@@ -198,18 +249,28 @@ const EditProject: React.FC<EditProject> = () => {
                 required
                 >
                 <option value="">{status ? status : "Select a status"}</option>
-                <option value="Open">Open</option>
-                <option value="Closed">Closed</option>
+                <option value="Not Started">Not Started</option>
+                <option value="In Progress">In Progress</option>
+                <option value="On Hold">On Hold</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
                 </select>
             </div>
 
-          <div>
+          <div className="flex justify-between gap-10">
             <button
               type="button"
-              onClick={handleEditProject}
+              onClick={() => window.confirm("are you sure to save the changes?") && handleEditProject()}
               className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               Save Changes
+            </button>
+            <button
+              type="button"
+              onClick={() => window.confirm("are you sure to discard the changes?") && navigate(`/client/profile/${username}`)}
+              className="w-full bg-gray-400 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Cancel Changes
             </button>
           </div>
         </form>

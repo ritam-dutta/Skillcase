@@ -56,7 +56,7 @@ const getProjects = asyncHandler(async (req, res) => {
 
     try {
         const projects = await Project.find(query);
-        // const projects = await Project.updateMany(query, { $set: { status: "Open" } }, { new: true });
+        // const projects = await Project.deleteMany({title:"abc"});
         return res
             .status(200)
             .json(new ApiResponse(200, projects, "Projects fetched successfully"));
@@ -90,13 +90,14 @@ const getCurrentProject = asyncHandler(async (req, res) => {
 });
 
 const updateProjectDetails = asyncHandler(async (req, res) => {
+    console.log("entered updateproject")
     const projectId = req.headers.projectid;
     const { title, description, industry, budget, duration, status } = req.body;
 
     if(!title || !description || !industry || !budget || !duration || !status) {
         throw new ApiError(400, null, "All fields are required");
     }
-
+    console.log("2nd level",projectId)
     const project = await Project.findByIdAndUpdate(
         projectId,
         { 

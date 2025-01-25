@@ -27,7 +27,7 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
     return (
         <>
             
-            <body className="container flex flex-col items-center bg-[#f7faff] text-[#1e3a8a]">
+            <body className=" h-screen flex flex-col items-center bg-[#f7faff] text-[#1e3a8a]">
             <Header />
             <main className="flex-grow w-[90%] max-w-[1200px] py-10">
                 <h2 className="text-3xl font-semibold mb-8">Available Projects</h2>

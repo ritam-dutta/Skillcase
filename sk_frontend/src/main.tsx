@@ -13,8 +13,7 @@ import ProjectPage from './projects.tsx'
 import HomePage from './home.tsx'
 import UploadProject from './upload_project.tsx'
 import EditProject from './edit_project.tsx'
-import { Edit2 } from 'lucide-react'
-
+import ViewProjects from './view_projects.tsx'
 
 
 
@@ -34,6 +33,7 @@ const router= createBrowserRouter(
       <Route path='freelancer/projects/:username' element={<ProjectPage/>}> </Route>
       <Route path='client/upload_project/:username' element={<UploadProject/>}> </Route>
       <Route path='client/edit_project/:username' element={<EditProject/>}> </Route>
+      <Route path='client/view_projects/:username' element={<ViewProjects/>}> </Route>
       <Route path='' element={<HomePage/>}> </Route>
       <Route path="*" element={<Not_found/>}></Route>
     </Route>
