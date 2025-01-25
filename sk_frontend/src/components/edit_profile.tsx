@@ -173,6 +173,7 @@ const Edit: React.FC<Edit> = ({})=> {
                     },
                 }
             );
+            console.log(about)
             navigate(`/${role}/profile/${username}`);
         } catch (error) {
             console.log(error);
@@ -258,12 +259,12 @@ const Edit: React.FC<Edit> = ({})=> {
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">About</label>
                                     <textarea 
-                                        className="mt-1 block w-full rounded-md border-gray-300 border-b-[2px] shadow-sm  focus:outline-none  focus:shadow-md px-1" 
+                                        className="mt-1 block w-full rounded-md border-gray-300 border-b-[2px] shadow-sm  focus:outline-none  focus:shadow-md px-1 resize-none" 
                                         value={about} 
                                         onChange={(e) => setAbout(e.target.value)}
                                     />
                                 </div>
-                                <div>
+                                {/* <div>
                                     <label className="block text-sm font-medium text-gray-700">Skills</label>
                                     <div className="flex items-center gap-2 mb-2">
                                         <input 
@@ -272,7 +273,7 @@ const Edit: React.FC<Edit> = ({})=> {
                                             placeholder="Add a skill"
                                             value={searchedSkill}
                                             onChange={(e) => setSearchedSkill(e.target.value)}
-                                            onKeyDown={(                                            e) => {
+                                            onKeyDown={(e) => {
                                                 if (e.key === "Enter" && searchedSkill.trim() !== "") {
                                                     setSkills([...skills, searchedSkill.trim()]);
                                                     setSearchedSkill("");
@@ -304,7 +305,7 @@ const Edit: React.FC<Edit> = ({})=> {
                                             </div>
                                         ))}
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
                             <div className="mt-6 flex justify-end gap-4">
                                 <button 

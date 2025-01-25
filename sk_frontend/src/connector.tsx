@@ -28,11 +28,11 @@ const Connector : React.FC<Connector> = ({})=>{
       <div className="options flex justify-evenly w-full">
         {/* Client Option */}
         <div className="option flex flex-col items-center w-[40%] hover:scale-105 transition-transform duration-300">
-          <Link to="/client/login" className="icon bg-blue-100 rounded-full h-[120px] w-[120px] flex items-center justify-center mb-4 shadow-md">
+          <Link to="/client/register" className="icon bg-blue-100 rounded-full h-[120px] w-[120px] flex items-center justify-center mb-4 shadow-md">
             <img src="/images/client.png" alt="Client" className="h-[80px] w-[80px] " />
           </Link>
           <Link
-            to="/client/login"
+            to="/client/register"
             className="text-lg font-medium text-blue-600 hover:text-blue-800 transition-colors duration-300"
           >
             Client
@@ -41,11 +41,11 @@ const Connector : React.FC<Connector> = ({})=>{
 
         {/* Freelancer Option */}
         <div className="option flex flex-col items-center w-[40%] hover:scale-105 transition-transform duration-300">
-          <Link to="/freelancer/login" className="icon bg-blue-100 rounded-full h-[120px] w-[120px] flex items-center justify-center mb-4 shadow-md">
+          <Link to="/freelancer/register" className="icon bg-blue-100 rounded-full h-[120px] w-[120px] flex items-center justify-center mb-4 shadow-md">
             <img src="/images/freelancer.png" alt="Freelancer" className="h-[80px] w-[80px]" />
           </Link>
           <Link
-            to="/freelancer/login"
+            to="/freelancer/register"
             className="text-lg font-medium text-blue-600 hover:text-blue-800 transition-colors duration-300"
           >
             Freelancer

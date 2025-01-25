@@ -2,17 +2,11 @@ import React,{ useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Header from "./components/header";
-import ProfileStats from "./components/profileStats";
-import ProjectList from "./components/projectList";
-import { Button } from "./components/ui/button";
-import { Badge } from "./components/ui/badge";
-import { Avatar } from "./components/ui/avatar";
-import { Progress } from "./components/ui/progress";
 // import Footer from "./components/footer";
 import axios from "axios";
 import "./App.css"
-interface Profile {}
-const Profile : React.FC<Profile> = ({})=>{
+interface FreelancerProfile {}
+const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
     const [user, setUser] = useState<any>();
 
     const url = window.location.href;
@@ -92,6 +86,7 @@ const Profile : React.FC<Profile> = ({})=>{
                     fetchedUser = currentUser;
                 }
                 // console.log(fetchedUser)
+              
                 setUser(fetchedUser);
                 setFullname(fetchedUser?.fullname || "");
                 setFollowing(fetchedUser?.following || 0);
@@ -120,7 +115,7 @@ const Profile : React.FC<Profile> = ({})=>{
         
         <div className="min-h-screen w-full bg-gray-100">
       {/* Header */}
-      <Header></Header>
+      <Header/>
       <div className="h-[18vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-start px-8">
         <h1 className="text-3xl text-white font-bold mt-6">Profile</h1>
       </div>
@@ -220,4 +215,4 @@ const Profile : React.FC<Profile> = ({})=>{
     </>
   )
 }
-export default Profile
+export default FreelancerProfile

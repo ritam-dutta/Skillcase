@@ -22,4 +22,7 @@ app.use("/api/v1/freelancer", freelancerRouter)
 import clientRouter from  "./routes/client.routes.js"
 app.use("/api/v1/client", clientRouter)
 
+import projectRouter from "./routes/project.routes.js"
+app.use("/api/v1/root", projectRouter)
+
 export {app}

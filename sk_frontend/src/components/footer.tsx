@@ -14,7 +14,7 @@ const Footer: React.FC<Footer> = ({}) => {
       </div>
 
       {/* Right Section */}
-      <div className="foot2 w-full md:w-1/3 flex justify-center md:justify-end items-center space-x-6">
+      <div className="w-full flex justify-center md:justify-end items-center space-x-5">
         <Link
           to="/contact"
           className="text-gray-300 text-sm md:text-base hover:text-yellow-400 transition duration-300"

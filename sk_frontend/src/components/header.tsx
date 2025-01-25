@@ -1,20 +1,44 @@
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import "../App.css";
+import { useEffect, useState } from "react";
 
 interface Header {}
 
 const Header: React.FC<Header> = ({}) => {
+
+  const {username} = useParams<{ username: string }>();
+  const url = window.location.href;
+  const role = url.includes("freelancer") ? "freelancer" : "client";
+  let activeTab = "";
+    if(url.includes("projects")){
+      activeTab="projects"
+    }
+    else if(url.includes("profile")){
+      activeTab="profile"
+    }
+    else if(url.includes("upload")){
+      activeTab="upload"
+    }
+    else if(url.includes("contact")){
+      activeTab="contact"
+    }
+    else{
+      activeTab="home"
+    }
+    
+    // console.log("activeTab",activeTab)
+
+
   return (
     <header className="h-[8vh] w-full bg-gradient-to-r from-gray-50 to-gray-200 text-white shadow-md">
       <div className="container mx-auto h-full px-6 flex justify-between items-center">
-        {/* Logo Section */}
         <div className="flex items-center">
+
           <Link to="/" className="text-2xl font-bold text-gray-600">
             SkillCase
           </Link>
         </div>
 
-        {/* Navigation Links */}
         <nav className="hidden md:flex space-x-6">
           <Link
             to="/"
@@ -22,17 +46,23 @@ const Header: React.FC<Header> = ({}) => {
           >
             Home
           </Link>
-          <Link
-            to="/about"
-            className="text-lg font-medium hover:text-gray-400 transition text-gray-600"
+          <Link 
+            to={`/${role}/projects/${username}`}
+            className={`text-lg font-medium hover:text-gray-400 transition  ${activeTab==="projects" ? "text-gray-400" : "text-gray-600"}`}
           >
-            About
+            Projects
+          </Link>
+          <Link 
+            to={`/client/upload_project/${username}`}
+            className={`text-lg font-medium hover:text-gray-400 transition  ${activeTab==="upload" ? "text-gray-400" : "text-gray-600"}`}
+          >
+            Upload Project
           </Link>
           <Link
-            to="/services"
-            className="text-lg font-medium hover:text-gray-400 transition text-gray-600"
+            to={`/${role}/profile/${username}`}
+            className={`text-lg font-medium hover:text-gray-400 transition  ${activeTab==="profile" ? "text-gray-400" : "text-gray-600"}`}
           >
-            Services
+            Profile
           </Link>
           <Link
             to="/contact"
@@ -41,22 +71,6 @@ const Header: React.FC<Header> = ({}) => {
             Contact
           </Link>
         </nav>
-
-        {/* Action Buttons */}
-        {/* <div className="flex items-center space-x-4">
-          <Link
-            to="/login"
-            className="px-4 py-2 text-sm bg-transparent border border-white rounded-md hover:bg-white hover:text-blue-600 transition"
-          >
-            Login
-          </Link>
-          <Link
-            to="/signup"
-            className="px-4 py-2 text-sm bg-white text-blue-600 rounded-md hover:bg-gray-100 transition"
-          >
-            Sign Up
-          </Link>
-        </div> */}
 
         {/* Mobile Menu Icon */}
         <div className=" flex items-center">

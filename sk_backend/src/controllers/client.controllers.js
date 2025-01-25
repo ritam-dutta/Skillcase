@@ -206,6 +206,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
         industry,
         department,
         phone,
+        about,
     }= req.body;
 
     if(!fullname || !dob || !industry || !phone){
@@ -215,7 +216,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     const client = await Client.findByIdAndUpdate(
         req.user?._id,
         {
-            $set: {fullname, dob, companyname, industry, department, phone}
+            $set: {fullname, dob, companyname, industry, department, phone, about}
         },
         {
             new: true
