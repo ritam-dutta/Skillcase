@@ -46,13 +46,30 @@ const createProject = asyncHandler(async (req, res) => {
 });
 
 const getProjects = asyncHandler(async (req, res) => {
-    const { status, industry, skills } = req.query;
+
+    const query = {};
+    try {
+        const projects = await Project.find(query);
+        // const projects = await Project.deleteMany({title:"abc"});
+        return res
+            .status(200)
+            .json(new ApiResponse(200, projects, "Projects fetched successfully"));
+    } catch (error) {
+        return res
+            .status(500)
+            .json(new ApiError(500, null, "An error occurred while fetching projects"));
+    }
+
+});
+
+const getUserProjects = asyncHandler(async (req, res) => {
 
     const query = {};
 
-    if (status==="open") query.status = status;
-    if (industry) query.industry = industry;
-    if (skills) query.skills = skills;
+    query.employer = req.headers.username || "";
+    // if (status) query.status = status;
+    // if (industry) query.industry = industry;
+    // if (skills) query.skills = skills;
 
     try {
         const projects = await Project.find(query);
@@ -118,5 +135,6 @@ export
 {   createProject,
     getProjects,
     getCurrentProject,
+    getUserProjects,
     updateProjectDetails,
 };

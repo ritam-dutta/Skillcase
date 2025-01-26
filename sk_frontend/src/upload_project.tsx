@@ -102,12 +102,15 @@ const UploadProject: React.FC<UploadProject> = () => {
 
   return (
     <>
-    <body className="bg-gradient-to-r from-blue-50 to-blue-100">
+    <body className="bg-[url('/images/background.jpg')] bg-cover bg-center">
     <Header />
+    <div className="h-[15vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-start px-8">
+        <h1 className="text-3xl text-white font-bold mt-6">Upload Project</h1>
+      </div>
       <div className="flex items-center justify-center">
-      <div className="w-full max-w-3xl bg-white rounded-lg shadow-lg p-8 mt-8">
-        <h1 className="text-2xl font-bold text-blue-700 mb-6">Upload Project</h1>
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="w-full h-[76.3vh] max-w-3xl bg-slate-200 rounded-lg shadow-lg p-8 mt-[-11vh] overflow-auto">
+        {/* <h1 className="text-2xl font-bold text-blue-700 mb-6">Upload Project</h1> */}
+        <form onSubmit={handleSubmit} className="space-y-6 ">
           <div>
             <p className="block text-sm font-medium text-blue-700">
               Project Title
@@ -118,7 +121,7 @@ const UploadProject: React.FC<UploadProject> = () => {
               value={projectTitle}
               onChange={(e) => setProjectTitle(e.target.value)}
               placeholder="Enter your project name"
-              className="mt-1 block w-full border border-blue-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+              className="mt-1 block w-full bg-slate-100 border border-blue-300 rounded-md shadow-sm py-2 px-3 outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
               required
             />
           </div>
@@ -132,7 +135,7 @@ const UploadProject: React.FC<UploadProject> = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Provide a detailed description of the project"
-              className="mt-1 block w-full border border-blue-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900 h-28 resize-none"
+              className="mt-1 block w-full bg-slate-100 border border-blue-300 rounded-md shadow-sm py-2 px-3 outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900 h-28 resize-none"
               required
             />
           </div>
@@ -145,7 +148,7 @@ const UploadProject: React.FC<UploadProject> = () => {
                 id="Industry"
                 value={industry}
                 onChange={(e) => setIndustry(e.target.value)}
-                className="mt-1 block w-full border border-blue-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900 z-10 relative"
+                className="mt-1 block w-full bg-slate-100 border border-blue-300 rounded-md shadow-sm py-2 px-3 outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900 z-10 relative"
                 required
             >
                 <option value="">Select an industry</option>
@@ -186,7 +189,7 @@ const UploadProject: React.FC<UploadProject> = () => {
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
             placeholder="Enter the duration"
-            className="mt-1 block w-full border border-blue-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+            className="mt-1 block w-full bg-slate-100 border border-blue-300 rounded-md shadow-sm py-2 px-3 outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
             required
             />
         </div>
@@ -201,7 +204,7 @@ const UploadProject: React.FC<UploadProject> = () => {
               value={budget}
               onChange={(e) => setBudget(e.target.value)}
               placeholder="Enter your budget"
-              className="mt-1 block w-full border border-blue-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+              className="mt-1 block w-full bg-slate-100 border border-blue-300 rounded-md shadow-sm py-2 px-3 outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
               required
             />
           </div>
@@ -214,7 +217,7 @@ const UploadProject: React.FC<UploadProject> = () => {
                 id="status"
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="mt-1 block w-full border border-blue-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                className="mt-1 block w-full bg-slate-100 border border-blue-300 rounded-md shadow-sm py-2 px-3 outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900 "
                 required
                 >
                 <option value="">Select a status</option>

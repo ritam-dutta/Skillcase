@@ -8,12 +8,15 @@ import Connector from './connector.tsx'
 import Not_found from './components/not_found.tsx'
 import FreelancerProfile from './profile_freelancer.tsx'
 import ClientProfile from './profile_client.tsx'
-import Edit from './components/edit_profile.tsx'
+import EditClient from './edit_profile_client.tsx'
+import EditFreelancer from './edit_profile_freelancer.tsx'
 import ProjectPage from './projects.tsx'
 import HomePage from './home.tsx'
 import UploadProject from './upload_project.tsx'
 import EditProject from './edit_project.tsx'
 import ViewProjects from './view_projects.tsx'
+import ViewProject from './view_project.tsx'
+import ViewFeedProject from './view_feed_project.tsx'
 
 
 
@@ -27,13 +30,18 @@ const router= createBrowserRouter(
       <Route path='connector' element={<Connector/>}> </Route>
       <Route path='freelancer/profile/:username' element={<FreelancerProfile/>}> </Route>
       <Route path='client/profile/:username' element={<ClientProfile/>}> </Route>
-      <Route path='freelancer/edit/:username' element={<Edit/>}> </Route>
-      <Route path='client/edit/:username' element={<Edit/>}> </Route>
+      <Route path='freelancer/edit/:username' element={<EditFreelancer/>}> </Route>
+      <Route path='client/edit/:username' element={<EditClient/>}> </Route>
       <Route path='client/projects/:username' element={<ProjectPage/>}> </Route>
       <Route path='freelancer/projects/:username' element={<ProjectPage/>}> </Route>
+      <Route path='projects' element={<ProjectPage/>}> </Route>
       <Route path='client/upload_project/:username' element={<UploadProject/>}> </Route>
-      <Route path='client/edit_project/:username' element={<EditProject/>}> </Route>
+      <Route path='client/edit_project/:username/:projectid' element={<EditProject/>}> </Route>
       <Route path='client/view_projects/:username' element={<ViewProjects/>}> </Route>
+      <Route path='client/view_project/:projectid' element={<ViewProject/>}> </Route>
+      <Route path='freelancer/view_project/:projectid' element={<ViewProject/>}> </Route>
+      <Route path='client/view_feed_project/:projectid' element={<ViewFeedProject/>}> </Route>
+      <Route path='freelancer/view_feed_project/:projectid' element={<ViewFeedProject/>}> </Route>
       <Route path='' element={<HomePage/>}> </Route>
       <Route path="*" element={<Not_found/>}></Route>
     </Route>

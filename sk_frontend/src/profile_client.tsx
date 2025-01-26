@@ -2,7 +2,6 @@ import React,{ useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Header from "./components/header";
-import Footer from "./components/footer";
 import axios from "axios";
 import "./App.css"
 interface ClientProfile {}
@@ -20,12 +19,14 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
     else if(url.includes("client")){
         userType="client"
     }
+    console.log("localStorage",localStorage)
 
     const[fullname,setFullname]=useState("");
     const[following, setFollowing]=useState(0);
     const[followers, setFollowers]=useState(0);
+    const[connections,setConnections]=useState(0);
     const[about,setAbout]=useState("");
-    const [skills, setSkills] = useState([""]);
+    const[experience, setExperience]=useState("");
     const [avatar, setAvatar] = useState("");
     const[currentRole,setRole]=useState(userType);
     const {username} = useParams<{ username: string }>();
@@ -92,10 +93,11 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
               
                 setUser(fetchedUser);
                 setFullname(fetchedUser?.fullname || "");
-                setFollowing(fetchedUser?.following || 0);
-                setFollowers(fetchedUser?.followers || 0);
+                setFollowing(fetchedUser?.following.length || 0);
+                setFollowers(fetchedUser?.followers.length || 0);
+                setConnections(fetchedUser?.connections.length || 0);
                 setAbout(fetchedUser?.about || "")  
-                setSkills(fetchedUser?.skills || [""]) 
+                setExperience(fetchedUser?.experience || "")
                 setAvatar(fetchedUser?.avatar || "/images/freelancer.png") 
                 setRole(fetchedUser?.role || "")
             } catch (error) {
@@ -104,10 +106,17 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
             }
         };
         fetchUserData();
-        const fetchProjects = async () => {
+        const fetchUserProjects = async () => {
             try {
-                const response = await axios.get("http://localhost:8000/api/v1/root/getprojects");
+                const response = await axios.get("http://localhost:8000/api/v1/root/getuserprojects",{
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        username: username,
+                    }
+                });
+
                 const projects = response.data.data;
+                console.log("prj",projects)
                 setProjects(projects);
                 let cp = projects.filter((project) => project.status === "Completed");
                 let ip = projects.filter((project) => project.status === "In Progress");
@@ -118,21 +127,29 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
             }
         };
 
-        fetchProjects();
+        fetchUserProjects();
     }, [navigate]);
 
     if(!user){
         return <div>Loading...</div>
     }
 
-    const navEdit = (id) => {
-        if (id) {
-            localStorage.setItem("projectId", id);
-            navigate(`/client/edit_project/${username}`);
-        } else {
-            console.error("Invalid project ID");
-        }
-    }
+    // const navEdit = (id) => {
+    //     if (id) {
+    //         // localStorage.setItem("projectId", id);
+    //         navigate(`/client/edit_project/${id}`);
+    //     } else {
+    //         console.error("Invalid project ID");
+    //     }
+    // }
+    // const navView = (id) => {
+    //     if (id) {
+    //         localStorage.setItem("projectId", id);
+    //         navigate(`/client/view_project/${username}`);
+    //     } else {
+    //         console.error("Invalid project ID");
+    //     }
+    // }
     let notStarted=0;
     let inProgress=0;
     let onHold=0;
@@ -169,7 +186,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
 
       <div className="flex flex-row justify-center mt-[-10vh]">
         {/* Sidebar Profile Card */}
-        <div className="w-[25%] h-[83vh] bg-white shadow-lg rounded-lg p-6 flex flex-col items-center border border-gray-200">
+        <div className="w-[25%] h-[83vh] bg-slate-50 shadow-lg rounded-lg p-6 flex flex-col items-center border border-gray-200">
 
           <div className="bg-gray-100 rounded-full w-24 h-24 flex items-center justify-center border border-gray-300">
             <img
@@ -183,10 +200,10 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
           <p className="text-gray-500 mt-2">{userType[0].toUpperCase()+userType.slice(1,)}</p>
 
           <div className="flex justify-evenly w-full mt-6 text-center">
-            {/* <div>
-              <p className="font-semibold text-gray-700">{following}</p>
-              <p className="text-gray-500 text-sm">Projects</p>
-            </div> */}
+          <div>
+              <p className="font-semibold text-gray-700">{connections}</p>
+              <p className="text-gray-500 text-sm">Connections</p>
+            </div>
             <div>
               <p className="font-semibold text-gray-700">{following}</p>
               <p className="text-gray-500 text-sm">Following</p>
@@ -202,16 +219,16 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
             <textarea
               readOnly
               value={about}
-              className="w-full mt-2 p-3 text-sm bg-gray-50 border border-gray-200 rounded-md resize-none"
+              className="w-full mt-2 p-3 text-sm bg-gray-200 border border-gray-200 rounded-md resize-none"
             ></textarea>
           </div>
 
           <div className="w-full mt-6">
-            <h3 className="font-semibold text-gray-800">Skills</h3>
+            <h3 className="font-semibold text-gray-800">Experience</h3>
             <textarea
               readOnly
-              value={skills.join("\n")}
-              className="w-full mt-2 p-3 text-sm bg-gray-50 border border-gray-200 rounded-md resize-none"
+              value={experience}
+              className="w-full mt-2 p-3 text-sm bg-gray-200 border border-gray-200 rounded-md resize-none"
             ></textarea>
           </div>
 
@@ -224,27 +241,27 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
         </div>
 
         {/* Main Content Area */}
-        <div className="w-[65%] h-[83vh] bg-white shadow-lg rounded-lg p-8 ml-6 border border-gray-200 overflow-auto">
+        <div className="w-[65%] h-[83vh] bg-slate-50 shadow-lg rounded-lg p-8 ml-6 border border-gray-200 overflow-auto">
           <h2 className="text-2xl font-bold mb-4">Projects Status</h2>
 
           {/* Stats Cards */}
           <div className="grid grid-cols-3 gap-4 mb-8">
-            <div className="bg-gray-50 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
               <h3 className="text-lg font-semibold text-gray-700">Completed: {completed}</h3>
             </div>
-            <div className="bg-gray-50 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
               <h3 className="text-lg font-semibold text-gray-700">Not Started: {notStarted}</h3>
             </div>
-            <div className="bg-gray-50 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
               <h3 className="text-lg font-semibold text-gray-700">In Progress: {inProgress}</h3>
             </div>
-            <div className="bg-gray-50 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
               <h3 className="text-lg font-semibold text-gray-700">On Hold: {onHold}</h3>
             </div>
-            <div className="bg-gray-50 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
               <h3 className="text-lg font-semibold text-gray-700">Cancelled: {cancelled}</h3>
             </div>
-            <div className="bg-gray-50 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
               <h3 className="text-lg font-semibold text-gray-700">Total: {total}</h3>
             </div>
           </div>
@@ -257,9 +274,9 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                 inProgressProjects.map((project) => (
                     <div
                         key={project._id}
-                        className="bg-white border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
+                        className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
                     >
-                        <div className="w-full flex justify-between items-end">
+                        <div className="w-full flex justify-between items-end ">
                             <div>
                                 <h3 className="text-lg font-semibold text-gray-800 truncate">
                                     {project.title}
@@ -271,7 +288,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                             <div>
                                 <button
                                     className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
-                                    // onClick={() => navigate(`/client/view_projects/${username}`)}
+                                    onClick={() => navigate(`/${userType}/view_project/${project._id}`)}
                                     >
                                     View Project
                                 </button>
@@ -286,7 +303,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                             </span>
                             <button
                             className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
-                            onClick={() => navEdit(project._id)}
+                            onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
                             >
                             Edit Project
                             </button>
@@ -311,7 +328,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                 completedProjects.map((project) => (
                     <div
                         key={project._id}
-                        className="bg-white border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
+                        className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
                     >
                         <div className="w-full flex justify-between items-end">
                             <div>
@@ -325,7 +342,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                             <div>
                                 <button
                                     className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
-                                    // onClick={() => navigate(`/client/view_projects/${username}`)}
+                                    onClick={() => navigate(`/${userType}/view_project/${project._id}`)}
                                     >
                                     View Project
                                 </button>
@@ -340,7 +357,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                             </span>
                             <button
                             className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
-                            onClick={() => navEdit(project._id)}
+                            onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
                             >
                             Edit Project
                             </button>

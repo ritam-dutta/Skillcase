@@ -1,11 +1,10 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import Footer from "./footer"; 
+import Footer from "./components/footer"; 
 import axios from "axios";
-import "../App.css";
 
-interface Edit {}
-const Edit: React.FC<Edit> = ({})=> {
+interface EditFreelancer {}
+const EditFreelancer: React.FC<EditFreelancer> = ({})=> {
     const { username } = useParams<{ username: string }>();
     const navigate = useNavigate();
     const [user, setUser] = useState<any>();
@@ -328,5 +327,5 @@ const Edit: React.FC<Edit> = ({})=> {
     );
 };
 
-export default Edit;
+export default EditFreelancer;
 

@@ -5,13 +5,16 @@ interface Connector {}
 const Connector : React.FC<Connector> = ({})=>{
   return(
     <>
-      <div className="h-screen w-screen bg-gradient-to-b from-blue-50 to-blue-100 flex flex-col justify-between items-center">
+      <div className="h-screen w-screen bg-[url('/images/background.jpg')] bg-cover bg-center flex flex-col justify-between items-center">
   {/* Navbar */}
-  <div className="navbar h-[10vh] w-full flex justify-between items-center px-8 shadow-md bg-blue-50">
-    <div id="logo" className="h-[60px] w-[200px]">
-      <img src="/images/logo.png" alt="Skillcase Logo" className="h-full w-full object-contain" />
-    </div>
-  </div>
+  <header className="w-full h-[8vh] flex justify-between items-center px-8 shadow-md bg-gradient-to-r from-blue-400 to-blue-600 text-white">
+                <h1 className="text-2xl font-bold">Skillcase</h1>
+                <nav className="flex gap-6">
+                    {/* <Link to="/" className="hover:underline">About Us</Link>
+                    <Link to="/" className="hover:underline">Contact Us</Link> */}
+                    <p className="font-bold text-white text-lg">Welcome to the world of Client-Freelancing!</p>
+                </nav>
+            </header>
 
   {/* Main Content */}
   <div className="main w-full flex justify-center items-center">

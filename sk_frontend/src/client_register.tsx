@@ -55,9 +55,9 @@ const Client_reg : React.FC<Client_reg> = ({})=>{
                 fullname: fullname,
                 role: "client"
             });
-            const clientData = response.data;
+            const {accessToken} = response.data;
             console.log("Register Successful:", response.data);
-            localStorage.setItem("user", JSON.stringify(clientData));
+            localStorage.setItem("accessToken", JSON.stringify(accessToken));
             localStorage.setItem("role", "client");
             navigate(`/${role}/profile/${username}`)
         } catch (error) {
@@ -67,11 +67,10 @@ const Client_reg : React.FC<Client_reg> = ({})=>{
 
   return(
     <>
-        <div className="container h-lvh w-lvw flex flex-col justify-center items-center bg-gradient-to-b from-slate-200 to-slate-400 gap-5 overflow-hidden">
-    {/* Navbar */}
-    <div className="navbar h-[10vh] w-full px-6 flex justify-between items-center bg-gradient-to-r from-blue-400 to-blue-600 shadow-md">
+        {/* Navbar */}
+    <div className="navbar h-[8vh] w-full px-6 flex justify-between items-center bg-gradient-to-r from-blue-400 to-blue-600 shadow-md">
         <div className="flex items-center">
-          <img src="/images/logo.png" alt="Logo" className="h-12 w-auto" />
+          <p className="text-white font-bold text-2xl">Skillcase</p>
         </div>
         <div className="flex items-center space-x-4">
           <Link
@@ -88,9 +87,9 @@ const Client_reg : React.FC<Client_reg> = ({})=>{
           </Link>
         </div>
       </div>
-
     {/* Registration Form */}
-    <div className="register-container w-[30vw] h-auto bg-slate-200 rounded-[10px] border-[1px] border-blue-400 shadow-sm shadow-blue-900 hover:shadow-2xl hover:shadow-blue-400 transition duration-300 p-8">
+    <body className="container h-[85vh] w-lvw flex flex-col justify-center items-center bg-[url('/images/background.jpg')] bg-cover bg-center gap-5 overflow-hidden">
+        <div className="register-container w-[30vw] h-auto bg-slate-200 rounded-[10px] border-[1px] border-blue-400 shadow-sm shadow-blue-900 hover:shadow-2xl hover:shadow-blue-400 transition duration-300 p-8">
         <h2 className="text-center text-blue-600 text-3xl font-semibold mb-6">
             Create Your Account As a Client
         </h2>
@@ -146,8 +145,8 @@ const Client_reg : React.FC<Client_reg> = ({})=>{
             </p>
         </div>
     </div>
+</body>
     <Footer />
-</div>
     </>
 
   )

@@ -1,18 +1,23 @@
 import { Link } from "react-router-dom";
+import Footer from "./components/footer";
 
 interface HomePage {}
 const HomePage: React.FC<HomePage> = () => {
     return (
-        <div className="container h-screen w-screen flex flex-col items-center bg-[#f7faff] text-[#1e3a8a]">
-            <header className="w-full h-[10vh] flex justify-between items-center px-8 shadow-md bg-[#1e3a8a] text-white">
+
+        <body className="bg-[url('/images/background.jpg')] bg-cover bg-center">  
+        <div className="container h-screen w-screen flex flex-col items-center bg-transparent text-[#1e3a8a]">
+            <header className="w-full h-[10vh] flex justify-between items-center px-8 shadow-md bg-blue-500 text-white">
                 <h1 className="text-2xl font-bold">Skillcase</h1>
                 <nav className="flex gap-6">
-                    <a href="/" className="hover:underline">About Us</a>
-                    <a href="/" className="hover:underline">Contact Us</a>
+                    {/* <Link to="/" className="hover:underline">About Us</Link>
+                    <Link to="/" className="hover:underline">Contact Us</Link> */}
+                    <p className="font-bold text-white text-lg">Welcome to the world of Client-Freelancing!</p>
+
                 </nav>
             </header>
 
-            <main className="flex-grow w-[90%] max-w-[1200px] py-10 flex flex-col items-center text-center">
+            <main className="flex-grow w-[90%] max-w-[1200px] py-10 flex flex-col items-center text-center bg-transparent backdrop-blur-sm">
                 <h2 className="text-4xl font-bold mb-6">Welcome to Skillcase</h2>
                 <p className="text-lg mb-8">
                     Your go-to platform for connecting with top freelancers and finding the perfect project opportunities.
@@ -46,7 +51,7 @@ const HomePage: React.FC<HomePage> = () => {
                         
             </main>
 
-            <section className="w-full bg-white py-10 shadow-md">
+            <section className="w-full  py-10 shadow-md bg-transparent backdrop-blur-sm">
                 <div className="w-[90%] max-w-[1200px] mx-auto text-center">
                     <h3 className="text-2xl font-semibold mb-4">Why Choose Skillcase?</h3>
                     <p className="text-sm mb-6">
@@ -69,10 +74,13 @@ const HomePage: React.FC<HomePage> = () => {
                 </div>
             </section>
 
-            <footer className="w-full h-[8vh] flex justify-center items-center bg-[#1e3a8a] text-white">
+            {/* <footer className="w-full h-[8vh] flex justify-center items-center bg-[#1e3a8a] text-white">
                 <p className="text-sm">&copy; 2025 Skillcase. All rights reserved.</p>
-            </footer>
+            </footer> */}
+            <Footer />
         </div>
+        </body>
+
     );
 };
 

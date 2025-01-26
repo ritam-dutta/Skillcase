@@ -15,7 +15,7 @@ const EditProject: React.FC<EditProject> = () => {
   const navigate = useNavigate();
   const { username } = useParams<{ username: string }>();
   const [project, setProject] = useState<any>();
-  const projectId = localStorage.getItem("projectId");
+  const {projectid} = useParams<{ projectid: string}>();
   const accessToken = localStorage.getItem("accessToken");
   const url = window.location.href;
   let role = url.includes("freelancer") ? "freelancer" : "client";
@@ -75,20 +75,20 @@ const EditProject: React.FC<EditProject> = () => {
         };
         fetchIndustries();
         const fetchProjectData = async	() => {
+          console.log("projectid",projectid)
             try {
-                const accessToken = localStorage.getItem("accessToken");
+                // const accessToken = localStorage.getItem("accessToken");
                 
-                console.log("at",accessToken)
+                // console.log("at",accessToken)
                 const response = await axios.get(`http://localhost:8000/api/v1/root/currentproject`,
                 {
                     headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                        projectId: projectId,
+                        projectId: projectid,
                     },
                 }
             );
                 const projectData = response.data.data;
-                // console.log("Project Data:", projectData);
+                console.log("Project Data:", projectData);
                 setProject(projectData);
                 setProjectTitle(projectData?.title || "");
                 setDescription(projectData?.description || "");
@@ -119,7 +119,7 @@ const EditProject: React.FC<EditProject> = () => {
             },{
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-                    projectId: projectId,
+                    projectId: projectid,
                 },
             });
             // const projectData = response.data;
@@ -133,11 +133,16 @@ const EditProject: React.FC<EditProject> = () => {
     
   return (
     <>
-    <body className="bg-gradient-to-r from-blue-50 to-blue-100">
+    <body className="bg-[url('/images/background.jpg')] bg-cover bg-center">
+
     <Header />
-      <div className="flex items-center justify-center">
-      <div className="w-full max-w-3xl bg-white rounded-lg shadow-lg p-8 mt-8">
-        <h1 className="text-2xl font-bold text-blue-700 mb-6">Edit Project</h1>
+
+    <div className="h-[13vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-start px-8">
+        <h1 className="text-3xl text-white font-bold mt-6">Edit Project</h1>
+    </div>
+
+      <div className="flex items-center justify-center mt-[-14vh]">
+      <div className="w-full max-w-3xl bg-slate-50 rounded-lg shadow-lg p-8 mt-8 overflow-auto h-[77vh]">
         <form className="space-y-6">
           <div>
             <p className="block text-sm font-medium text-blue-700">
@@ -149,7 +154,7 @@ const EditProject: React.FC<EditProject> = () => {
               value={projectTitle}
               onChange={(e) => setProjectTitle(e.target.value)}
               placeholder="Enter your project name"
-              className="mt-1 block w-full border border-blue-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+              className="mt-1 block w-full bg-slate-50 border-blue-300 border-[1px] outline-none rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
               required
             />
           </div>
@@ -163,7 +168,7 @@ const EditProject: React.FC<EditProject> = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Provide a detailed description of the project"
-              className="mt-1 block w-full border border-blue-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900 h-28 resize-none"
+              className="mt-1 block w-full bg-slate-50 border-blue-300 border-[1px] outline-none rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900 h-28 resize-none"
               required
             />
           </div>
@@ -176,7 +181,7 @@ const EditProject: React.FC<EditProject> = () => {
                 id="Industry"
                 value={industry}
                 onChange={(e) => setIndustry(e.target.value)}
-                className="mt-1 block w-full border border-blue-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900 z-10 relative"
+                className="mt-1 block w-full bg-slate-50 border-blue-300 border-[1px] outline-none rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900 z-10 relative"
                 required
             >
                 <option value="">{ industry ? industry : "Select an industry"}</option>
@@ -188,25 +193,6 @@ const EditProject: React.FC<EditProject> = () => {
             </select>
         </div>
 
-          {/* <div>
-            <p className="block text-sm font-medium text-blue-700">
-              Category
-            </p>
-            <select
-              id="category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="mt-1 block w-full border border-blue-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-              required
-            >
-              <option value="">Select a category</option>
-              <option value="web-development">Web Development</option>
-              <option value="design">Design</option>
-              <option value="marketing">Marketing</option>
-              <option value="data-science">Data Science</option>
-            </select>
-          </div> */}
-
         <div>
             <p className="block text-sm font-medium text-blue-700">
             Duration
@@ -217,7 +203,7 @@ const EditProject: React.FC<EditProject> = () => {
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
             placeholder="Enter the duration"
-            className="mt-1 block w-full border border-blue-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+            className="mt-1 block w-full bg-slate-50 border-blue-300 border-[1px] outline-none rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
             required
             />
         </div>
@@ -232,7 +218,7 @@ const EditProject: React.FC<EditProject> = () => {
               value={budget}
               onChange={(e) => setBudget(e.target.value)}
               placeholder="Enter your budget"
-              className="mt-1 block w-full border border-blue-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+              className="mt-1 block w-full bg-slate-50 border-blue-300 border-[1px] outline-none rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
               required
             />
           </div>
@@ -245,7 +231,7 @@ const EditProject: React.FC<EditProject> = () => {
                 id="status"
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="mt-1 block w-full border border-blue-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                className="mt-1 block w-full bg-slate-50 border-blue-300 border-[1px] outline-none rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                 required
                 >
                 <option value="">{status ? status : "Select a status"}</option>
@@ -278,7 +264,7 @@ const EditProject: React.FC<EditProject> = () => {
       
     </div>
     
-    <footer className="w-full h-[8vh] mt-7 flex justify-center items-center bg-[#1e3a8a] text-white">
+    <footer className="w-full h-[8.3vh] mt-7 flex justify-center items-center bg-[#1e3a8a] text-white">
         <p className="text-sm">&copy; 2025 Skillcase. All rights reserved.</p>
     </footer>
 

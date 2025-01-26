@@ -42,11 +42,13 @@ const Login : React.FC<Login> = ({})=>{
     };
   return(
     <>
-      <div className="h-screen w-screen bg-gradient-to-b from-slate-200 to-slate-400 flex flex-col justify-between items-center">
+      <div className="h-screen w-screen flex flex-col justify-between items-center bg-[url('/images/background.jpg')] bg-cover bg-center">
       {/* Navbar */}
-      <div className="navbar h-[10vh] w-full px-6 flex justify-between items-center bg-gradient-to-r from-blue-400 to-blue-600 shadow-md">
+      <div className="navbar h-[8vh] w-full px-6 flex justify-between items-center bg-gradient-to-r from-blue-400 to-blue-600 shadow-md">
         <div className="flex items-center">
-          <img src="/images/logo.png" alt="Logo" className="h-12 w-auto" />
+          {/* <img src="/images/logo.png" alt="Logo" className="h-12 w-auto" /> */}
+          <p className="text-white font-bold text-2xl">Skillcase</p>
+
         </div>
         <div className="flex items-center space-x-4">
           <Link

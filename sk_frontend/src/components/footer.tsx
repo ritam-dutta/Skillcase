@@ -5,7 +5,7 @@ interface Footer {}
 
 const Footer: React.FC<Footer> = ({}) => {
   return (
-    <footer className="footer bg-gray-800 text-white h-[8vh] w-full flex flex-col md:flex-row justify-between items-center px-4">
+    <footer className="footer bg-blue-900 text-white w-full h-[7vh] flex flex-col md:flex-row justify-between items-center px-4">
       {/* Left Section */}
       <div className="foot1 w-full md:w-1/3 flex justify-center md:justify-start items-center mb-2 md:mb-0">
         <p className="font-sans font-semibold text-sm md:text-lg text-gray-300">

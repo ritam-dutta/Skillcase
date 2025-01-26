@@ -95,9 +95,16 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
             }
         };
         fetchUserData();
-        const fetchProjects = async () => {
+        const fetchUserProjects = async () => {
             try {
-                const response = await axios.get("http://localhost:8000/api/v1/root/getprojects");
+                const response = await axios.get("http://localhost:8000/api/v1/root/getuserprojects",
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        username: username,
+                    },
+                });
+        
                 const projects = response.data.data;
                 setProjects(projects);
                 let compProjects = projects.filter((project) => project.status === "Completed");
@@ -115,21 +122,31 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
             }
         };
 
-        fetchProjects();
+        fetchUserProjects();
     }, [navigate]);
 
     if(!user){
         return <div>Loading...</div>
     }
 
-    const navEdit = (id) => {
-        if (id) {
-            localStorage.setItem("projectId", id);
-            navigate(`/client/edit_project/${username}`);
-        } else {
-            console.error("Invalid project ID");
-        }
-    }
+    // const navEdit = (id) => {
+    //     if (id) {
+    //         localStorage.setItem("projectId", id);
+    //         navigate(`/client/edit_project/${username}`);
+    //     } else {
+    //         console.error("Invalid project ID");
+    //     }
+    // }
+
+    // const navView = (id) => {
+    //     if (id) {
+    //         localStorage.setItem("projectId", id);
+    //         navigate(`/client/view_project/${username}`);
+    //     } else {
+    //         console.error("Invalid project ID");
+    //     }
+    // }
+
     let notStarted=0;
     let inProgress=0;
     let onHold=0;
@@ -157,35 +174,70 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
   return(
     <>
         
-        <div className="min-h-screen w-full bg-gray-100">
-      <Header/>
+        <div className="min-h-screen w-full bg-[url('/images/background.jpg')] bg-cover bg-center">
+      {/* <Header/> */}
+      <header className="h-[8vh] w-full bg-gradient-to-r from-gray-50 to-gray-200 text-white shadow-md">
+      <div className="container mx-auto h-full px-6 flex justify-between items-center">
+        <div className="flex items-center">
+
+          <Link to="/" className="text-2xl font-bold text-gray-600">
+            SkillCase
+          </Link>
+        </div>
+
+        <nav className="hidden md:flex space-x-6">
+          
+        </nav>
+
+        {/* Mobile Menu Icon */}
+        <div className=" flex items-center">
+          <button className="text-white focus:outline-none">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="2"
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4 6h16M4 12h16m-7 6h7"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+        {/* Main Content Area */}
       <div className="h-[18vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-start px-8">
         <h1 className="text-3xl text-white font-bold mt-6">All Projects</h1>
       </div>
 
       <div className="flex flex-row justify-center mt-[-10vh]">
-        {/* Main Content Area */}
-        <div className="w-[65%] h-[83vh] bg-white shadow-lg rounded-lg p-8 ml-6 border border-gray-200 overflow-auto">
+
+        <div className="w-[65%] h-[83vh] bg-slate-50 shadow-lg rounded-lg p-8 ml-6 border border-gray-200 overflow-auto">
           <h2 className="text-2xl font-bold mb-4">Projects Status</h2>
 
           {/* Stats Cards */}
           <div className="grid grid-cols-3 gap-4 mb-8">
-            <div className="bg-gray-50 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
               <h3 className="text-lg font-semibold text-gray-700">Completed: {completed}</h3>
             </div>
-            <div className="bg-gray-50 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
               <h3 className="text-lg font-semibold text-gray-700">Not Started: {notStarted}</h3>
             </div>
-            <div className="bg-gray-50 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
               <h3 className="text-lg font-semibold text-gray-700">In Progress: {inProgress}</h3>
             </div>
-            <div className="bg-gray-50 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
               <h3 className="text-lg font-semibold text-gray-700">On Hold: {onHold}</h3>
             </div>
-            <div className="bg-gray-50 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
               <h3 className="text-lg font-semibold text-gray-700">Cancelled: {cancelled}</h3>
             </div>
-            <div className="bg-gray-50 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
               <h3 className="text-lg font-semibold text-gray-700">Total: {total}</h3>
             </div>
           </div>
@@ -193,13 +245,13 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
             {/*completed projects*/}
 
           <h2 className="text-xl font-semibold mb-3 text-black">Completed Projects</h2>
-        <div className="mb-8 overflow-auto bg-gray-100 px-4 py-6 rounded-lg border border-gray-200">
+        <div className="mb-8 overflow-auto bg-gray-200 px-4 py-6 rounded-lg border border-gray-200">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {completedProjects.length > 0 ? (
                 completedProjects.map((project) => (
                     <div
                         key={project._id}
-                        className="bg-white border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
+                        className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
                     >
                         <div className="w-full flex justify-between items-end">
                             <div>
@@ -213,7 +265,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                             <div>
                                 <button
                                     className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
-                                    // onClick={() => navigate(`/client/view_projects/${username}`)}
+                                    onClick={() => navigate(`/client/view_project/${project._id}`)}
                                     >
                                     View Project
                                 </button>
@@ -228,7 +280,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                             </span>
                             <button
                             className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
-                            onClick={() => navEdit(project._id)}
+                            onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
                             >
                             Edit Project
                             </button>
@@ -237,7 +289,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                     </div>
                 ))
                 ) : (
-                <div className="col-span-full bg-gray-100 rounded-lg flex items-center justify-center">
+                <div className="col-span-full bg-gray-200 rounded-lg flex items-center justify-center">
                     <p className="text-gray-600">No completed projects available</p>
                 </div>
                 )}
@@ -247,13 +299,13 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
          {/*Not started projects*/}
 
          <h2 className="text-xl font-semibold mb-3 text-black">Not Started Projects</h2>
-        <div className="mb-8 overflow-auto bg-gray-100 px-4 py-6 rounded-lg border border-gray-200">
+        <div className="mb-8 overflow-auto bg-gray-200 px-4 py-6 rounded-lg border border-gray-200">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {notStartedProjects.length > 0 ? (
                 notStartedProjects.map((project) => (
                     <div
                         key={project._id}
-                        className="bg-white border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
+                        className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
                     >
                         <div className="w-full flex justify-between items-end">
                             <div>
@@ -267,7 +319,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                             <div>
                                 <button
                                     className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
-                                    // onClick={() => navigate(`/client/view_projects/${username}`)}
+                                    onClick={() => navigate(`/client/view_project/${project._id}`)}
                                     >
                                     View Project
                                 </button>
@@ -282,7 +334,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                             </span>
                             <button
                             className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
-                            onClick={() => navEdit(project._id)}
+                            onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
                             >
                             Edit Project
                             </button>
@@ -291,7 +343,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                     </div>
                 ))
                 ) : (
-                <div className="col-span-full bg-gray-100 rounded-lg flex items-center justify-center">
+                <div className="col-span-full bg-gray-200 rounded-lg flex items-center justify-center">
                     <p className="text-gray-600">No Data available</p>
                 </div>
                 )}
@@ -301,13 +353,13 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
          {/*In progress projects*/}
 
          <h2 className="text-xl font-semibold mb-3 text-black"> Projects In Progress</h2>
-        <div className="mb-8 overflow-auto bg-gray-100 px-4 py-6 rounded-lg border border-gray-200">
+        <div className="mb-8 overflow-auto bg-gray-200 px-4 py-6 rounded-lg border border-gray-200">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {inProgressProjects.length > 0 ? (
                 inProgressProjects.map((project) => (
                     <div
                         key={project._id}
-                        className="bg-white border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
+                        className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
                     >
                         <div className="w-full flex justify-between items-end">
                             <div>
@@ -321,7 +373,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                             <div>
                                 <button
                                     className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
-                                    // onClick={() => navigate(`/client/view_projects/${username}`)}
+                                    onClick={() => navigate(`/client/view_project/${project._id}`)}
                                     >
                                     View Project
                                 </button>
@@ -336,7 +388,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                             </span>
                             <button
                             className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
-                            onClick={() => navEdit(project._id)}
+                            onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
                             >
                             Edit Project
                             </button>
@@ -345,7 +397,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                     </div>
                 ))
                 ) : (
-                <div className="col-span-full bg-gray-100 rounded-lg flex items-center justify-center">
+                <div className="col-span-full bg-gray-200 rounded-lg flex items-center justify-center">
                     <p className="text-gray-600">No completed projects available</p>
                 </div>
                 )}
@@ -355,13 +407,13 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
          {/*On hold projects*/}
 
          <h2 className="text-xl font-semibold mb-3 text-black">Projects On Hold</h2>
-        <div className="mb-8 overflow-auto bg-gray-100 px-4 py-6 rounded-lg border border-gray-200">
+        <div className="mb-8 overflow-auto bg-gray-200 px-4 py-6 rounded-lg border border-gray-200">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {onHoldProjects.length > 0 ? (
                 onHoldProjects.map((project) => (
                     <div
                         key={project._id}
-                        className="bg-white border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
+                        className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
                     >
                         <div className="w-full flex justify-between items-end">
                             <div>
@@ -375,7 +427,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                             <div>
                                 <button
                                     className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
-                                    // onClick={() => navigate(`/client/view_projects/${username}`)}
+                                    onClick={() => navigate(`/client/view_project/${project._id}`)}
                                     >
                                     View Project
                                 </button>
@@ -390,7 +442,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                             </span>
                             <button
                             className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
-                            onClick={() => navEdit(project._id)}
+                            onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
                             >
                             Edit Project
                             </button>
@@ -399,7 +451,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                     </div>
                 ))
                 ) : (
-                <div className="col-span-full bg-gray-100 rounded-lg flex items-center justify-center">
+                <div className="col-span-full bg-gray-200 rounded-lg flex items-center justify-center">
                     <p className="text-gray-600">No completed projects available</p>
                 </div>
                 )}
@@ -408,13 +460,13 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
 
           {/* Cancelled Projects */}
           <h2 className="text-xl font-semibold mb-3 text-black"> Cancelled Progress</h2>
-        <div className="mb-8 overflow-auto bg-gray-100 px-4 py-6 rounded-lg border border-gray-200">
+        <div className="mb-8 overflow-auto bg-gray-200 px-4 py-6 rounded-lg border border-gray-200">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {cancelledProjects.length > 0 ? (
                 cancelledProjects.map((project) => (
                     <div
                         key={project._id}
-                        className="bg-white border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
+                        className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
                     >
                         <div className="w-full flex justify-between items-end">
                             <div>
@@ -428,7 +480,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                             <div>
                                 <button
                                     className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
-                                    // onClick={() => navigate(`/client/view_projects/${username}`)}
+                                    onClick={() => navigate(`/client/view_project/${project._id}`)}
                                     >
                                     View Project
                                 </button>
@@ -443,7 +495,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                             </span>
                             <button
                             className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
-                            onClick={() => navEdit(project._id)}
+                            onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
                             >
                             Edit Project
                             </button>
@@ -452,21 +504,21 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                     </div>
                 ))
                 ) : (
-                <div className="col-span-full bg-gray-100 rounded-lg flex items-center justify-center">
+                <div className="col-span-full bg-gray-200 rounded-lg flex items-center justify-center">
                     <p className="text-gray-600">No completed projects available</p>
                 </div>
                 )}
             </div>
         </div>          
 
-            {/* <div className="w-full flex justify-center items-center">
+            <div className="w-full flex justify-center items-center">
                 <button
                     className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-1/6"
-                    onClick={() => navigate(`/client/view_projects/${username}`)}
+                    onClick={() => navigate(`/client/profile/${username}`)}
                     >
-                    View All Projects
+                    Go Back
                 </button>
-            </div> */}
+            </div>
       </div>
     {/* <Footer/> */}
     </div>
