@@ -14,7 +14,7 @@ import ProjectPage from './projects.tsx'
 import HomePage from './home.tsx'
 import UploadProject from './upload_project.tsx'
 import EditProject from './edit_project.tsx'
-import ViewProjects from './view_projects.tsx'
+import ViewProjects from './view_all_projects.tsx'
 import ViewProject from './view_project.tsx'
 import ViewFeedProject from './view_feed_project.tsx'
 

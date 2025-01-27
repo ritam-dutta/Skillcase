@@ -9,6 +9,8 @@ const Login : React.FC<Login> = ({})=>{
     const [username,setUsername]=useState('')
     const [password,setPassword]=useState('')
     const [errorMessage, setErrorMessage] = useState("")
+    const [type, setType] = useState("password");
+    const [showImage, setShowImage] = useState("show");
     const url = window.location.href;
     let role="";
     if(url.includes("freelancer")){
@@ -39,6 +41,16 @@ const Login : React.FC<Login> = ({})=>{
             console.error("Login Error:", error);
             setErrorMessage("Login failed. Please check your credentials.");
         }
+    };
+
+    const showHide = () => {
+      if (type === "password") {
+        setType("text");
+        setShowImage("dontshow");
+      } else {
+        setType("password");
+        setShowImage("show");
+      }
     };
   return(
     <>
@@ -101,7 +113,7 @@ const Login : React.FC<Login> = ({})=>{
               <img src="/images/pwd.png" alt="Password Icon" className="h-5 w-5" />
             </div>
             <input
-              type="password"
+              type={type}
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -109,6 +121,9 @@ const Login : React.FC<Login> = ({})=>{
               required
               className="pl-10 pr-4 py-3 w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
             />
+            <div className="absolute right-3 cursor-pointer">
+              <img src={`/images/${showImage}.png`} alt="Show Password Icon" className="h-5 w-5" onClick={showHide} />
+            </div>
           </div>
 
           {/* Remember Me & Forgot Password */}

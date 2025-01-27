@@ -227,6 +227,135 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {client}, 'Account details updated successfully'));
 });
 
+const followAccount = asyncHandler(async (req, res) => {
+    const {username} = req.body;
+    // console.log("entered followAccount");
+    const followingClient = await Client.findByIdAndUpdate(req.user?._id,
+        {
+            $addToSet: {following: username}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!followingClient) {
+        throw new ApiError(404, 'following Client not found');
+    }
+    console.log("followingClient",followingClient);
+    const followedClient = await Client.findOneAndUpdate({username},
+        {
+            $addToSet: {followers: req.user?.username}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!followedClient) {
+        throw new ApiError(404, 'followed Client not found');
+    }
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {followingClient, followedClient}, 'Account followed successfully'));
+
+});
+
+const unFollowAccount = asyncHandler(async (req, res) => {
+    console.log("entered unfollowAccount");
+    const {username} = req.body
+    const unFollowingClient = await Client.findByIdAndUpdate(req.user?._id,
+        {
+            $pull: {following: username}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!unFollowingClient) {
+        throw new ApiError(404, 'unFollowing Client not found');
+    }
+
+    const unFollowedClient = await Client.findOneAndUpdate({username},
+        {
+            $pull: {followers: req.user?.username}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!unFollowedClient) {
+        throw new ApiError(404, 'unFollowed Client not found');
+    }
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {unFollowingClient, unFollowedClient}, 'Account unfollowed successfully'));
+});
+
+const connectAccount = asyncHandler(async (req, res) => {
+    const {username} = req.body;
+    // console.log("entered followAccount");
+    const connectingClient = await Client.findByIdAndUpdate(req.user?._id,
+        {
+            $addToSet: {connections: username}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!connectingClient) {
+        throw new ApiError(404, 'connecting Client not found');
+    }
+    // console.log("connecting client",connectingClient);
+    const connectedClient = await Client.findOneAndUpdate({username},
+        {
+            $addToSet: {connections: req.user?.username}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!connectedClient) {
+        throw new ApiError(404, 'connected Client not found');
+    }
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {connectingClient, connectedClient}, 'Added to connections successfully'));
+
+});
+
+const disconnectAccount = asyncHandler(async (req, res) => {
+    const {username} = req.body
+    const disconnectingClient = await Client.findByIdAndUpdate(req.user?._id,
+        {
+            $pull: {connections: username}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!disconnectingClient) {
+        throw new ApiError(404, 'disconnecting Client not found');
+    }
+
+    const disconnectedClient = await Client.findOneAndUpdate({username},
+        {
+            $pull: {connections: req.user?.username}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!disconnectedClient) {
+        throw new ApiError(404, 'disconnected Client not found');
+    }
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {disconnectingClient, disconnectedClient}, 'Disconnected successfully'));
+});
+
 export {
     registerClient,
     loginClient,
@@ -235,5 +364,9 @@ export {
     changeCurrentPassword,
     getCurrentClient,
     getLoggedInClient,
-    updateAccountDetails
+    updateAccountDetails,
+    followAccount,
+    unFollowAccount,
+    connectAccount,
+    disconnectAccount,
 }

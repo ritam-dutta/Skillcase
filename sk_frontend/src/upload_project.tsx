@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Header from "./components/header";
+import Loader from "./components/loader";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -7,7 +8,7 @@ interface UploadProject {}
 const UploadProject: React.FC<UploadProject> = () => {
   const [projectTitle, setProjectTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
+  // const [category, setCategory] = useState("");
   const [industry, setIndustry] = useState("");
   const [industries, setIndustries] = useState([]);
   const [budget, setBudget] = useState("");
@@ -15,6 +16,7 @@ const UploadProject: React.FC<UploadProject> = () => {
   const [status, setStatus] = useState("");
   const navigate = useNavigate();
   const { username } = useParams<{ username: string }>();
+  const [loading, setLoading] = useState(false);
   const url = window.location.href;
   const role = url.includes("freelancer") ? "freelancer" : "client";
   const accessToken = localStorage.getItem("accessToken");
@@ -22,6 +24,7 @@ const UploadProject: React.FC<UploadProject> = () => {
   useEffect(() => {
 
     const fetchUserData = async () => {
+      setLoading(true);
       try {
           const responseLoggedUser = await axios.get(`http://localhost:8000/api/v1/${role}/loggedIn${role[0].toUpperCase()}${role.slice(1)}`, {
               headers: {
@@ -61,10 +64,12 @@ const UploadProject: React.FC<UploadProject> = () => {
           console.error("Error fetching user data", error);
           navigate(`/${role}/profile/${username}`);
       }
+      setLoading(false);
     };
   fetchUserData();
 
     const fetchIndustries = async () => {
+      setLoading(true);
       try {
         const response = await axios.get("https://api.smartrecruiters.com/v1/industries");
         setIndustries(response.data.content);
@@ -72,6 +77,7 @@ const UploadProject: React.FC<UploadProject> = () => {
       } catch (error) {
         console.error("Fetch Industries Error:", error);
       }
+      setLoading(false);
     };
     fetchIndustries();
     }, []);
@@ -108,8 +114,9 @@ const UploadProject: React.FC<UploadProject> = () => {
         <h1 className="text-3xl text-white font-bold mt-6">Upload Project</h1>
       </div>
       <div className="flex items-center justify-center">
-      <div className="w-full h-[76.3vh] max-w-3xl bg-slate-200 rounded-lg shadow-lg p-8 mt-[-11vh] overflow-auto">
-        {/* <h1 className="text-2xl font-bold text-blue-700 mb-6">Upload Project</h1> */}
+
+        {!loading ? (
+      <div className="w-full h-[76.3vh] max-w-3xl bg-slate-50 rounded-lg shadow-lg p-8 mt-[-11vh] overflow-auto">
         <form onSubmit={handleSubmit} className="space-y-6 ">
           <div>
             <p className="block text-sm font-medium text-blue-700">
@@ -239,7 +246,15 @@ const UploadProject: React.FC<UploadProject> = () => {
             </button>
           </div>
         </form>
-      </div>
+      </div>)
+      :(
+        <div>
+          <div className="h-[70vh] w-[50vw] flex justify-center items-center bg-slate-50 rounded-md shadow-lg mt-[-11vh]">
+            <Loader />
+          </div>
+        </div>
+      )
+    }
       
     </div>
     

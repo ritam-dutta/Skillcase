@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Header from "./components/header";
-import Footer from "./components/footer"; 
+import Loader from "./components/loader";
 import axios from "axios";
 
 interface EditClient {}
@@ -18,6 +18,7 @@ const EditClient: React.FC<EditClient> = ({})=> {
     const [avatar, setAvatar] = useState<string | null>("/images/freelancer.png");
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [token, setToken] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const url = window.location.href;
     const role = url.includes("freelancer") ? "freelancer" : "client";
@@ -33,6 +34,7 @@ const EditClient: React.FC<EditClient> = ({})=> {
         }
 
         const fetchUserData = async () => {
+            setLoading(true);
             try {
                 const responseLoggedUser = await axios.get(`http://localhost:8000/api/v1/${role}/loggedIn${role[0].toUpperCase()}${role.slice(1)}`, {
                     headers: {
@@ -79,6 +81,7 @@ const EditClient: React.FC<EditClient> = ({})=> {
                 console.error("Error fetching user data", error);
                 navigate(`/${role}/profile/${username}`);
             }
+            setLoading(false);
         };
         fetchUserData();
     }, [navigate]);
@@ -193,6 +196,7 @@ const EditClient: React.FC<EditClient> = ({})=> {
       <div className="flex flex-row justify-center mt-[-10vh]">
         {/* Main Content Area */}
         <div className="min-h-[88vh] w-full flex flex-col items-center py-6">
+            { !loading?(
                 <div className="w-11/12 lg:w-3/5 bg-slate-100 shadow-lg rounded-lg p-8">
                     <div className="flex justify-between items-start ">
                         <div className="w-1/3 flex flex-col items-center gap-4 ">
@@ -282,7 +286,16 @@ const EditClient: React.FC<EditClient> = ({})=> {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>)
+                :(
+                    <div className="w-11/12 lg:w-3/5 bg-slate-100 shadow-lg rounded-lg flex justify-center items-center">
+                        <div className="h-[70vh] w-[50vw] flex justify-center items-center">
+                            <Loader />
+                        </div>
+                    </div>
+                )
+            }
+
             </div>          
       </div>
     </div>

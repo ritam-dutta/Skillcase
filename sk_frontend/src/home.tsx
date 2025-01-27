@@ -4,7 +4,6 @@ import Footer from "./components/footer";
 interface HomePage {}
 const HomePage: React.FC<HomePage> = () => {
     return (
-
         <body className="bg-[url('/images/background.jpg')] bg-cover bg-center">  
         <div className="container h-screen w-screen flex flex-col items-center bg-transparent text-[#1e3a8a]">
             <header className="w-full h-[10vh] flex justify-between items-center px-8 shadow-md bg-blue-500 text-white">

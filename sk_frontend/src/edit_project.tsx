@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Header from "./components/header";
+import Loader from "./components/loader";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -16,12 +17,14 @@ const EditProject: React.FC<EditProject> = () => {
   const { username } = useParams<{ username: string }>();
   const [project, setProject] = useState<any>();
   const {projectid} = useParams<{ projectid: string}>();
+  const [loading, setLoading] = useState(false);
   const accessToken = localStorage.getItem("accessToken");
   const url = window.location.href;
   let role = url.includes("freelancer") ? "freelancer" : "client";
     useEffect(() => {
 
         const fetchUserData = async () => {
+          setLoading(true);
             try {
                 const responseLoggedUser = await axios.get(`http://localhost:8000/api/v1/${role}/loggedIn${role[0].toUpperCase()}${role.slice(1)}`, {
                     headers: {
@@ -61,10 +64,12 @@ const EditProject: React.FC<EditProject> = () => {
                 console.error("Error fetching user data", error);
                 navigate(`/${role}/profile/${username}`);
             }
+            setLoading(false);
         };
         fetchUserData();
 
         const fetchIndustries = async () => {
+          setLoading(true);
         try {
             const response = await axios.get("https://api.smartrecruiters.com/v1/industries");
             setIndustries(response.data.content);
@@ -72,10 +77,13 @@ const EditProject: React.FC<EditProject> = () => {
         } catch (error) {
             console.error("Fetch Industries Error:", error);
         }
+        setLoading(false);
         };
         fetchIndustries();
+
         const fetchProjectData = async	() => {
-          console.log("projectid",projectid)
+          setLoading(true);
+          // console.log("projectid",projectid)
             try {
                 // const accessToken = localStorage.getItem("accessToken");
                 
@@ -99,6 +107,7 @@ const EditProject: React.FC<EditProject> = () => {
             } catch (error) {
                 console.error("Fetch Project Data Error:", error);
             }
+            setLoading(false);
         }
 
         fetchProjectData();
@@ -142,6 +151,7 @@ const EditProject: React.FC<EditProject> = () => {
     </div>
 
       <div className="flex items-center justify-center mt-[-14vh]">
+        {!loading ? (
       <div className="w-full max-w-3xl bg-slate-50 rounded-lg shadow-lg p-8 mt-8 overflow-auto h-[77vh]">
         <form className="space-y-6">
           <div>
@@ -154,7 +164,7 @@ const EditProject: React.FC<EditProject> = () => {
               value={projectTitle}
               onChange={(e) => setProjectTitle(e.target.value)}
               placeholder="Enter your project name"
-              className="mt-1 block w-full bg-slate-50 border-blue-300 border-[1px] outline-none rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+              className="mt-1 block w-full bg-slate-100 border-blue-300 border-[1px] outline-none rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
               required
             />
           </div>
@@ -168,7 +178,7 @@ const EditProject: React.FC<EditProject> = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Provide a detailed description of the project"
-              className="mt-1 block w-full bg-slate-50 border-blue-300 border-[1px] outline-none rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900 h-28 resize-none"
+              className="mt-1 block w-full bg-slate-100 border-blue-300 border-[1px] outline-none rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900 h-28 resize-none"
               required
             />
           </div>
@@ -181,7 +191,7 @@ const EditProject: React.FC<EditProject> = () => {
                 id="Industry"
                 value={industry}
                 onChange={(e) => setIndustry(e.target.value)}
-                className="mt-1 block w-full bg-slate-50 border-blue-300 border-[1px] outline-none rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900 z-10 relative"
+                className="mt-1 block w-full bg-slate-100 border-blue-300 border-[1px] outline-none rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900 z-10 relative"
                 required
             >
                 <option value="">{ industry ? industry : "Select an industry"}</option>
@@ -203,7 +213,7 @@ const EditProject: React.FC<EditProject> = () => {
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
             placeholder="Enter the duration"
-            className="mt-1 block w-full bg-slate-50 border-blue-300 border-[1px] outline-none rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+            className="mt-1 block w-full bg-slate-100 border-blue-300 border-[1px] outline-none rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
             required
             />
         </div>
@@ -218,7 +228,7 @@ const EditProject: React.FC<EditProject> = () => {
               value={budget}
               onChange={(e) => setBudget(e.target.value)}
               placeholder="Enter your budget"
-              className="mt-1 block w-full bg-slate-50 border-blue-300 border-[1px] outline-none rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+              className="mt-1 block w-full bg-slate-100 border-blue-300 border-[1px] outline-none rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
               required
             />
           </div>
@@ -231,7 +241,7 @@ const EditProject: React.FC<EditProject> = () => {
                 id="status"
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="mt-1 block w-full bg-slate-50 border-blue-300 border-[1px] outline-none rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                className="mt-1 block w-full bg-slate-100 border-blue-300 border-[1px] outline-none rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                 required
                 >
                 <option value="">{status ? status : "Select a status"}</option>
@@ -246,21 +256,29 @@ const EditProject: React.FC<EditProject> = () => {
           <div className="flex justify-between gap-10">
             <button
               type="button"
-              onClick={() => window.confirm("are you sure to save the changes?") && handleEditProject()}
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Save Changes
-            </button>
-            <button
-              type="button"
               onClick={() => window.confirm("are you sure to discard the changes?") && navigate(`/client/profile/${username}`)}
               className="w-full bg-gray-400 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               Cancel Changes
             </button>
+            <button
+              type="button"
+              onClick={() => window.confirm("are you sure to save the changes?") && handleEditProject()}
+              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Save Changes
+            </button>
           </div>
         </form>
-      </div>
+      </div>)
+      :(
+        <div className="w-full max-w-3xl bg-slate-50 rounded-lg shadow-lg h-[77vh] mt-8">
+          <div className="w-full h-[77vh] flex justify-center items-center">
+            <Loader />
+          </div>
+        </div>
+      )
+    }
       
     </div>
     

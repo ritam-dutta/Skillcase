@@ -16,6 +16,10 @@ const Client_reg : React.FC<Client_reg> = ({})=>{
     const [phone,setPhone]=useState('')
     const [confirmPassword,setConfirmPassword]=useState('')
     const [fullname,setFullname]=useState('')
+    const [type1, setType1] = useState("password");
+    const [type2, setType2] = useState("password");
+    const [showImage1, setShowImage1] = useState("show");
+    const [showImage2, setShowImage2] = useState("show");
     // const [role,setRole]=useState('client')
 
     const url = window.location.href;
@@ -63,7 +67,27 @@ const Client_reg : React.FC<Client_reg> = ({})=>{
         } catch (error) {
             console.error("Login Error:", error);
         }
-    }
+    };
+
+    const showHide1 = () => {
+        if (type1 === "password") {
+          setType1("text");
+          setShowImage1("dontshow");
+        } else {
+          setType1("password");
+          setShowImage1("show");
+        }
+      };
+  
+      const showHide2 = () => {
+        if (type2 === "password") {
+          setType2("text");
+          setShowImage2("dontshow");
+        } else {
+          setType2("password");
+          setShowImage2("show");
+        }
+      };
 
   return(
     <>
@@ -113,13 +137,23 @@ const Client_reg : React.FC<Client_reg> = ({})=>{
                         <img src={Image} alt="User Icon" className="h-5 w-5" />
                      </div>
                     <input
-                        type={type}
+                        type={placeholder === "Set Password" ? type1 : placeholder === "Confirm Password" ? type2 : type}
                         placeholder={placeholder}
                         value={value}
                         onChange={(e) => setValue(e.target.value)}
                         required
                         className="input w-full pl-10 pr-4 py-3 bg-white border-[1px] border-gray-400 rounded-md text-gray-700 focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
                     />
+                    {placeholder === "Set Password" ? (
+                    <div className="absolute right-3 cursor-pointer">
+                      <img src={`/images/${showImage1}.png`} alt="Show Password Icon" className="h-5 w-5" onClick={showHide1} />
+                    </div>)
+                    : null}
+                    {placeholder === "Confirm Password" ? (
+                    <div className="absolute right-3 cursor-pointer">
+                      <img src={`/images/${showImage2}.png`} alt="Show Password Icon" className="h-5 w-5" onClick={showHide2} />
+                    </div>)
+                    : null}
                 </div>
             ))}
 

@@ -1,8 +1,7 @@
 import React,{ useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
-import Header from "./components/header";
-import Footer from "./components/footer";
+import Loader from "./components/loader";
 import axios from "axios";
 import "./App.css"
 interface ViewProjects {}
@@ -14,6 +13,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
     const [notStartedProjects, setNotStartedProjects] = useState([]);
     const [onHoldProjects, setOnHoldProjects] = useState([]);
     const [cancelledProjects, setCancelledProjects] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const url = window.location.href;
     let userType="";
@@ -26,6 +26,8 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
 
     const[currentRole,setRole]=useState(userType);
     const {username} = useParams<{ username: string }>();
+    const [loggedUsername, setLoggedUsername] = useState("");
+    
 
     const navigate = useNavigate();
 
@@ -38,6 +40,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
         } 
 
         const fetchUserData = async () => {
+            setLoading(true);
             try {
                 // console.log(`loggedIn${loggedInRole[0].toUpperCase()}${loggedInRole.slice(1)}`)
                 // console.log(currentRole,loggedInRole)
@@ -81,9 +84,11 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                 // console.log("loggedInUser",loggedInUser)
                 if(loggedInUser.username === currentUser.username){
                     fetchedUser = loggedInUser;
+                    setLoggedUsername(loggedInUser.username);   
                 }
                 else{
                     fetchedUser = currentUser;
+                    setLoggedUsername(loggedInUser.username);
                 }
                 // console.log(fetchedUser)
               
@@ -92,10 +97,13 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
             } catch (error) {
                 console.error("error fetching user data",error);
                 navigate(`/${currentRole}/login`);
+            } finally{
+                setLoading(false);
             }
         };
         fetchUserData();
         const fetchUserProjects = async () => {
+            setLoading(true);
             try {
                 const response = await axios.get("http://localhost:8000/api/v1/root/getuserprojects",
                 {
@@ -119,33 +127,13 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                 setCancelledProjects(cancelProjects);
             } catch (error) {
                 console.error("Fetch Projects Error:", error);
+            } finally{
+                setLoading(false);
             }
         };
 
         fetchUserProjects();
     }, [navigate]);
-
-    if(!user){
-        return <div>Loading...</div>
-    }
-
-    // const navEdit = (id) => {
-    //     if (id) {
-    //         localStorage.setItem("projectId", id);
-    //         navigate(`/client/edit_project/${username}`);
-    //     } else {
-    //         console.error("Invalid project ID");
-    //     }
-    // }
-
-    // const navView = (id) => {
-    //     if (id) {
-    //         localStorage.setItem("projectId", id);
-    //         navigate(`/client/view_project/${username}`);
-    //     } else {
-    //         console.error("Invalid project ID");
-    //     }
-    // }
 
     let notStarted=0;
     let inProgress=0;
@@ -216,7 +204,8 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
       </div>
 
       <div className="flex flex-row justify-center mt-[-10vh]">
-
+        
+        {!loading ? (
         <div className="w-[65%] h-[83vh] bg-slate-50 shadow-lg rounded-lg p-8 ml-6 border border-gray-200 overflow-auto">
           <h2 className="text-2xl font-bold mb-4">Projects Status</h2>
 
@@ -274,18 +263,20 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                         {/* <p className="text-sm text-gray-600 mt-1 truncate">
                             {project.status || "No status provided."}
                         </p> */}
-                        <div className="mt-4 flex items-center justify-between gap-4">
-                            <span className="text-sm text-blue-500 font-medium">
-                            {project.industry || "Uncategorized"}
-                            </span>
-                            <button
-                            className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
-                            onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
-                            >
-                            Edit Project
-                            </button>
-                            
-                        </div>
+                        {username === loggedUsername ? (    
+                            <div className="mt-4 flex items-center justify-between gap-4">
+                                <span className="text-sm text-blue-500 font-medium">
+                                {project.industry || "Uncategorized"}
+                                </span>
+                                <button
+                                className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
+                                onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
+                                >
+                                Edit Project
+                                </button>
+                            </div>)
+                            :null
+                        }
                     </div>
                 ))
                 ) : (
@@ -328,18 +319,20 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                         {/* <p className="text-sm text-gray-600 mt-1 truncate">
                             {project.status || "No status provided."}
                         </p> */}
-                        <div className="mt-4 flex items-center justify-between gap-4">
-                            <span className="text-sm text-blue-500 font-medium">
-                            {project.industry || "Uncategorized"}
-                            </span>
-                            <button
-                            className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
-                            onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
-                            >
-                            Edit Project
-                            </button>
-                            
-                        </div>
+                        {username === loggedUsername ? (    
+                            <div className="mt-4 flex items-center justify-between gap-4">
+                                <span className="text-sm text-blue-500 font-medium">
+                                {project.industry || "Uncategorized"}
+                                </span>
+                                <button
+                                className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
+                                onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
+                                >
+                                Edit Project
+                                </button>
+                            </div>)
+                            :null
+                        }
                     </div>
                 ))
                 ) : (
@@ -379,21 +372,21 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                                 </button>
                             </div>
                         </div>
-                        {/* <p className="text-sm text-gray-600 mt-1 truncate">
-                            {project.status || "No status provided."}
-                        </p> */}
-                        <div className="mt-4 flex items-center justify-between gap-4">
-                            <span className="text-sm text-blue-500 font-medium">
-                            {project.industry || "Uncategorized"}
-                            </span>
-                            <button
-                            className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
-                            onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
-                            >
-                            Edit Project
-                            </button>
-                            
-                        </div>
+                        
+                        {username === loggedUsername ? (    
+                            <div className="mt-4 flex items-center justify-between gap-4">
+                                <span className="text-sm text-blue-500 font-medium">
+                                {project.industry || "Uncategorized"}
+                                </span>
+                                <button
+                                className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
+                                onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
+                                >
+                                Edit Project
+                                </button>
+                            </div>)
+                            :null
+                        }
                     </div>
                 ))
                 ) : (
@@ -436,18 +429,20 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                         {/* <p className="text-sm text-gray-600 mt-1 truncate">
                             {project.status || "No status provided."}
                         </p> */}
-                        <div className="mt-4 flex items-center justify-between gap-4">
-                            <span className="text-sm text-blue-500 font-medium">
-                            {project.industry || "Uncategorized"}
-                            </span>
-                            <button
-                            className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
-                            onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
-                            >
-                            Edit Project
-                            </button>
-                            
-                        </div>
+                        {username === loggedUsername ? (    
+                            <div className="mt-4 flex items-center justify-between gap-4">
+                                <span className="text-sm text-blue-500 font-medium">
+                                {project.industry || "Uncategorized"}
+                                </span>
+                                <button
+                                className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
+                                onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
+                                >
+                                Edit Project
+                                </button>
+                            </div>)
+                            :null
+                        }
                     </div>
                 ))
                 ) : (
@@ -489,18 +484,20 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                         {/* <p className="text-sm text-gray-600 mt-1 truncate">
                             {project.status || "No status provided."}
                         </p> */}
-                        <div className="mt-4 flex items-center justify-between gap-4">
-                            <span className="text-sm text-blue-500 font-medium">
-                            {project.industry || "Uncategorized"}
-                            </span>
-                            <button
-                            className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
-                            onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
-                            >
-                            Edit Project
-                            </button>
-                            
-                        </div>
+                        {username === loggedUsername ? (    
+                            <div className="mt-4 flex items-center justify-between gap-4">
+                                <span className="text-sm text-blue-500 font-medium">
+                                {project.industry || "Uncategorized"}
+                                </span>
+                                <button
+                                className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
+                                onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
+                                >
+                                Edit Project
+                                </button>
+                            </div>)
+                            :null
+                        }
                     </div>
                 ))
                 ) : (
@@ -513,13 +510,20 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
 
             <div className="w-full flex justify-center items-center">
                 <button
-                    className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-1/6"
+                    className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
                     onClick={() => navigate(`/client/profile/${username}`)}
                     >
-                    Go Back
+                    Go to Profile
                 </button>
             </div>
-      </div>
+      </div>)
+      :(
+        <div>
+            <div className="h-[70vh] w-[50vw] flex justify-center items-center bg-slate-50 rounded-md shadow-lg">
+                <Loader />
+            </div>
+        </div>
+      )}
     {/* <Footer/> */}
     </div>
             

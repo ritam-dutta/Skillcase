@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Header from "./components/header";
+import Loader from "./components/loader";
 
 interface ProjectPage {}
 const ProjectPage: React.FC<ProjectPage> = ({}) => {
@@ -9,9 +10,11 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
     const url = window.location.href;
     const role = url.includes("freelancer") ? "freelancer" : "client";
     const [projects, setProjects] = useState([]);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     useEffect(() => {
         const fetchProjects = async () => {
+            setLoading(true);
             try {
                 const response = await axios.get("http://localhost:8000/api/v1/root/getprojects");
                 const projects = response.data.data;
@@ -20,6 +23,7 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
             } catch (error) {
                 console.error("Fetch Projects Error:", error);
             }
+            setLoading(false);
         };
 
         fetchProjects();
@@ -41,7 +45,8 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
             <Header />
             <main className="flex-grow w-[90%] max-w-[1200px] py-10">
                 <h2 className="text-3xl font-semibold mb-8">Available Projects</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {!loading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 bg-slate-50 p-8 rounded-md overflow-auto">
                     {projects.map(project => (
                         <div
                             key={projects._id}
@@ -67,7 +72,12 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
                             </button>
                         </div>
                     ))}
-                </div>
+                </div>)
+                :(
+                    <div className="h-[50vh] flex justify-center items-center bg-slate-50">
+                        <Loader />
+                    </div>
+                )}
             </main>
             
             <footer className="w-full h-[8vh] flex justify-center items-center bg-[#1e3a8a] text-white">

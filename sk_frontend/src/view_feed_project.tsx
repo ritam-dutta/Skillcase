@@ -1,5 +1,6 @@
 import Header from "./components/header";
 import Footer from "./components/footer";
+import Loader from "./components/loader";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
@@ -16,6 +17,7 @@ const ViewFeedProject: React.FC<ViewFeedProject> = ({})=>{
     const [duration, setDuration] = useState("");
     const [status, setStatus] = useState("");
     const [username, setUsername] = useState("");
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const {projectid} = useParams();
 
@@ -23,6 +25,7 @@ const ViewFeedProject: React.FC<ViewFeedProject> = ({})=>{
 
     useEffect(() => {
         const fetchProject = async () => {
+            setLoading(true);
             console.log(projectid)
             try {
                 const response = await axios.get("http://localhost:8000/api/v1/root/currentproject", {
@@ -45,6 +48,7 @@ const ViewFeedProject: React.FC<ViewFeedProject> = ({})=>{
             } catch (error) {
                 console.error("Fetch Projects Error:", error);
             }
+            setLoading(false);
         };
 
         fetchProject();
@@ -63,13 +67,14 @@ const ViewFeedProject: React.FC<ViewFeedProject> = ({})=>{
 
         {/* Main Content */}
         <main className="h-[72vh] flex-grow w-full flex justify-center items-start py-6">
-            <div className="w-11/12 lg:w-3/5 bg-slate-100 shadow-lg rounded-lg p-8 mt-[-13vh]">
+            {!loading ? (
+            <div className="w-11/12 lg:w-3/5 bg-slate-50 shadow-lg rounded-lg p-8 mt-[-13vh]">
             {/* Form Content */}
             <div className="space-y-6">
                 {/* Description */}
                 <div>
                 <label className="block text-md font-medium text-gray-700">Description</label>
-                <div className="mt-1 h-24 w-full rounded-md bg-slate-50 border-blue-300 border-[1px] shadow-sm px-4 py-2">
+                <div className="mt-1 h-24 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
                     {description}
                 </div>
                 </div>
@@ -77,7 +82,7 @@ const ViewFeedProject: React.FC<ViewFeedProject> = ({})=>{
                 {/* Industry */}
                 <div>
                 <label className="block text-md font-medium text-gray-700">Industry</label>
-                <div className="mt-1 w-full rounded-md bg-slate-50 border-blue-300 border-[1px] shadow-sm px-4 py-2">
+                <div className="mt-1 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
                     {industry}
                 </div>
                 </div>
@@ -85,7 +90,7 @@ const ViewFeedProject: React.FC<ViewFeedProject> = ({})=>{
                 {/* Budget */}
                 <div>
                 <label className="block text-md font-medium text-gray-700">Budget</label>
-                <div className="mt-1 w-full rounded-md bg-slate-50 border-blue-300 border-[1px] shadow-sm px-4 py-2">
+                <div className="mt-1 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
                     {budget}
                 </div>
                 </div>
@@ -93,7 +98,7 @@ const ViewFeedProject: React.FC<ViewFeedProject> = ({})=>{
                 {/* Duration */}
                 <div>
                 <label className="block text-md font-medium text-gray-700">Duration</label>
-                <div className="mt-1 w-full rounded-md bg-slate-50 border-blue-300 border-[1px] shadow-sm px-4 py-2">
+                <div className="mt-1 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
                     {duration}
                 </div>
                 </div>
@@ -101,7 +106,7 @@ const ViewFeedProject: React.FC<ViewFeedProject> = ({})=>{
                 {/* Status */}
                 <div>
                 <label className="block text-md font-medium text-gray-700">Status</label>
-                <div className="mt-1 w-full rounded-md bg-slate-50 border-blue-300 border-[1px] shadow-sm px-4 py-2">
+                <div className="mt-1 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
                     {status}
                 </div>
                 </div>
@@ -117,7 +122,13 @@ const ViewFeedProject: React.FC<ViewFeedProject> = ({})=>{
                 Go Back
                 </button>
             </div>
-            </div>
+            </div>):
+            (
+                <div className="h-[70vh] w-[50vw] flex justify-center items-center bg-slate-50 rounded-md shadow-lg mt-[-13vh]">
+                    <Loader />
+                </div>
+            )
+    }
         </main>
         </div>
         <Footer />
