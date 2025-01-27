@@ -142,7 +142,7 @@ const EditProject: React.FC<EditProject> = () => {
     
   return (
     <>
-    <body className="bg-[url('/images/background.jpg')] bg-cover bg-center">
+    <body className="h-full bg-[url('/images/background.jpg')] bg-cover bg-center">
 
     <Header />
 

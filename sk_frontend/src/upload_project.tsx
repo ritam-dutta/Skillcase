@@ -8,7 +8,6 @@ interface UploadProject {}
 const UploadProject: React.FC<UploadProject> = () => {
   const [projectTitle, setProjectTitle] = useState("");
   const [description, setDescription] = useState("");
-  // const [category, setCategory] = useState("");
   const [industry, setIndustry] = useState("");
   const [industries, setIndustries] = useState([]);
   const [budget, setBudget] = useState("");
@@ -110,7 +109,7 @@ const UploadProject: React.FC<UploadProject> = () => {
     <>
     <body className="bg-[url('/images/background.jpg')] bg-cover bg-center">
     <Header />
-    <div className="h-[15vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-start px-8">
+    <div className="h-[15vh] w-full flex items-start px-8 bg-gradient-to-r from-blue-500 to-indigo-500">
         <h1 className="text-3xl text-white font-bold mt-6">Upload Project</h1>
       </div>
       <div className="flex items-center justify-center">
@@ -166,25 +165,6 @@ const UploadProject: React.FC<UploadProject> = () => {
                 ))}
             </select>
         </div>
-
-          {/* <div>
-            <p className="block text-sm font-medium text-blue-700">
-              Category
-            </p>
-            <select
-              id="category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="mt-1 block w-full border border-blue-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-              required
-            >
-              <option value="">Select a category</option>
-              <option value="web-development">Web Development</option>
-              <option value="design">Design</option>
-              <option value="marketing">Marketing</option>
-              <option value="data-science">Data Science</option>
-            </select>
-          </div> */}
 
         <div>
             <p className="block text-sm font-medium text-blue-700">

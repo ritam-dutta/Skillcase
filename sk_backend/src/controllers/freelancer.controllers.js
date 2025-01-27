@@ -84,14 +84,14 @@ const registerFreelancer = asyncHandler(async (req,res) => {
 })
 
 const loginFreelancer = asyncHandler( async (req,res) => {
-    console.log("logging in");
+    // console.log("logging in");
     const {username, password} = req.body;
     console.log(username, password);
     if(!username || !password) {
         throw new ApiError(400, 'All fields are required');
     }
     const freelancer = await Freelancer.findOne({ username : username });
-    console.log(freelancer);
+    // console.log(freelancer);
     if(!freelancer) {
         return res.status(400).json(new ApiResponse(400, null, 'No such freelancer found'));
     }
@@ -206,9 +206,9 @@ const getCurrentFreelancer = asyncHandler(async (req, res) => {
 });
 
 const getLoggedInFreelancer = asyncHandler(async (req, res) => {
-    console.log("entered getLoggedInFreelancer");
+    // console.log("entered getLoggedInFreelancer");
     const freelancer = await Freelancer.findById(req.user?._id).select('-password -refreshToken');
-    console.log("loggedin freelancer",freelancer);
+    // console.log("loggedin freelancer",freelancer);
     if (!freelancer) {
         throw new ApiError(404, 'Freelancer not found');
     }

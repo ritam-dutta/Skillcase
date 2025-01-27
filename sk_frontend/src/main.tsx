@@ -17,6 +17,7 @@ import EditProject from './edit_project.tsx'
 import ViewProjects from './view_all_projects.tsx'
 import ViewProject from './view_project.tsx'
 import ViewFeedProject from './view_feed_project.tsx'
+import Followers from './followers.tsx'
 
 
 
@@ -42,6 +43,8 @@ const router= createBrowserRouter(
       <Route path='freelancer/view_project/:projectid' element={<ViewProject/>}> </Route>
       <Route path='client/view_feed_project/:projectid' element={<ViewFeedProject/>}> </Route>
       <Route path='freelancer/view_feed_project/:projectid' element={<ViewFeedProject/>}> </Route>
+      <Route path='freelancer/followers/:username' element={<Followers/>}> </Route>
+      <Route path='client/followers/:username' element={<Followers/>}> </Route>
       <Route path='' element={<HomePage/>}> </Route>
       <Route path="*" element={<Not_found/>}></Route>
     </Route>

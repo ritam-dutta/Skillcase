@@ -142,7 +142,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
         };
 
         fetchUserProjects();
-    }, [navigate]);
+    }, [username,navigate]);
     // console.log("following",isFollowing)
     const handleFollow = async () => {
         try {
@@ -272,15 +272,15 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
             <div className="flex justify-evenly w-full mt-6 text-center">
                     <div>
                     <p className="font-semibold text-gray-700">{connections}</p>
-                    <p className="text-gray-500 text-sm">Connections</p>
+                    <Link to={`/client/connections/${username}`} className="text-gray-500 text-sm">Connections</Link>
                     </div>
                     <div>
                     <p className="font-semibold text-gray-700">{following}</p>
-                    <p className="text-gray-500 text-sm">Following</p>
+                    <Link to={`client/followings/${username}`} className="text-gray-500 text-sm">Followings</Link>
                     </div>
                     <div>
                     <p className="font-semibold text-gray-700">{followers}</p>
-                    <p className="text-gray-500 text-sm">Followers</p>
+                    <Link to={`/client/followers/${username}`} className="text-gray-500 text-sm">Followers</Link>
                     </div>
             </div>
             ):(

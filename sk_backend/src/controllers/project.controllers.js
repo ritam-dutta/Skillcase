@@ -8,7 +8,6 @@ const createProject = asyncHandler(async (req, res) => {
     const {
         title,
         description,
-        skills,
         budget,
         duration,
         industry,
@@ -18,10 +17,10 @@ const createProject = asyncHandler(async (req, res) => {
     const employerId = req.user._id;
     const employer = await Client.findById(employerId).select("-password -refreshToken");
     try {
+        console.log(title, description, budget, duration, industry, employer.username, status)
         const project = await Project.create({
             title,
             description,
-            skills,
             budget,
             duration,
             industry,
@@ -107,14 +106,14 @@ const getCurrentProject = asyncHandler(async (req, res) => {
 });
 
 const updateProjectDetails = asyncHandler(async (req, res) => {
-    console.log("entered updateproject")
+    // console.log("entered updateproject")
     const projectId = req.headers.projectid;
     const { title, description, industry, budget, duration, status } = req.body;
 
     if(!title || !description || !industry || !budget || !duration || !status) {
         throw new ApiError(400, null, "All fields are required");
     }
-    console.log("2nd level",projectId)
+    // console.log("2nd level",projectId)
     const project = await Project.findByIdAndUpdate(
         projectId,
         { 

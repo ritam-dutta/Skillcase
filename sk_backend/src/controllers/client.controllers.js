@@ -179,7 +179,7 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 });
 
 const getCurrentClient = asyncHandler(async (req, res) => {
-    console.log("entered getCurrentClient");
+    // console.log("entered getCurrentClient");
     const {username} = req.params;
     const client = await Client.findOne({username}).select('-password -refreshToken');
     return res
@@ -188,7 +188,7 @@ const getCurrentClient = asyncHandler(async (req, res) => {
 });
 
 const getLoggedInClient = asyncHandler(async (req, res) => {
-    console.log("entered getLoggedInClient");
+    // console.log("entered getLoggedInClient");
     const client = await Client.findById(req.user?._id).select('-password -refreshToken');
     if (!client) {
         throw new ApiError(404, 'Client not found');
@@ -241,7 +241,7 @@ const followAccount = asyncHandler(async (req, res) => {
     if (!followingClient) {
         throw new ApiError(404, 'following Client not found');
     }
-    console.log("followingClient",followingClient);
+    // console.log("followingClient",followingClient);
     const followedClient = await Client.findOneAndUpdate({username},
         {
             $addToSet: {followers: req.user?.username}
@@ -261,7 +261,7 @@ const followAccount = asyncHandler(async (req, res) => {
 });
 
 const unFollowAccount = asyncHandler(async (req, res) => {
-    console.log("entered unfollowAccount");
+    // console.log("entered unfollowAccount");
     const {username} = req.body
     const unFollowingClient = await Client.findByIdAndUpdate(req.user?._id,
         {
@@ -356,6 +356,18 @@ const disconnectAccount = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {disconnectingClient, disconnectedClient}, 'Disconnected successfully'));
 });
 
+const getFollowers = asyncHandler(async (req, res) => {
+    const {username} = req.params;
+    const client = await Client.findOne({username}).select('-password -refreshToken');
+    if (!client) {
+        throw new ApiError(404, 'Client not found');
+    }
+    const followers = client.followers;
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {followers}, 'Followers fetched successfully')); 
+
+});
 export {
     registerClient,
     loginClient,
@@ -369,4 +381,5 @@ export {
     unFollowAccount,
     connectAccount,
     disconnectAccount,
+    getFollowers,
 }

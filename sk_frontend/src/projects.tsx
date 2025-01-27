@@ -41,7 +41,7 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
     return (
         <>
             
-            <body className=" h-screen flex flex-col items-center bg-[#f7faff] text-[#1e3a8a] bg-[url('/images/background.jpg')] bg-cover bg-center">
+            <div className=" h-full flex flex-col items-center text-[#1e3a8a] bg-[url('/images/background.jpg')] bg-cover bg-center">
             <Header />
             <main className="flex-grow w-[90%] max-w-[1200px] py-10">
                 <h2 className="text-3xl font-semibold mb-8">Available Projects</h2>
@@ -83,7 +83,7 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
             <footer className="w-full h-[8vh] flex justify-center items-center bg-[#1e3a8a] text-white">
                 <p className="text-sm">&copy; 2025 Skillcase. All rights reserved.</p>
             </footer>
-            </body> 
+            </div> 
         </>
     );
 };

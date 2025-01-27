@@ -187,7 +187,7 @@ const EditClient: React.FC<EditClient> = ({})=> {
 
     return (
         <>
-            <div className="min-h-screen w-full bg-[url('/images/background.jpg')] bg-cover bg-center">
+            <div className="h-full w-full bg-[url('/images/background.jpg')] bg-cover bg-center">
       <Header/>
       <div className="h-[14vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-start px-8">
         <h1 className="text-3xl text-white font-bold mt-6">All Projects</h1>

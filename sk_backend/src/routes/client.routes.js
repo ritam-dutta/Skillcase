@@ -12,6 +12,7 @@ import {
     unFollowAccount,
     connectAccount,
     disconnectAccount,
+    getFollowers,
 } from "../controllers/client.controllers.js"
 import { verifyJWT } from "../middlewares/auth.middlewares.js";
 
@@ -40,6 +41,8 @@ clientRouter.route("/unfollow/:username").post(verifyJWT, unFollowAccount);
 clientRouter.route("/connect/:username").post(verifyJWT, connectAccount);
 
 clientRouter.route("/disconnect/:username").post(verifyJWT, disconnectAccount);
+
+clientRouter.route("/getfollowers/:username").get(getFollowers);
 
 // clientRouter.route("/:username/update_avatar").post(verifyJWT, upload.single("avatar"), updateClientAvatar);
 
