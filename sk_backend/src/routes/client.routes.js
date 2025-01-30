@@ -15,6 +15,9 @@ import {
     getFollowers,
     getFollowings,
     getConnections,
+    createNotification,
+    getNotifications,
+    deleteNotification,
 } from "../controllers/client.controllers.js"
 import { verifyJWT } from "../middlewares/auth.middlewares.js";
 
@@ -49,6 +52,12 @@ clientRouter.route("/getfollowers/:username").get(getFollowers);
 clientRouter.route("/getfollowings/:username").get(getFollowings);
 
 clientRouter.route("/getconnections/:username").get(getConnections);
+
+clientRouter.route("/send_notification/:username").post(verifyJWT, createNotification);
+
+clientRouter.route("/get_notifications/:username").get(verifyJWT, getNotifications);
+
+clientRouter.route("/delete_notification/:username").post(verifyJWT, deleteNotification);
 
 // clientRouter.route("/:username/update_avatar").post(verifyJWT, upload.single("avatar"), updateClientAvatar);
 

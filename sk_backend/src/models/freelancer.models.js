@@ -65,6 +65,10 @@ const freelancerSchema = new mongoose.Schema({
         type: Array,
         required: false,
     },
+    notifications:{
+        type: Array,
+        required: false,
+    },
     refreshToken:{
         type: String,
         required: false,

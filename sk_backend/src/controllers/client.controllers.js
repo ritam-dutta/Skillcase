@@ -327,38 +327,29 @@ const unFollowAccount = asyncHandler(async (req, res) => {
 
 const connectAccount = asyncHandler(async (req, res) => {
     const {username, connectorRole} = req.body;
-    // console.log("entered followAccount");
+    console.log(username, connectorRole);   
+    console.log("entered connect");
     let connectedUser = {};
+    const User = connectorRole === "freelancer" ? Freelancer : Client;
 
-    if(connectorRole === "freelancer") {
-        connectedUser = await Freelancer.findByIdAndUpdate(req.user?._id,
-            {
-                $addToSet: {connections:{username: username, role: "client"}}
-            },
-            {
-                new: true
-            }
-        ).select('-password -refreshToken');
-    }
-    else if (connectorRole === "client") {
-        connectedUser = await Client.findByIdAndUpdate(req.user?._id,
-            {
-                $addToSet: {connections:{username: username, role: "client"}}
-            },
-            {
-                new: true
-            }
-        ).select('-password -refreshToken');
-    }
+    connectedUser = await User.findOneAndUpdate({username},
+        {
+            $addToSet: {connections:{username: req.user?.username, role: "client"}}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+
 
     if (!connectedUser) {
         throw new ApiError(404, `connecting ${connectorRole} not found`);
     }
-    // console.log("connecting client",connectingClient);
+    console.log("connecting client");
 
-    const connectedClient = await Client.findOneAndUpdate({username},
+    const connectedClient = await Client.findByIdAndUpdate(req.user?._id,
         {
-            $addToSet: {connections:{username: req.user?.username, role: connectorRole}}
+            $addToSet: {connections:{username: username, role: connectorRole}}
         },
         {
             new: true
@@ -462,6 +453,61 @@ const getConnections = asyncHandler(async (req, res) => {
 
 });
 
+const createNotification = asyncHandler(async (req, res) => {
+    const {username, receiverRole, notification} = req.body;
+    let User = receiverRole === "freelancer" ? Freelancer : Client; 
+    const user = await User.findOneAndUpdate({username},
+        {
+            $addToSet: {notifications: notification}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!user) {
+        throw new ApiError(404, `${User} not found`);
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {user}, 'Notification created successfully'));
+});
+
+const getNotifications = asyncHandler(async (req, res) => {
+    const {username} = req.params;
+    const role = req.headers.role;
+    let User = role === "freelancer" ? Freelancer : Client; 
+    const user = await User.findOne({username}).select('-password -refreshToken');
+    if (!user) {
+        throw new ApiError(404, `${User} not found`);
+    }
+    const notifications = user.notifications;
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {notifications}, 'Notifications fetched successfully'));
+});
+
+const deleteNotification = asyncHandler(async (req, res) => {
+    // console.log("entered deleteNotification");
+    const {username, type} = req.body;
+    // console.log(username)
+    
+    const client = await Client.findOneAndUpdate(
+        { username },
+        {
+            $pull: { notifications: { type } }
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!client) {
+        throw new ApiError(404, 'Client not found');
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {client}, 'Notification deleted successfully'));
+});
+
 export {
     registerClient,
     loginClient,
@@ -478,4 +524,7 @@ export {
     getFollowers,
     getFollowings,
     getConnections,
+    createNotification,
+    getNotifications,
+    deleteNotification,
 }

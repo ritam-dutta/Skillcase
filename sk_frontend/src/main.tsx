@@ -20,6 +20,7 @@ import ViewFeedProject from './view_feed_project.tsx'
 import Followers from './followers.tsx'
 import Followings from './followings.tsx'
 import Connections from './connections.tsx'
+import Notifications from './notifications.tsx'
 
 
 
@@ -52,6 +53,8 @@ const router= createBrowserRouter(
       <Route path='client/followings/:username' element={<Followings/>}> </Route>
       <Route path='client/connections/:username' element={<Connections/>}> </Route>
       <Route path='freelancer/connections/:username' element={<Connections/>}> </Route>
+      <Route path='freelancer/notifications/:username' element={<Notifications/>}> </Route>
+      <Route path='client/notifications/:username' element={<Notifications/>}> </Route>
       <Route path='' element={<HomePage/>}> </Route>
       <Route path="*" element={<Not_found/>}></Route>
     </Route>

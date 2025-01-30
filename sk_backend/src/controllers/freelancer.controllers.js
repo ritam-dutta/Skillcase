@@ -512,6 +512,58 @@ const getConnections = asyncHandler(async (req, res) => {
 
 });
 
+const createNotification = asyncHandler(async (req, res) => {
+    const {username, receiverRole, notification} = req.body;
+    let User = receiverRole === "freelancer" ? Freelancer : Client; 
+    const user = await User.findOneAndUpdate({username},
+        {
+            $addToSet: {notifications: notification}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!user) {
+        throw new ApiError(404, `${User} not found`);
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {user}, 'Notification created successfully'));
+});
+
+const getNotifications = asyncHandler(async (req, res) => {
+    const {username} = req.params;
+    const {role} = req.headers.role;
+    let User = role === "freelancer" ? Freelancer : Client; 
+    const user = await User.findOne({username}).select('-password -refreshToken');
+    if (!user) {
+        throw new ApiError(404, `${User} not found`);
+    }
+    const notifications = user.notifications;
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {notifications}, 'Notifications fetched successfully'));
+});
+
+const deleteNotification = asyncHandler(async (req, res) => {
+    const {username, type} = req.body;
+    const freelancer = await Freelancer.findOneAndUpdate(
+        { username, 'notifications.type': type },
+        {
+            $pull: { notifications: { type } }
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!freelancer) {
+        throw new ApiError(404, 'Freelancer not found');
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {freelancer}, 'Notification deleted successfully'));
+});
+
 // const updateFreelancerCoverImage = asyncHandler(async (req, res) => {
 //     const coverImageLocalPath = req.file?.path;
 //     if (!coverImageLocalPath) {
@@ -556,5 +608,8 @@ export {
     getFollowers, 
     getFollowings,
     getConnections,
+    createNotification,
+    getNotifications,
+    deleteNotification
     // updateFreelancerCoverImage
 }

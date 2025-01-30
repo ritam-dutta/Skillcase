@@ -85,9 +85,9 @@ const Followings: React.FC<Followings> = ({}) => {
                                 <div>
                                     <button
                                     className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                                    onClick={() => navigate(`/${alreadyFollowingUser.role}/profile/${alreadyFollowingUser.username}`)}
+                                    onClick={() => navigate(`/${alreadyFollowingUser.role}/view_projects/${alreadyFollowingUser.username}`)}
                                     >
-                                    View Profile
+                                    View Projects
                                     </button>
                                 </div>
                             </div>
@@ -113,16 +113,16 @@ const Followings: React.FC<Followings> = ({}) => {
                                 <div>
                                     <button
                                     className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                                    onClick={() => navigate(`/client/profile/${following.username}`)}
+                                    onClick={() => navigate(`/client/projects/${following.username}`)}
                                     >
-                                    View Profile
+                                    View Projects
                                     </button>
                                 </div>
                             </div>
                         )
                         ) : (
                             <div className="flex items-center justify-center bg-slate-100 p-4 rounded-md shadow-md">
-                                <h3 className="text-xl font-bold">No Client Followings Yet</h3>
+                                <h3 className="text-xl">Not following any Clients!</h3>
                             </div>
                     )}
                     </div>
@@ -143,16 +143,16 @@ const Followings: React.FC<Followings> = ({}) => {
                                 <div>
                                     <button
                                     className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                                    onClick={() => navigate(`/${follower.role}/profile/${follower.username}`)}
+                                    onClick={() => navigate(`/${follower.role}/view_projects/${follower.username}`)}
                                     >
-                                    View Profile
+                                    View Projects
                                     </button>
                                 </div>
                             </div>
                         )
                         ) : (
                             <div className="flex items-center justify-center bg-slate-100 p-4 rounded-md shadow-md">
-                                <h3 className="text-xl font-bold">No Freelancer Followings Yet</h3>
+                                <h3 className="text-xl">Not following any Freelancers!</h3>
                             </div>
                     )}
                     </div>

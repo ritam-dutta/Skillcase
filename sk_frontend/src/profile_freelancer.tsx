@@ -30,6 +30,8 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
     const {username} = useParams<{ username: string }>();
     const [loggedUsername, setLoggedUsername] = useState("");
     const [isConnected, setIsConnected] = useState(false);
+    const [connectionRequest, setConnectionRequest] = useState(false);
+    
     const [isFollowing, setIsFollowing] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -85,6 +87,7 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
                     }
                 }  
                 setLoggedUsername(loggedInUser.username);
+                localStorage.setItem("username",loggedInUser.username);
                 // console.log("currentUser",currentUser)
                 // console.log("loggedInUser",loggedInUser)
                 if(loggedInUser.username === currentUser.username){
@@ -99,7 +102,7 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
                       setIsConnected(true);
                   }
                 }
-                localStorage.setItem("username",fetchedUser.username);
+                // localStorage.setItem("username",fetchedUser.username);
                 // console.log(fetchedUser)
               
                 setUser(fetchedUser);
@@ -159,6 +162,47 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
       }
   }
 
+  const sendConnectionRequest = async () => {
+      try {
+          const accessToken = localStorage.getItem("accessToken");
+          const response1 = await axios.post(`http://localhost:8000/api/v1/freelancer/sent_connection_request/${username}`, {
+              username: username,
+              senderRole: localStorage.getItem("role"),
+              connectRequest:{
+                sender: localStorage.getItem("username"),
+                receiver: username,
+                markedAsRead: false
+              }
+          }, {
+              headers: {
+                  Authorization: `Bearer ${accessToken}`,
+              },
+          });
+
+          const response2 = await axios.post(`http://localhost:8000/api/v1/freelancer/send_notification/${username}`, {
+              username: username,
+              receiverRole: "freelancer",
+              notification:{
+                message: "You have a new connection request.",
+                type: "connection_request",
+                sender: localStorage.getItem("username"),
+                receiver: username,
+                senderRole: localStorage.getItem("role"),
+                markedAsRead: false,
+              }, 
+
+          }, {
+              headers: {
+                  Authorization: `Bearer ${accessToken}`,
+              },
+          });
+          setConnectionRequest(true);
+          setIsConnected(false);
+      } catch (error) {
+          console.error("Connect Error:", error);
+      }
+  }
+
   const handleConnect = async () => {
       try {
           const accessToken = localStorage.getItem("accessToken");
@@ -180,6 +224,10 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
 
   const handleDisconnect = async () => {
       try {
+          if(connectionRequest){
+            setConnectionRequest(false);
+          }
+          else{
           const accessToken = localStorage.getItem("accessToken");
           const response = await axios.post(`http://localhost:8000/api/v1/freelancer/disconnect/${username}`, {
               username: username,
@@ -191,6 +239,7 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
           });
           setIsConnected(false);
           setConnections(connections-1);
+        }
           // console.log("Disconnect Response:", response.data);
       } catch (error) {
           console.error("Disconnect Error:", error);
@@ -246,7 +295,10 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
                 {username === loggedUsername ? null : (
                 <div className="flex justify-evenly">
                     <div>
-                    <button className={isConnected ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" : "mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition" } onClick={() => {isConnected ? handleDisconnect() : handleConnect()}}>{isConnected ? "Connected" : "Connect"}</button>
+                    {/* <button className={isConnected ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" : "mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition" } onClick={() => {isConnected ? handleDisconnect() : handleConnect()}}>{isConnected ? "Connected" : "Connect"}</button> */}
+                    <button className={connectionRequest ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" : "mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition" } onClick={() => {connectionRequest ? handleDisconnect() :  sendConnectionRequest()}}>
+                      {connectionRequest ? "Request Sent" : isConnected ? "Connected" : "Connect"}
+                    </button>
                     </div>
                     <div>
                     <button className={isFollowing ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" :"mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"} onClick={() =>{isFollowing ? handleUnFollow() : handleFollow()}}>{isFollowing ? "Followed" : "Follow"}</button>

@@ -70,7 +70,7 @@ const Connections: React.FC<Connections> = ({}) => {
                     <div>
                     {isAlreadyConnected ? (
                         <div  className="bg-slate-100 p-4 rounded-md shadow-md flex flex-col items-center justify-center gap-4 mb-5">
-                            <p className="font-bold">You both follow each other </p>
+                            <p className="font-bold">You are connected with each other </p>
                             <div className="flex justify-between w-full -mt-4">
                                 <div className="flex gap-4 items-center"> 
                                     <div className="rounded-full bg-gray-300 p-2">
@@ -83,9 +83,9 @@ const Connections: React.FC<Connections> = ({}) => {
                                 <div>
                                     <button
                                     className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                                    onClick={() => navigate(`/${alreadyConnectedUser.role}/profile/${alreadyConnectedUser.username}`)}
+                                    onClick={() => navigate(`/${alreadyConnectedUser.role}/view_projects/${alreadyConnectedUser.username}`)}
                                     >
-                                    View Profile
+                                    View Projects
                                     </button>
                                 </div>
                             </div>
@@ -110,16 +110,16 @@ const Connections: React.FC<Connections> = ({}) => {
                                 <div>
                                     <button
                                     className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                                    onClick={() => navigate(`/client/profile/${connection.username}`)}
+                                    onClick={() => navigate(`/client/view_projects/${connection.username}`)}
                                     >
-                                    View Profile
+                                    View Projects
                                     </button>
                                 </div>
                             </div>
                         )
                         ) : (
                             <div className="flex items-center justify-center bg-slate-100 p-4 rounded-md shadow-md">
-                                <h3 className="text-xl font-bold">No Client Connections Yet</h3>
+                                <h3 className="text-xl">No Client Connections Yet</h3>
                             </div>
                     )}
                     </div>
@@ -140,16 +140,16 @@ const Connections: React.FC<Connections> = ({}) => {
                                 <div>
                                     <button
                                     className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                                    onClick={() => navigate(`/${connection.role}/profile/${connection.username}`)}
+                                    onClick={() => navigate(`/${connection.role}/view_projects/${connection.username}`)}
                                     >
-                                    View Profile
+                                    View Projects
                                     </button>
                                 </div>
                             </div>
                         )
                         ) : (
                             <div className="flex items-center justify-center bg-slate-100 p-4 rounded-md shadow-md">
-                                <h3 className="text-xl font-bold">No Freelancer Connections Yet</h3>
+                                <h3 className="text-xl ">No Freelancer Connections Yet</h3>
                             </div>
                     )}
                     </div>

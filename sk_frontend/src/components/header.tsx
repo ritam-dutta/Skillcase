@@ -21,6 +21,9 @@ const Header: React.FC<Header> = ({}) => {
     else if(url.includes("/contact")){
       activeTab="contact"
     }
+    else if(url.includes("/notifications")){
+      activeTab="notifications"
+    }
     else{
       activeTab="home"
     }
@@ -65,8 +68,14 @@ const Header: React.FC<Header> = ({}) => {
             Profile
           </Link>
           <Link
+            to={`/${role}/notifications/${username}`}
+            className={`text-lg font-medium hover:text-gray-400 transition  ${activeTab==="notifications" ? "text-gray-400" : "text-gray-600"}`}
+          >
+            Notifications
+          </Link>
+          <Link
             to="/contact"
-            className="text-lg font-medium hover:text-gray-400 transition text-gray-600"
+            className={`text-lg font-medium hover:text-gray-400 transition  ${activeTab==="contact" ? "text-gray-400" : "text-gray-600"}`}
           >
             Contact
           </Link>

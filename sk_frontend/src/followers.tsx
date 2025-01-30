@@ -16,6 +16,7 @@ const Followers: React.FC<Followers> = ({}) => {
     const {username} = useParams();
     const navigate = useNavigate();
     const currentRole = window.location.href.includes("client") ? "client" : "freelancer";
+    const loggedUsername = localStorage.getItem("username");
 
     useEffect(() => {
         const fetchFollowers = async () => {
@@ -32,7 +33,7 @@ const Followers: React.FC<Followers> = ({}) => {
                 
                 fetchedFollowers.forEach(follower => {
                     // console.log("username",follower.username);
-                    if(follower.username === localStorage.getItem("username")) {
+                    if(follower.username === loggedUsername) {
                         alreadyFollowing = true;
                         followingUser = follower;
                     }
@@ -89,9 +90,9 @@ const Followers: React.FC<Followers> = ({}) => {
                                 <div>
                                     <button
                                     className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                                    onClick={() => navigate(`/${alreadyFollowingUser.role}/profile/${alreadyFollowingUser.username}`)}
+                                    onClick={() => navigate(`/${alreadyFollowingUser.role}/projects/${alreadyFollowingUser.username}`)}
                                     >
-                                    View Profile
+                                    View Projects
                                     </button>
                                 </div>
                             </div>
@@ -117,16 +118,16 @@ const Followers: React.FC<Followers> = ({}) => {
                                 <div>
                                     <button
                                     className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                                    onClick={() => navigate(`/${follower.role}/profile/${follower.username}`)}
+                                    onClick={() => navigate(`/${follower.role}/view_projects/${follower.username}`)}
                                     >
-                                    View Profile
+                                    View Projects
                                     </button>
                                 </div>
                             </div>
                         )
                         ) : (
                             <div className="flex items-center justify-center bg-slate-100 p-4 rounded-md shadow-md">
-                                <h3 className="text-xl font-bold">No Client Followers Yet</h3>
+                                <h3 className="text-xl">No Client Followers Yet</h3>
                             </div>
                     )}
                     </div>
@@ -148,16 +149,16 @@ const Followers: React.FC<Followers> = ({}) => {
                                 <div>
                                     <button
                                     className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                                    onClick={() => navigate(`/${follower.role}/profile/${follower.username}`)}
+                                    onClick={() => navigate(`/${follower.role}/view_projects/${follower.username}`)}
                                     >
-                                    View Profile
+                                    View Projects
                                     </button>
                                 </div>
                             </div>
                         )
                         ) : (
                             <div className="flex items-center justify-center bg-slate-100 p-4 rounded-md shadow-md">
-                                <h3 className="text-xl font-bold">No Freelancer Followers Yet</h3>
+                                <h3 className="text-xl">No Freelancer Followers Yet</h3>
                             </div>
                     )}
                     </div>

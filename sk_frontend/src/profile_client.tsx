@@ -34,11 +34,12 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
     const [isConnected, setIsConnected] = useState(false);
     const [isFollowing, setIsFollowing] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [connectionRequest, setConnectionRequest] = useState(false);
     const navigate = useNavigate();
+    const accessToken = localStorage.getItem("accessToken");
+    const loggedInRole = localStorage.getItem("role") || "";
 
     useEffect(() => {
-        const accessToken = localStorage.getItem("accessToken");
-        const loggedInRole = localStorage.getItem("role") || "";
         // console.log("fetched token",accessToken)
         if (!accessToken) {
             navigate(`/${currentRole}/login`);
@@ -85,6 +86,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                         loggedInUser = responseLoggedUser.data?.data?.freelancer;
                     }
                 }  
+                localStorage.setItem("username",loggedInUser.username);
                 setLoggedUsername(loggedInUser.username);
                 // console.log("currentUser",currentUser)
                 // console.log("loggedInUser",loggedInUser)
@@ -93,12 +95,15 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                 }
                 else{
                     fetchedUser = currentUser;
-                    if(fetchedUser.followers.some((follower: { username: string }) => follower.username === loggedInUser.username)){
+                    if(fetchedUser.followers && fetchedUser.followers.some((follower: { username: string }) => follower.username === loggedInUser.username)){
                         setIsFollowing(true);
                     }
-                    if(fetchedUser.connections.some((connection: { username: string }) => connection.username === loggedInUser.username)){
-                        setIsConnected(true);
+                    if(fetchedUser.notifications && fetchedUser.notifications.some((notification: { type: string }) => notification.type === "connection_request" && notification.sender === loggedInUser.username)){
+                        setConnectionRequest(true);
                     }
+                    // if(fetchedUser.connections.some((connection: { username: string }) => connection.username === loggedInUser.username)){
+                    //     setIsConnected(true);
+                    // }
                 }
                 // console.log(fetchedUser)
               
@@ -203,19 +208,50 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
         }
     }
 
-    const handleDisconnect = async () => {
+    const sendConnectionRequest = async () => {
         try {
-            const accessToken = localStorage.getItem("accessToken");
-            const response = await axios.post(`http://localhost:8000/api/v1/client/disconnect/${username}`, {
+            const response = await axios.post(`http://localhost:8000/api/v1/client/send_notification/${username}`, {
                 username: username,
-                disConnectorRole: localStorage.getItem("role"),
+                receiverRole: "client",
+                notification:{
+                  message: `You have a new connection request from @${loggedUsername}`,
+                  type: "connection_request",
+                  sender: localStorage.getItem("username"),
+                  receiver: username,
+                  senderRole: localStorage.getItem("role"),
+                  markedAsRead: false,
+                }, 
+  
             }, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
+            setConnectionRequest(true);
             setIsConnected(false);
-            setConnections(connections-1);
+        } catch (error) {
+            console.error("Connect Error:", error);
+        }
+    }
+
+    const handleDisconnect = async () => {
+        try {
+            if(connectionRequest){
+                setConnectionRequest(false);
+            }
+            else{
+                const accessToken = localStorage.getItem("accessToken");
+                const response = await axios.post(`http://localhost:8000/api/v1/client/disconnect/${username}`, {
+                    username: username,
+                    disConnectorRole: localStorage.getItem("role"),
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+                setIsConnected(false);
+                setConnections(connections-1);
+            }
             // console.log("Disconnect Response:", response.data);
         } catch (error) {
             console.error("Disconnect Error:", error);
@@ -293,7 +329,10 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                 {username === loggedUsername ? null : (
                 <div className="flex justify-evenly">
                     <div>
-                    <button className={isConnected ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" : "mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition" } onClick={() => {isConnected ? handleDisconnect() : handleConnect()}}>{isConnected ? "Connected" : "Connect"}</button>
+                    {/* <button className={isConnected ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" : "mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition" } onClick={() => {isConnected ? handleDisconnect() : handleConnect()}}>{isConnected ? "Connected" : "Connect"}</button> */}
+                    <button className={connectionRequest ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" : "mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition" } onClick={() => {connectionRequest ? handleDisconnect() :  sendConnectionRequest()}}>
+                      {connectionRequest ? "Request Sent" : isConnected ? "Connected" : "Connect"}
+                    </button>
                     </div>
                     <div>
                     <button className={isFollowing ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" :"mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"} onClick={() =>{isFollowing ? handleUnFollow() : handleFollow()}}>{isFollowing ? "Followed" : "Follow"}</button>

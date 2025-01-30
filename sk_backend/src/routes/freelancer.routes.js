@@ -16,6 +16,9 @@ import {
     getFollowers,
     getFollowings,
     getConnections,
+    createNotification,
+    getNotifications,
+    deleteNotification,
 } from "../controllers/freelancer.controllers.js";
 import {upload} from "../middlewares/multer.middlewares.js"
 import { verifyJWT } from "../middlewares/auth.middlewares.js";
@@ -63,6 +66,14 @@ freelancerRouter.route("/getfollowers/:username").get(getFollowers);
 freelancerRouter.route("/getfollowings/:username").get(getFollowings);
 
 freelancerRouter.route("/getconnections/:username").get(getConnections);
+
+freelancerRouter.route("/create_notification").post(verifyJWT, createNotification);
+
+freelancerRouter.route("/send_notification/:username").post(verifyJWT, createNotification);
+
+freelancerRouter.route("/get_notifications/:username").get(verifyJWT, getNotifications);
+
+freelancerRouter.route("/delete_notification/:username").post(verifyJWT, deleteNotification);
 
 freelancerRouter.route("/update_avatar/:username").post(verifyJWT, upload.single("avatar"), updateFreelancerAvatar);
 export default freelancerRouter;
