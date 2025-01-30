@@ -13,6 +13,8 @@ import {
     connectAccount,
     disconnectAccount,
     getFollowers,
+    getFollowings,
+    getConnections,
 } from "../controllers/client.controllers.js"
 import { verifyJWT } from "../middlewares/auth.middlewares.js";
 
@@ -43,6 +45,10 @@ clientRouter.route("/connect/:username").post(verifyJWT, connectAccount);
 clientRouter.route("/disconnect/:username").post(verifyJWT, disconnectAccount);
 
 clientRouter.route("/getfollowers/:username").get(getFollowers);
+
+clientRouter.route("/getfollowings/:username").get(getFollowings);
+
+clientRouter.route("/getconnections/:username").get(getConnections);
 
 // clientRouter.route("/:username/update_avatar").post(verifyJWT, upload.single("avatar"), updateClientAvatar);
 

@@ -104,7 +104,7 @@ const Client_reg : React.FC<Client_reg> = ({})=>{
             Sign In
           </Link>
           <Link
-            to="/connector"
+            to="/register/connector"
             className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-full shadow hover:bg-blue-400 transition duration-300"
           >
             Select Role

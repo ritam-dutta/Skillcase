@@ -2,6 +2,7 @@ import React,{ useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Header from "./components/header";
+import Loader from "./components/loader";
 // import Footer from "./components/footer";
 import axios from "axios";
 import "./App.css"
@@ -21,11 +22,16 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
     const[fullname,setFullname]=useState("");
     const[following, setFollowing]=useState(0);
     const[followers, setFollowers]=useState(0);
+    const [connections, setConnections] = useState(0);
     const[about,setAbout]=useState("");
     const [skills, setSkills] = useState([""]);
     const [avatar, setAvatar] = useState("");
     const[currentRole,setRole]=useState(userType);
     const {username} = useParams<{ username: string }>();
+    const [loggedUsername, setLoggedUsername] = useState("");
+    const [isConnected, setIsConnected] = useState(false);
+    const [isFollowing, setIsFollowing] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
 
@@ -38,6 +44,7 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
         } 
 
         const fetchUserData = async () => {
+          setLoading(true);
             try {
                 // console.log(`loggedIn${loggedInRole[0].toUpperCase()}${loggedInRole.slice(1)}`)
                 // console.log(currentRole,loggedInRole)
@@ -55,7 +62,7 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
                 // console.log("respone of current user",responseCurrentUser)
                 // console.log("response of logged in user",responseLoggedUser)
                 let currentUser ;
-                let loggedInUser;
+                let loggedInUser : any;
                 let fetchedUser;
                 if(currentRole===loggedInRole){
                     if(currentRole==="freelancer"){
@@ -77,6 +84,7 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
                         loggedInUser = responseLoggedUser.data?.data?.freelancer;
                     }
                 }  
+                setLoggedUsername(loggedInUser.username);
                 // console.log("currentUser",currentUser)
                 // console.log("loggedInUser",loggedInUser)
                 if(loggedInUser.username === currentUser.username){
@@ -84,13 +92,21 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
                 }
                 else{
                     fetchedUser = currentUser;
+                    if(fetchedUser.followers.some((follower: { username: string }) => follower.username === loggedInUser.username)){
+                      setIsFollowing(true);
+                  }
+                  if(fetchedUser.connections.some((connection: { username: string }) => connection.username === loggedInUser.username)){
+                      setIsConnected(true);
+                  }
                 }
+                localStorage.setItem("username",fetchedUser.username);
                 // console.log(fetchedUser)
               
                 setUser(fetchedUser);
                 setFullname(fetchedUser?.fullname || "");
-                setFollowing(fetchedUser?.following || 0);
-                setFollowers(fetchedUser?.followers || 0);
+                setFollowing(fetchedUser?.following.length || 0);
+                setFollowers(fetchedUser?.followers.length || 0);
+                setConnections(fetchedUser?.connections.length || 0);
                 setAbout(fetchedUser?.about || "")  
                 setSkills(fetchedUser?.skills || [""]) 
                 setAvatar(fetchedUser?.avatar || "/images/freelancer.png") 
@@ -99,13 +115,88 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
                 console.error("error fetching user data",error);
                 navigate(`/${currentRole}/login`);
             }
+            setLoading(false);
         };
         fetchUserData();
-    }, [navigate]);
+    }, [username,navigate]);
 
-    if(!user){
-        return <div>Loading...</div>
-    }
+    const handleFollow = async () => {
+      try {
+          const accessToken = localStorage.getItem("accessToken");
+          const response = await axios.post(`http://localhost:8000/api/v1/freelancer/follow/${username}`, {
+              username: username,
+              followerRole: localStorage.getItem("role"),
+          }, {
+              headers: {
+                  Authorization: `Bearer ${accessToken}`,
+              },
+          });
+          setIsFollowing(true);
+          setFollowers(followers+1);
+          // console.log("Follow Response:", response.data);
+      } catch (error) {
+          console.error("Follow Error:", error);
+      }
+  };
+
+  const handleUnFollow = async () => {
+      try {
+          const accessToken = localStorage.getItem("accessToken");
+          // console.log(")
+          const response = await axios.post(`http://localhost:8000/api/v1/freelancer/unfollow/${username}`, {
+              username: username,
+              unFollowerRole: localStorage.getItem("role"),
+          }, {
+              headers: {
+                  Authorization: `Bearer ${accessToken}`,
+              },
+          });
+          setIsFollowing(false);
+          setFollowers(followers-1);
+          // console.log("UnFollow Response:", response.data);
+      } catch (error) {
+          console.error("UnFollow Error:", error);
+      }
+  }
+
+  const handleConnect = async () => {
+      try {
+          const accessToken = localStorage.getItem("accessToken");
+          const response = await axios.post(`http://localhost:8000/api/v1/freelancer/connect/${username}`, {
+              username: username,
+              connectorRole: localStorage.getItem("role"),
+          }, {
+              headers: {
+                  Authorization: `Bearer ${accessToken}`,
+              },
+          });
+          setIsConnected(true);
+          setConnections(connections+1);
+          // console.log("Connect Response:", response.data);
+      } catch (error) {
+          console.error("Connect Error:", error);
+      }
+  }
+
+  const handleDisconnect = async () => {
+      try {
+          const accessToken = localStorage.getItem("accessToken");
+          const response = await axios.post(`http://localhost:8000/api/v1/freelancer/disconnect/${username}`, {
+              username: username,
+              disConnectorRole: localStorage.getItem("role"),
+          }, {
+              headers: {
+                  Authorization: `Bearer ${accessToken}`,
+              },
+          });
+          setIsConnected(false);
+          setConnections(connections-1);
+          // console.log("Disconnect Response:", response.data);
+      } catch (error) {
+          console.error("Disconnect Error:", error);
+      }
+  }
+
     // console.log(user.data.freelancer.fullname)
     // export const temp=(s:string)=>({
     //     setAbout({s})
@@ -120,6 +211,7 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
         <h1 className="text-3xl text-white font-bold mt-6">Profile</h1>
       </div>
 
+      {!loading ? (
       <div className="flex flex-row justify-center mt-[-10vh]">
         {/* Sidebar Profile Card */}
         <div className="w-[25%] bg-white shadow-lg rounded-lg p-6 flex flex-col items-center border border-gray-200">
@@ -133,21 +225,35 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
           </div>
           <p className="text-xl font-semibold mt-4">{fullname}</p>
           <p className="text-gray-600">@{username}</p>
-          <p className="text-gray-500 mt-2">{userType[0].toUpperCase()+userType.slice(1,)}</p>
+          <p className="text-gray-500 mt-2">Freelancer</p>
 
-          <div className="flex justify-between w-full mt-6 text-center">
-            <div>
-              <p className="font-semibold text-gray-700">{following}</p>
-              <p className="text-gray-500 text-sm">Projects</p>
-            </div>
-            <div>
-              <p className="font-semibold text-gray-700">{following}</p>
-              <p className="text-gray-500 text-sm">Following</p>
-            </div>
-            <div>
-              <p className="font-semibold text-gray-700">{followers}</p>
-              <p className="text-gray-500 text-sm">Followers</p>
-            </div>
+            <div className="flex flex-col justify-evenly w-full mt-4 text-center">
+                <div className="flex justify-evenly">
+                    <div>
+                    <p className="font-semibold text-gray-700">{connections}</p>
+                    <Link to={`/freelancer/connections/${username}`} className="text-gray-500 text-sm">Connections</Link>
+                    </div>
+                    <div>
+                    <p className="font-semibold text-gray-700">{following}</p>
+                    <Link to={`/freelancer/followings/${username}`} className="text-gray-500 text-sm">Followings</Link>
+                    </div>
+                    <div>
+                    <p className="font-semibold text-gray-700">{followers}</p>
+                    <Link to={`/freelancer/followers/${username}`} className="text-gray-500 text-sm">Followers</Link>
+                    </div>
+                </div>
+                
+                {username === loggedUsername ? null : (
+                <div className="flex justify-evenly">
+                    <div>
+                    <button className={isConnected ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" : "mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition" } onClick={() => {isConnected ? handleDisconnect() : handleConnect()}}>{isConnected ? "Connected" : "Connect"}</button>
+                    </div>
+                    <div>
+                    <button className={isFollowing ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" :"mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"} onClick={() =>{isFollowing ? handleUnFollow() : handleFollow()}}>{isFollowing ? "Followed" : "Follow"}</button>
+                    </div>
+                </div>
+                )}
+                
           </div>
 
           <div className="w-full mt-6">
@@ -209,7 +315,15 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
             </div>
           </div>
         </div>
-      </div>
+      </div>)
+      : (
+      <div className="h-[70vh] w-full flex justify-center items-center">
+            <div className="h-[70vh] w-[50vw] flex justify-center items-center bg-slate-50">
+                <Loader />
+            </div>
+        </div>
+        )
+      }
     </div>
 
     </>

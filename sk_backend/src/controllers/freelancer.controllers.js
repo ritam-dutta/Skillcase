@@ -1,5 +1,6 @@
 import { asyncHandler } from '../utils/AsyncHandler.js';
 import { Freelancer } from '../models/freelancer.models.js';
+import { Client } from '../models/client.models.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
 import jwt from 'jsonwebtoken';
@@ -278,6 +279,239 @@ const updateFreelancerAvatar = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {freelancer}, 'Avatar updated successfully'));
 });
 
+const getFollowers = asyncHandler(async (req, res) => {
+    const {username} = req.params;
+    const freelancer = await Freelancer.findOne({username}).select('-password -refreshToken');
+    if (!freelancer) {
+        throw new ApiError(404, 'freelancer not found');
+    }
+    const followers = freelancer.followers;
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {followers}, 'Followers fetched successfully')); 
+
+});
+
+const followAccount = asyncHandler(async (req, res) => {
+    const {username, followerRole} = req.body;
+    // console.log("entered followAccount");
+    let followingUser = {};
+    if(followerRole === "freelancer") {
+        followingUser = await Freelancer.findByIdAndUpdate(req.user?._id,
+            {
+                $addToSet: {following:{username: username, role: "freelancer"}}
+            },
+            {
+                new: true
+            }
+        ).select('-password -refreshToken');
+    }
+
+    else if (followerRole === "client") {
+        followingUser = await Client.findByIdAndUpdate(req.user?._id,
+            {
+                $addToSet: {following:{username: username, role: "freelancer"}}
+            },
+            {
+                new: true
+            }
+        ).select('-password -refreshToken');
+    }
+
+    if (!followingUser) {
+        throw new ApiError(404, `following ${followerRole} not found`);
+    }
+    // console.log("followingClient",followingClient);
+
+    const followedFreelancer = await Freelancer.findOneAndUpdate({username},
+        {
+            $addToSet: {followers: {username: req.user?.username, role: followerRole}}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+
+    if (!followedFreelancer) {
+        throw new ApiError(404, 'followed Freelancer not found');
+    }
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {followingUser, followedFreelancer}, 'Account followed successfully'));
+
+});
+
+const unFollowAccount = asyncHandler(async (req, res) => {
+    // console.log("entered unfollowAccount");
+    const {username, unFollowerRole} = req.body
+    let unFollowingUser = {};
+    if(unFollowerRole === "freelancer") {
+        unFollowingUser = await Freelancer.findByIdAndUpdate(req.user?._id,
+            {
+                $pull: {following: {username: username, role: "freelancer"}}
+            },
+            {
+                new: true
+            }
+        ).select('-password -refreshToken');
+    }
+    else if (unFollowerRole === "client") {
+        unFollowingUser = await Client.findByIdAndUpdate(req.user?._id,
+            {
+                $pull: {following: {username: username, role: "freelancer"}}
+            },
+            {
+                new: true
+            }
+        ).select('-password -refreshToken');
+    }
+
+    if (!unFollowingUser) {
+        throw new ApiError(404, `unFollowing ${unFollowerRole} not found`);
+    }
+
+    const unFollowedFreelancer = await Freelancer.findOneAndUpdate({username},
+        {
+            $pull: {followers:{username: req.user?.username, role: unFollowerRole}}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+
+    if (!unFollowedFreelancer) {
+        throw new ApiError(404, 'unFollowed Freelancer not found');
+    }
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {unFollowingUser, unFollowedFreelancer}, 'Account unfollowed successfully'));
+});
+
+const connectAccount = asyncHandler(async (req, res) => {
+    const {username, connectorRole} = req.body;
+    // console.log("entered followAccount");
+    let connectedUser = {};
+
+    if(connectorRole === "freelancer") {
+        connectedUser = await Freelancer.findByIdAndUpdate(req.user?._id,
+            {
+                $addToSet: {connections:{username: username, role: "freelancer"}}
+            },
+            {
+                new: true
+            }
+        ).select('-password -refreshToken');
+    }
+    else if (connectorRole === "client") {
+        connectedUser = await Client.findByIdAndUpdate(req.user?._id,
+            {
+                $addToSet: {connections:{username: username, role: "freelancer"}}
+            },
+            {
+                new: true
+            }
+        ).select('-password -refreshToken');
+    }
+
+    if (!connectedUser) {
+        throw new ApiError(404, `connecting ${connectorRole} not found`);
+    }
+    // console.log("connecting client",connectingClient);
+
+    const connectedFreelancer = await Freelancer.findOneAndUpdate({username},
+        {
+            $addToSet: {connections:{username: req.user?.username, role: connectorRole}}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    
+    if (!connectedFreelancer) {
+        throw new ApiError(404, 'connected Freelancer not found');
+    }
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {connectedUser, connectedFreelancer}, 'Added to connections successfully'));
+
+});
+
+const disconnectAccount = asyncHandler(async (req, res) => {
+    const {username, disConnectorRole} = req.body
+    let disconnectingUser = {};
+
+    if(disConnectorRole === "freelancer") {
+        disconnectingUser = await Freelancer.findByIdAndUpdate(req.user?._id,
+            {
+                $pull: {connections:{username: username, role: "freelancer"}}
+            },
+            {
+                new: true
+            }
+        ).select('-password -refreshToken');
+    }
+    else if (disConnectorRole === "client") {
+        disconnectingUser = await Client.findByIdAndUpdate(req.user?._id,
+            {
+                $pull: {connections:{username: username, role: "freelancer"}}
+            },
+            {
+                new: true
+            }
+        ).select('-password -refreshToken');
+    }
+
+    if (!disconnectingUser) {
+        throw new ApiError(404, `disconnecting ${disConnectorRole} not found`);
+    }
+
+    const disconnectedFreelancer = await Freelancer.findOneAndUpdate({username},
+        {
+            $pull: {connections:{username: req.user?.username, role: disConnectorRole}}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+
+    if (!disconnectedFreelancer) {
+        throw new ApiError(404, 'disconnected Freelancer not found');
+    }
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {disconnectingUser, disconnectedFreelancer}, 'Disconnected successfully'));
+});
+
+const getFollowings = asyncHandler(async (req, res) => {
+    const {username} = req.params;
+    const freelancer = await Freelancer.findOne({username}).select('-password -refreshToken');
+    if (!freelancer) {
+        throw new ApiError(404, 'freelancer not found');
+    }
+    const followings = freelancer.following;
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {followings}, 'followings fetched successfully')); 
+
+});
+
+const getConnections = asyncHandler(async (req, res) => {
+    const {username} = req.params;
+    const freelancer = await Freelancer.findOne({username}).select('-password -refreshToken');
+    if (!freelancer) {
+        throw new ApiError(404, 'freelancer not found');
+    }
+    const connections = freelancer.connections;
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {connections}, 'connections fetched successfully')); 
+
+});
+
 // const updateFreelancerCoverImage = asyncHandler(async (req, res) => {
 //     const coverImageLocalPath = req.file?.path;
 //     if (!coverImageLocalPath) {
@@ -314,6 +548,13 @@ export {
     getCurrentFreelancer,
     getLoggedInFreelancer,
     updateAccountDetails,
-    updateFreelancerAvatar
+    updateFreelancerAvatar,
+    followAccount,
+    unFollowAccount,
+    connectAccount,
+    disconnectAccount,
+    getFollowers, 
+    getFollowings,
+    getConnections,
     // updateFreelancerCoverImage
 }

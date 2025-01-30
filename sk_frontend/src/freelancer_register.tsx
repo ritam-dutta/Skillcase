@@ -101,7 +101,7 @@ const Freelancer_reg : React.FC<Freelancer_reg> = ({})=>{
             Sign In
           </Link>
           <Link
-            to="/connector"
+            to="/register/connector"
             className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-full shadow hover:bg-blue-400 transition duration-300"
           >
             Select Role
@@ -109,26 +109,6 @@ const Freelancer_reg : React.FC<Freelancer_reg> = ({})=>{
         </div>
       </div>
     <body className="container h-[85vh] flex flex-col justify-center items-center bg-[url('/images/background.jpg')] bg-cover bg-center gap-5 overflow-hidden">
-    {/* Navbar */}
-    {/* <div className="navbar h-[8.9vh] w-full px-6 flex justify-between items-center bg-gradient-to-r from-blue-400 to-blue-600 shadow-md">
-        <div className="flex items-center">
-          <p className="text-white font-bold text-2xl">Skillcase</p>
-        </div>
-        <div className="flex items-center space-x-4">
-          <Link
-            to={`/${role}/login`}
-            className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-full shadow hover:bg-blue-400 transition duration-300"
-          >
-            Sign In
-          </Link>
-          <Link
-            to="/connector"
-            className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-full shadow hover:bg-blue-400 transition duration-300"
-          >
-            Select Role
-          </Link>
-        </div>
-      </div> */}
 
     {/* Registration Form */}
     <div className="register-container w-[30vw] h-[79vh] bg-slate-200 rounded-[10px] shadow-sm shadow-blue-600 hover:shadow-2xl hover:shadow-blue-400 transition duration-300 p-8">

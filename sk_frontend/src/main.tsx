@@ -18,6 +18,8 @@ import ViewProjects from './view_all_projects.tsx'
 import ViewProject from './view_project.tsx'
 import ViewFeedProject from './view_feed_project.tsx'
 import Followers from './followers.tsx'
+import Followings from './followings.tsx'
+import Connections from './connections.tsx'
 
 
 
@@ -28,7 +30,8 @@ const router= createBrowserRouter(
       <Route path='client/login' element={<Login/>}> </Route>
       <Route path='client/register' element={<Client_reg/>}> </Route>
       <Route path='freelancer/register' element={<Freelancer_reg/>}> </Route>
-      <Route path='connector' element={<Connector/>}> </Route>
+      <Route path='register/connector' element={<Connector/>}> </Route>
+      <Route path='login/connector' element={<Connector/>}> </Route>
       <Route path='freelancer/profile/:username' element={<FreelancerProfile/>}> </Route>
       <Route path='client/profile/:username' element={<ClientProfile/>}> </Route>
       <Route path='freelancer/edit/:username' element={<EditFreelancer/>}> </Route>
@@ -45,6 +48,10 @@ const router= createBrowserRouter(
       <Route path='freelancer/view_feed_project/:projectid' element={<ViewFeedProject/>}> </Route>
       <Route path='freelancer/followers/:username' element={<Followers/>}> </Route>
       <Route path='client/followers/:username' element={<Followers/>}> </Route>
+      <Route path='freelancer/followings/:username' element={<Followings/>}> </Route>
+      <Route path='client/followings/:username' element={<Followings/>}> </Route>
+      <Route path='client/connections/:username' element={<Connections/>}> </Route>
+      <Route path='freelancer/connections/:username' element={<Connections/>}> </Route>
       <Route path='' element={<HomePage/>}> </Route>
       <Route path="*" element={<Not_found/>}></Route>
     </Route>

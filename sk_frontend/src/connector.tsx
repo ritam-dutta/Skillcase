@@ -3,6 +3,8 @@ import "./App.css"
 import Footer from "./components/footer"
 interface Connector {}
 const Connector : React.FC<Connector> = ({})=>{
+  const url = window.location.href;
+  let nextTab = url.includes("register") ? "register" : "login";
   return(
     <>
       <div className="h-screen w-screen bg-[url('/images/background.jpg')] bg-cover bg-center flex flex-col justify-between items-center">
@@ -31,11 +33,11 @@ const Connector : React.FC<Connector> = ({})=>{
       <div className="options flex justify-evenly w-full">
         {/* Client Option */}
         <div className="option flex flex-col items-center w-[40%] hover:scale-105 transition-transform duration-300">
-          <Link to="/client/register" className="icon bg-blue-100 rounded-full h-[120px] w-[120px] flex items-center justify-center mb-4 shadow-md">
+          <Link to={`/client/${nextTab}`} className="icon bg-blue-100 rounded-full h-[120px] w-[120px] flex items-center justify-center mb-4 shadow-md">
             <img src="/images/client.png" alt="Client" className="h-[80px] w-[80px] " />
           </Link>
           <Link
-            to="/client/register"
+            to={`/client/${nextTab}`}
             className="text-lg font-medium text-blue-600 hover:text-blue-800 transition-colors duration-300"
           >
             Client
@@ -44,11 +46,11 @@ const Connector : React.FC<Connector> = ({})=>{
 
         {/* Freelancer Option */}
         <div className="option flex flex-col items-center w-[40%] hover:scale-105 transition-transform duration-300">
-          <Link to="/freelancer/register" className="icon bg-blue-100 rounded-full h-[120px] w-[120px] flex items-center justify-center mb-4 shadow-md">
+          <Link to={`/freelancer/${nextTab}`} className="icon bg-blue-100 rounded-full h-[120px] w-[120px] flex items-center justify-center mb-4 shadow-md">
             <img src="/images/freelancer.png" alt="Freelancer" className="h-[80px] w-[80px]" />
           </Link>
           <Link
-            to="/freelancer/register"
+            to={`/freelancer/${nextTab}`}
             className="text-lg font-medium text-blue-600 hover:text-blue-800 transition-colors duration-300"
           >
             Freelancer

@@ -63,7 +63,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                 // console.log("respone of current user",responseCurrentUser)
                 // console.log("response of logged in user",responseLoggedUser)
                 let currentUser ;
-                let loggedInUser;
+                let loggedInUser: any;
                 let fetchedUser;
                 if(currentRole===loggedInRole){
                     if(currentRole==="freelancer"){
@@ -93,10 +93,10 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                 }
                 else{
                     fetchedUser = currentUser;
-                    if(fetchedUser.followers.includes(loggedInUser.username)){
+                    if(fetchedUser.followers.some((follower: { username: string }) => follower.username === loggedInUser.username)){
                         setIsFollowing(true);
                     }
-                    if(fetchedUser.connections.includes(loggedInUser.username)){
+                    if(fetchedUser.connections.some((connection: { username: string }) => connection.username === loggedInUser.username)){
                         setIsConnected(true);
                     }
                 }
@@ -111,6 +111,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                 setExperience(fetchedUser?.experience || "")
                 setAvatar(fetchedUser?.avatar || "/images/freelancer.png") 
                 setRole(fetchedUser?.role || "")
+
             } catch (error) {
                 console.error("error fetching user data",error);
                 navigate(`/${currentRole}/login`);
@@ -149,6 +150,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
             const accessToken = localStorage.getItem("accessToken");
             const response = await axios.post(`http://localhost:8000/api/v1/client/follow/${username}`, {
                 username: username,
+                followerRole: localStorage.getItem("role"),
             }, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -165,8 +167,10 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
     const handleUnFollow = async () => {
         try {
             const accessToken = localStorage.getItem("accessToken");
+            // console.log(")
             const response = await axios.post(`http://localhost:8000/api/v1/client/unfollow/${username}`, {
                 username: username,
+                unFollowerRole: localStorage.getItem("role"),
             }, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -185,6 +189,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
             const accessToken = localStorage.getItem("accessToken");
             const response = await axios.post(`http://localhost:8000/api/v1/client/connect/${username}`, {
                 username: username,
+                connectorRole: localStorage.getItem("role"),
             }, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -203,6 +208,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
             const accessToken = localStorage.getItem("accessToken");
             const response = await axios.post(`http://localhost:8000/api/v1/client/disconnect/${username}`, {
                 username: username,
+                disConnectorRole: localStorage.getItem("role"),
             }, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -266,39 +272,25 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
           </div>
           <p className="text-xl font-semibold mt-4">{fullname}</p>
           <p className="text-gray-600">@{username}</p>
-          <p className="text-gray-500 mt-2">{userType[0].toUpperCase()+userType.slice(1,)}</p>
-
-        {username === loggedUsername ? (
-            <div className="flex justify-evenly w-full mt-6 text-center">
+          <p className="text-gray-500 mt-2">Client</p>
+            
+            <div className="flex flex-col justify-evenly w-full mt-4 text-center">
+                <div className="flex justify-evenly">
                     <div>
                     <p className="font-semibold text-gray-700">{connections}</p>
                     <Link to={`/client/connections/${username}`} className="text-gray-500 text-sm">Connections</Link>
                     </div>
                     <div>
                     <p className="font-semibold text-gray-700">{following}</p>
-                    <Link to={`client/followings/${username}`} className="text-gray-500 text-sm">Followings</Link>
+                    <Link to={`/client/followings/${username}`} className="text-gray-500 text-sm">Followings</Link>
                     </div>
                     <div>
                     <p className="font-semibold text-gray-700">{followers}</p>
                     <Link to={`/client/followers/${username}`} className="text-gray-500 text-sm">Followers</Link>
                     </div>
-            </div>
-            ):(
-            <div className="flex flex-col justify-evenly w-full mt-4 text-center">
-                <div className="flex justify-evenly">
-                    <div>
-                    <p className="font-semibold text-gray-700">{connections}</p>
-                    <p className="text-gray-500 text-sm">Connections</p>
-                    </div>
-                    <div>
-                    <p className="font-semibold text-gray-700">{following}</p>
-                    <p className="text-gray-500 text-sm">Following</p>
-                    </div>
-                    <div>
-                    <p className="font-semibold text-gray-700">{followers}</p>
-                    <p className="text-gray-500 text-sm">Followers</p>
-                    </div>
                 </div>
+                
+                {username === loggedUsername ? null : (
                 <div className="flex justify-evenly">
                     <div>
                     <button className={isConnected ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" : "mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition" } onClick={() => {isConnected ? handleDisconnect() : handleConnect()}}>{isConnected ? "Connected" : "Connect"}</button>
@@ -307,10 +299,10 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                     <button className={isFollowing ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" :"mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"} onClick={() =>{isFollowing ? handleUnFollow() : handleFollow()}}>{isFollowing ? "Followed" : "Follow"}</button>
                     </div>
                 </div>
+                )}
                 
           </div>
-            )
-            }
+            
 
           <div className="w-full mt-6">
             <h3 className="font-semibold text-gray-800">About</h3>

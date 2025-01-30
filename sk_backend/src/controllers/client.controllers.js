@@ -1,5 +1,6 @@
 import { asyncHandler } from '../utils/AsyncHandler.js';
 import { Client } from '../models/client.models.js';
+import { Freelancer } from '../models/freelancer.models.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
 import jwt from 'jsonwebtoken';
@@ -228,136 +229,202 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 });
 
 const followAccount = asyncHandler(async (req, res) => {
-    const {username} = req.body;
+    const {username, followerRole} = req.body;
     // console.log("entered followAccount");
-    const followingClient = await Client.findByIdAndUpdate(req.user?._id,
-        {
-            $addToSet: {following: username}
-        },
-        {
-            new: true
-        }
-    ).select('-password -refreshToken');
-    if (!followingClient) {
-        throw new ApiError(404, 'following Client not found');
+    let followingUser = {};
+    if(followerRole === "freelancer") {
+        followingUser = await Freelancer.findByIdAndUpdate(req.user?._id,
+            {
+                $addToSet: {following:{username: username, role: "client"}}
+            },
+            {
+                new: true
+            }
+        ).select('-password -refreshToken');
+    }
+
+    else if (followerRole === "client") {
+        followingUser = await Client.findByIdAndUpdate(req.user?._id,
+            {
+                $addToSet: {following:{username: username, role: "client"}}
+            },
+            {
+                new: true
+            }
+        ).select('-password -refreshToken');
+    }
+
+    if (!followingUser) {
+        throw new ApiError(404, `following ${followerRole} not found`);
     }
     // console.log("followingClient",followingClient);
+
     const followedClient = await Client.findOneAndUpdate({username},
         {
-            $addToSet: {followers: req.user?.username}
+            $addToSet: {followers: {username: req.user?.username, role: followerRole}}
         },
         {
             new: true
         }
     ).select('-password -refreshToken');
+
     if (!followedClient) {
-        throw new ApiError(404, 'followed Client not found');
+        throw new ApiError(404, 'followed User not found');
     }
 
     return res
     .status(200)
-    .json(new ApiResponse(200, {followingClient, followedClient}, 'Account followed successfully'));
+    .json(new ApiResponse(200, {followingUser, followedClient}, 'Account followed successfully'));
 
 });
 
 const unFollowAccount = asyncHandler(async (req, res) => {
     // console.log("entered unfollowAccount");
-    const {username} = req.body
-    const unFollowingClient = await Client.findByIdAndUpdate(req.user?._id,
-        {
-            $pull: {following: username}
-        },
-        {
-            new: true
-        }
-    ).select('-password -refreshToken');
-    if (!unFollowingClient) {
-        throw new ApiError(404, 'unFollowing Client not found');
+    const {username, unFollowerRole} = req.body
+    let unFollowingUser = {};
+    if(unFollowerRole === "freelancer") {
+        unFollowingUser = await Freelancer.findByIdAndUpdate(req.user?._id,
+            {
+                $pull: {following: {username: username, role: "client"}}
+            },
+            {
+                new: true
+            }
+        ).select('-password -refreshToken');
+    }
+    else if (unFollowerRole === "client") {
+        unFollowingUser = await Client.findByIdAndUpdate(req.user?._id,
+            {
+                $pull: {following: {username: username, role: "client"}}
+            },
+            {
+                new: true
+            }
+        ).select('-password -refreshToken');
+    }
+
+    if (!unFollowingUser) {
+        throw new ApiError(404, `unFollowing ${unFollowerRole} not found`);
     }
 
     const unFollowedClient = await Client.findOneAndUpdate({username},
         {
-            $pull: {followers: req.user?.username}
+            $pull: {followers:{username: req.user?.username, role: unFollowerRole}}
         },
         {
             new: true
         }
     ).select('-password -refreshToken');
+
     if (!unFollowedClient) {
-        throw new ApiError(404, 'unFollowed Client not found');
+        throw new ApiError(404, 'unFollowed User not found');
     }
 
     return res
     .status(200)
-    .json(new ApiResponse(200, {unFollowingClient, unFollowedClient}, 'Account unfollowed successfully'));
+    .json(new ApiResponse(200, {unFollowingUser, unFollowedClient}, 'Account unfollowed successfully'));
 });
 
 const connectAccount = asyncHandler(async (req, res) => {
-    const {username} = req.body;
+    const {username, connectorRole} = req.body;
     // console.log("entered followAccount");
-    const connectingClient = await Client.findByIdAndUpdate(req.user?._id,
-        {
-            $addToSet: {connections: username}
-        },
-        {
-            new: true
-        }
-    ).select('-password -refreshToken');
-    if (!connectingClient) {
-        throw new ApiError(404, 'connecting Client not found');
+    let connectedUser = {};
+
+    if(connectorRole === "freelancer") {
+        connectedUser = await Freelancer.findByIdAndUpdate(req.user?._id,
+            {
+                $addToSet: {connections:{username: username, role: "client"}}
+            },
+            {
+                new: true
+            }
+        ).select('-password -refreshToken');
+    }
+    else if (connectorRole === "client") {
+        connectedUser = await Client.findByIdAndUpdate(req.user?._id,
+            {
+                $addToSet: {connections:{username: username, role: "client"}}
+            },
+            {
+                new: true
+            }
+        ).select('-password -refreshToken');
+    }
+
+    if (!connectedUser) {
+        throw new ApiError(404, `connecting ${connectorRole} not found`);
     }
     // console.log("connecting client",connectingClient);
+
     const connectedClient = await Client.findOneAndUpdate({username},
         {
-            $addToSet: {connections: req.user?.username}
+            $addToSet: {connections:{username: req.user?.username, role: connectorRole}}
         },
         {
             new: true
         }
     ).select('-password -refreshToken');
+    
     if (!connectedClient) {
         throw new ApiError(404, 'connected Client not found');
     }
 
     return res
     .status(200)
-    .json(new ApiResponse(200, {connectingClient, connectedClient}, 'Added to connections successfully'));
+    .json(new ApiResponse(200, {connectedUser, connectedClient}, 'Added to connections successfully'));
 
 });
 
 const disconnectAccount = asyncHandler(async (req, res) => {
-    const {username} = req.body
-    const disconnectingClient = await Client.findByIdAndUpdate(req.user?._id,
-        {
-            $pull: {connections: username}
-        },
-        {
-            new: true
-        }
-    ).select('-password -refreshToken');
-    if (!disconnectingClient) {
-        throw new ApiError(404, 'disconnecting Client not found');
+    const {username, disConnectorRole} = req.body
+    let disconnectingUser = {};
+
+    if(disConnectorRole === "freelancer") {
+        disconnectingUser = await Freelancer.findByIdAndUpdate(req.user?._id,
+            {
+                $pull: {connections:{username: username, role: "client"}}
+            },
+            {
+                new: true
+            }
+        ).select('-password -refreshToken');
+    }
+    else if (disConnectorRole === "client") {
+        disconnectingUser = await Client.findByIdAndUpdate(req.user?._id,
+            {
+                $pull: {connections:{username: username, role: "client"}}
+            },
+            {
+                new: true
+            }
+        ).select('-password -refreshToken');
+    }
+
+    if (!disconnectingUser) {
+        throw new ApiError(404, `disconnecting ${disConnectorRole} not found`);
     }
 
     const disconnectedClient = await Client.findOneAndUpdate({username},
         {
-            $pull: {connections: req.user?.username}
+            $pull: {connections:{username: req.user?.username, role: disConnectorRole}}
         },
         {
             new: true
         }
     ).select('-password -refreshToken');
+
     if (!disconnectedClient) {
         throw new ApiError(404, 'disconnected Client not found');
     }
 
     return res
     .status(200)
-    .json(new ApiResponse(200, {disconnectingClient, disconnectedClient}, 'Disconnected successfully'));
+    .json(new ApiResponse(200, {disconnectingUser, disconnectedClient}, 'Disconnected successfully'));
 });
 
 const getFollowers = asyncHandler(async (req, res) => {
     const {username} = req.params;
+    // const role = req.headers.role;
     const client = await Client.findOne({username}).select('-password -refreshToken');
     if (!client) {
         throw new ApiError(404, 'Client not found');
@@ -368,6 +435,33 @@ const getFollowers = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {followers}, 'Followers fetched successfully')); 
 
 });
+
+const getFollowings = asyncHandler(async (req, res) => {
+    const {username} = req.params;
+    const client = await Client.findOne({username}).select('-password -refreshToken');
+    if (!client) {
+        throw new ApiError(404, 'Client not found');
+    }
+    const followings = client.following;
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {followings}, 'followings fetched successfully')); 
+
+});
+
+const getConnections = asyncHandler(async (req, res) => {
+    const {username} = req.params;
+    const client = await Client.findOne({username}).select('-password -refreshToken');
+    if (!client) {
+        throw new ApiError(404, 'Client not found');
+    }
+    const connections = client.connections;
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {connections}, 'connections fetched successfully')); 
+
+});
+
 export {
     registerClient,
     loginClient,
@@ -382,4 +476,6 @@ export {
     connectAccount,
     disconnectAccount,
     getFollowers,
+    getFollowings,
+    getConnections,
 }

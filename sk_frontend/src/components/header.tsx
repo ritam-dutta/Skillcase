@@ -1,6 +1,5 @@
 import { Link, useParams } from "react-router-dom";
 import "../App.css";
-import { useEffect, useState } from "react";
 
 interface Header {}
 
@@ -26,7 +25,6 @@ const Header: React.FC<Header> = ({}) => {
       activeTab="home"
     }
     
-    // console.log("activeTab",activeTab)
 
 
   return (
@@ -52,12 +50,14 @@ const Header: React.FC<Header> = ({}) => {
           >
             Projects
           </Link>
+          {role==="freelancer" ? null :(
           <Link 
             to={`/client/upload_project/${username}`}
             className={`text-lg font-medium hover:text-gray-400 transition  ${activeTab==="upload" ? "text-gray-400" : "text-gray-600"}`}
           >
             Upload Project
           </Link>
+          )}
           <Link
             to={`/${role}/profile/${username}`}
             className={`text-lg font-medium hover:text-gray-400 transition  ${activeTab==="profile" ? "text-gray-400" : "text-gray-600"}`}

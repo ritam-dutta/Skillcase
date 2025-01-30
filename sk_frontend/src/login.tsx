@@ -70,7 +70,7 @@ const Login : React.FC<Login> = ({})=>{
             Sign Up
           </Link>
           <Link
-            to="/"
+            to="/login/connector"
             className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-full shadow hover:bg-blue-400 transition duration-300"
           >
             Select Role

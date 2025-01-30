@@ -9,6 +9,13 @@ import {
     getLoggedInFreelancer,
     updateAccountDetails,
     updateFreelancerAvatar,
+    followAccount,
+    unFollowAccount,
+    connectAccount,
+    disconnectAccount,
+    getFollowers,
+    getFollowings,
+    getConnections,
 } from "../controllers/freelancer.controllers.js";
 import {upload} from "../middlewares/multer.middlewares.js"
 import { verifyJWT } from "../middlewares/auth.middlewares.js";
@@ -42,6 +49,20 @@ freelancerRouter.route("/profile/:username").get(verifyJWT, getCurrentFreelancer
 freelancerRouter.route("/loggedInFreelancer").get(verifyJWT, getLoggedInFreelancer);
 
 freelancerRouter.route("/update_account/:username").post(verifyJWT, updateAccountDetails);
+
+freelancerRouter.route("/follow/:username").post(verifyJWT, followAccount);
+
+freelancerRouter.route("/unfollow/:username").post(verifyJWT, unFollowAccount);
+
+freelancerRouter.route("/connect/:username").post(verifyJWT, connectAccount);
+
+freelancerRouter.route("/disconnect/:username").post(verifyJWT, disconnectAccount);
+
+freelancerRouter.route("/getfollowers/:username").get(getFollowers);
+
+freelancerRouter.route("/getfollowings/:username").get(getFollowings);
+
+freelancerRouter.route("/getconnections/:username").get(getConnections);
 
 freelancerRouter.route("/update_avatar/:username").post(verifyJWT, upload.single("avatar"), updateFreelancerAvatar);
 export default freelancerRouter;

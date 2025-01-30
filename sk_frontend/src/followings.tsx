@@ -4,13 +4,13 @@ import Footer from "./components/footer";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-interface Followers {}
-const Followers: React.FC<Followers> = ({}) => {
+interface Followings {}
+const Followings: React.FC<Followings> = ({}) => {
 
     const [loading, setLoading] = useState(false);
-    const [followers, setFollowers] = useState([]);
-    const [clientFollowers, setClientFollowers] = useState<any[]>([]);
-    const [freelancerFollowers, setFreelancerFollowers] = useState<any[]>([]);
+    const [followings, setFollowings] = useState([]);
+    const [clientFollowings, setClientFollowings] = useState<any[]>([]);
+    const [freelancerFollowings, setFreelancerFollowings] = useState<any[]>([]);
     const [isAlreadyFollowing, setIsAlreadyFollowing] = useState(false);
     const [alreadyFollowingUser, setAlreadyFollowingUser] = useState({});
     const {username} = useParams();
@@ -18,44 +18,40 @@ const Followers: React.FC<Followers> = ({}) => {
     const currentRole = window.location.href.includes("client") ? "client" : "freelancer";
 
     useEffect(() => {
-        const fetchFollowers = async () => {
+        const fetchFollowings = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:8000/api/v1/${currentRole}/getfollowers/${username}`);
-
-                const fetchedFollowers = response.data.data.followers;
-                setFollowers(fetchedFollowers);
+                const response = await axios.get(`http://localhost:8000/api/v1/${currentRole}/getfollowings/${username}`);
+                const fetchedFollowings = response.data.data.followings;
+                console.log(fetchedFollowings)
+                setFollowings(fetchedFollowings);
                 let clientList: any[] = [];
                 let freelancerList: any[] = [];
                 let alreadyFollowing = false;
                 let followingUser = {};
-                
-                fetchedFollowers.forEach(follower => {
-                    // console.log("username",follower.username);
-                    if(follower.username === localStorage.getItem("username")) {
+
+                fetchedFollowings.forEach(following => {
+                    if(following.username === localStorage.getItem("username")) {
                         alreadyFollowing = true;
-                        followingUser = follower;
-                    }
-                    else if(follower.role === "client") {
-                        clientList.push(follower);
-                    } else if(follower.role === "freelancer") {
-                        freelancerList.push(follower);
+                        followingUser = following;
+                    } else if(following.role === "client") {
+                        clientList.push(following);
+                    } else if(following.role === "freelancer") {
+                        freelancerList.push(following);
                     }
                 });
                 setAlreadyFollowingUser(followingUser);
                 setIsAlreadyFollowing(alreadyFollowing);
-                setClientFollowers(clientList);
-                setFreelancerFollowers(freelancerList);
+                setClientFollowings(clientList);
+                setFreelancerFollowings(freelancerList);
+
             } catch (error) {
                 console.error("Fetch Projects Error:", error);
             }
             setLoading(false);
         };
-        fetchFollowers();
+        fetchFollowings();
     }, [username, navigate]);
-    // console.log("followers", followers);
-    // console.log("clientFollowers", clientFollowers);
-    // console.log("freelancerFollowers", freelancerFollowers);
 
     return (
         <>
@@ -74,7 +70,7 @@ const Followers: React.FC<Followers> = ({}) => {
                 <div className="space-y-6">
                     {/* Description */}
                     <div>
-                        {isAlreadyFollowing ? (
+                    {isAlreadyFollowing ? (
                         <div  className="bg-slate-100 p-4 rounded-md shadow-md flex flex-col items-center justify-center gap-4 mb-5">
                             <p className="font-bold">You both follow each other </p>
                             <div className="flex justify-between w-full -mt-4">
@@ -104,20 +100,20 @@ const Followers: React.FC<Followers> = ({}) => {
                         <div className="flex items-center justify-center">
                             <p className="font-bold">Clients</p>
                         </div>
-                        {clientFollowers.length > 0 ? clientFollowers.map(follower => (
-                            <div key={follower._id} className="flex items-center justify-between bg-slate-100 p-4 shadow-md rounded-md mt-1">
+                        {clientFollowings.length > 0 ? clientFollowings.map(following => (
+                            <div key={following._id} className="flex items-center justify-between bg-slate-100 p-4 shadow-md">
                                 <div className="flex items-center gap-4"> 
                                     <div className="rounded-full bg-gray-300 p-2">
                                         <img src="/images/user.png" alt=""  className="h-5 w-5"/>
                                     </div>
                                     <div>
-                                        <Link to={`/${follower.role}/profile/${follower.username}`} className="text-xl">@{follower.username}</Link>
+                                        <Link to={`/client/profile/${following.username}`} className="text-xl">@{following.username}</Link>
                                     </div>
                                 </div>
                                 <div>
                                     <button
                                     className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                                    onClick={() => navigate(`/${follower.role}/profile/${follower.username}`)}
+                                    onClick={() => navigate(`/client/profile/${following.username}`)}
                                     >
                                     View Profile
                                     </button>
@@ -126,16 +122,15 @@ const Followers: React.FC<Followers> = ({}) => {
                         )
                         ) : (
                             <div className="flex items-center justify-center bg-slate-100 p-4 rounded-md shadow-md">
-                                <h3 className="text-xl font-bold">No Client Followers Yet</h3>
+                                <h3 className="text-xl font-bold">No Client Followings Yet</h3>
                             </div>
                     )}
                     </div>
-                    
                     <div className="mt-6">	
                         <div className="flex items-center justify-center">
                             <p className="font-bold mb-2">Freelancers</p>
                         </div>
-                        {freelancerFollowers.length > 0 ? freelancerFollowers.map(follower => (
+                        {freelancerFollowings.length > 0 ? freelancerFollowings.map(follower => (
                             <div key={follower._id} className="flex items-center justify-between bg-slate-100 p-4 shadow-md">
                                 <div className="flex items-center gap-4"> 
                                     <div className="rounded-full bg-gray-300 p-2">
@@ -157,12 +152,11 @@ const Followers: React.FC<Followers> = ({}) => {
                         )
                         ) : (
                             <div className="flex items-center justify-center bg-slate-100 p-4 rounded-md shadow-md">
-                                <h3 className="text-xl font-bold">No Freelancer Followers Yet</h3>
+                                <h3 className="text-xl font-bold">No Freelancer Followings Yet</h3>
                             </div>
                     )}
                     </div>
                     </div>
-
 
                     
                     {/* Action Buttons */}
@@ -194,4 +188,4 @@ const Followers: React.FC<Followers> = ({}) => {
     );
 }
 
-export default Followers;
+export default Followings;

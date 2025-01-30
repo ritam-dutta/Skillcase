@@ -29,7 +29,7 @@ const HomePage: React.FC<HomePage> = () => {
                         Explore Projects
                     </Link>
                     <Link
-                        to="/connector"
+                        to="register/connector"
                         className="px-6 py-3 bg-white border border-blue-500 text-blue-500 rounded-lg shadow-md hover:bg-blue-500 hover:text-white transition-colors duration-300"
                     >
                         Create Profile
@@ -38,14 +38,14 @@ const HomePage: React.FC<HomePage> = () => {
                 </div>
                     <p className="text-lg mt-5">Already have an account?{" "}</p>
                     <div className="flex gap-4">
-                    <Link to="/freelancer/login" className="px-4 py-2 mt-5 bg-white border border-blue-500 text-blue-500 rounded-lg shadow-md hover:bg-blue-500 hover:text-white transition-colors duration-300"
+                    <Link to="/login/connector" className="px-4 py-2 mt-5 bg-white border border-blue-500 text-blue-500 rounded-lg shadow-md hover:bg-blue-500 hover:text-white transition-colors duration-300"
                         >
-                            Sign In as Freelancer
+                            Sign In
                     </Link>
-                    <Link to="/client/login" className="px-6 py-2 mt-5 bg-white border border-blue-500 text-blue-500 rounded-lg shadow-md hover:bg-blue-500 hover:text-white transition-colors duration-300"
+                    {/* <Link to="/client/login" className="px-6 py-2 mt-5 bg-white border border-blue-500 text-blue-500 rounded-lg shadow-md hover:bg-blue-500 hover:text-white transition-colors duration-300"
                         >
                             Sign In as Client
-                    </Link>
+                    </Link> */}
                     </div>
                         
             </main>

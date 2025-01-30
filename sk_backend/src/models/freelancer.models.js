@@ -53,6 +53,18 @@ const freelancerSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    followers:{
+        type: Array,
+        required: false,
+    },
+    following:{
+        type: Array,
+        required: false,
+    },
+    connections:{
+        type: Array,
+        required: false,
+    },
     refreshToken:{
         type: String,
         required: false,
