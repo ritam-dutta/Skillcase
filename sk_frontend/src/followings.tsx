@@ -59,7 +59,7 @@ const Followings: React.FC<Followings> = ({}) => {
         <div className="h-[85vh] w-screen bg-[url('/images/background.jpg')] bg-cover bg-center flex flex-col justify-between">
         {/* Title Section */}
         <div className="h-[15vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center px-8">
-            <h1 className="text-3xl text-white font-bold">Followers</h1>
+            <h1 className="text-3xl text-white font-bold">Followings</h1>
         </div>
 
         {/* Main Content */}

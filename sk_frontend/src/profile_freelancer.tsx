@@ -165,25 +165,12 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
   const sendConnectionRequest = async () => {
       try {
           const accessToken = localStorage.getItem("accessToken");
-          const response1 = await axios.post(`http://localhost:8000/api/v1/freelancer/sent_connection_request/${username}`, {
-              username: username,
-              senderRole: localStorage.getItem("role"),
-              connectRequest:{
-                sender: localStorage.getItem("username"),
-                receiver: username,
-                markedAsRead: false
-              }
-          }, {
-              headers: {
-                  Authorization: `Bearer ${accessToken}`,
-              },
-          });
 
-          const response2 = await axios.post(`http://localhost:8000/api/v1/freelancer/send_notification/${username}`, {
+          const response = await axios.post(`http://localhost:8000/api/v1/freelancer/send_notification/${username}`, {
               username: username,
               receiverRole: "freelancer",
               notification:{
-                message: "You have a new connection request.",
+                message: `You have a new connection request from @${loggedUsername}`,
                 type: "connection_request",
                 sender: localStorage.getItem("username"),
                 receiver: username,

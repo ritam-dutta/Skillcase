@@ -328,7 +328,7 @@ const unFollowAccount = asyncHandler(async (req, res) => {
 const connectAccount = asyncHandler(async (req, res) => {
     const {username, connectorRole} = req.body;
     console.log(username, connectorRole);   
-    console.log("entered connect");
+    // console.log("entered connect");
     let connectedUser = {};
     const User = connectorRole === "freelancer" ? Freelancer : Client;
 
@@ -474,13 +474,13 @@ const createNotification = asyncHandler(async (req, res) => {
 
 const getNotifications = asyncHandler(async (req, res) => {
     const {username} = req.params;
-    const role = req.headers.role;
-    let User = role === "freelancer" ? Freelancer : Client; 
-    const user = await User.findOne({username}).select('-password -refreshToken');
-    if (!user) {
-        throw new ApiError(404, `${User} not found`);
+    // const role = req.headers.role;
+    // let User = Client; 
+    const client = await Client.findOne({username}).select('-password -refreshToken');
+    if (!client) {
+        throw new ApiError(404, `Client not found`);
     }
-    const notifications = user.notifications;
+    const notifications = client.notifications;
     return res
     .status(200)
     .json(new ApiResponse(200, {notifications}, 'Notifications fetched successfully'));

@@ -393,36 +393,25 @@ const connectAccount = asyncHandler(async (req, res) => {
     const {username, connectorRole} = req.body;
     // console.log("entered followAccount");
     let connectedUser = {};
-
-    if(connectorRole === "freelancer") {
-        connectedUser = await Freelancer.findByIdAndUpdate(req.user?._id,
-            {
-                $addToSet: {connections:{username: username, role: "freelancer"}}
-            },
-            {
-                new: true
-            }
-        ).select('-password -refreshToken');
-    }
-    else if (connectorRole === "client") {
-        connectedUser = await Client.findByIdAndUpdate(req.user?._id,
-            {
-                $addToSet: {connections:{username: username, role: "freelancer"}}
-            },
-            {
-                new: true
-            }
-        ).select('-password -refreshToken');
-    }
+    const User = connectorRole === "freelancer" ? Freelancer : Client;
+    
+    connectedUser = await User.findOneAndUpdate({username},
+        {
+            $addToSet: {connections:{username: req.user?.username, role: "freelancer"}}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
 
     if (!connectedUser) {
         throw new ApiError(404, `connecting ${connectorRole} not found`);
     }
     // console.log("connecting client",connectingClient);
 
-    const connectedFreelancer = await Freelancer.findOneAndUpdate({username},
+    const connectedFreelancer = await Freelancer.findByIdAndUpdate(req.user?._id,
         {
-            $addToSet: {connections:{username: req.user?.username, role: connectorRole}}
+            $addToSet: {connections:{username: username, role: connectorRole}}
         },
         {
             new: true
@@ -533,13 +522,13 @@ const createNotification = asyncHandler(async (req, res) => {
 
 const getNotifications = asyncHandler(async (req, res) => {
     const {username} = req.params;
-    const {role} = req.headers.role;
-    let User = role === "freelancer" ? Freelancer : Client; 
-    const user = await User.findOne({username}).select('-password -refreshToken');
-    if (!user) {
-        throw new ApiError(404, `${User} not found`);
+    // const {role} = req.headers.role;
+    // let User =  Freelancer; 
+    const freelancer = await Freelancer.findOne({username}).select('-password -refreshToken');
+    if (!freelancer) {
+        throw new ApiError(404, `Freelancer not found`);
     }
-    const notifications = user.notifications;
+    const notifications = freelancer.notifications;
     return res
     .status(200)
     .json(new ApiResponse(200, {notifications}, 'Notifications fetched successfully'));

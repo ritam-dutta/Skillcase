@@ -28,7 +28,7 @@ const Notifications: React.FC<Notifications> = ({}) => {
                 const response = await axios.get(`http://localhost:8000/api/v1/${loggedRole}/get_notifications/${loggedUsername}`,{
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-                        role: loggedRole,
+                        // role: loggedRole,
                     }
                 });
                 const fetchedNotifications = response.data.data.notifications;
@@ -55,7 +55,7 @@ const Notifications: React.FC<Notifications> = ({}) => {
     const handleConnect = async (username:String, role:string) => {
         try {
             const accessToken = localStorage.getItem("accessToken");
-            const response1 = await axios.post(`http://localhost:8000/api/v1/client/connect/${loggedUsername}`, {
+            const response1 = await axios.post(`http://localhost:8000/api/v1/${loggedRole}/connect/${loggedUsername}`, {
                 username: username,
                 connectorRole: role,
             }, {
