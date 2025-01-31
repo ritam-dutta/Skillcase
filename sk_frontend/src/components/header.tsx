@@ -1,13 +1,41 @@
 import { Link, useParams } from "react-router-dom";
 import "../App.css";
+import { Bell,User, Home, Upload , UserCheck, File } from "lucide-react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 interface Header {}
 
 const Header: React.FC<Header> = ({}) => {
 
   const {username} = useParams<{ username: string }>();
+  const [notifications, setNotifications] = useState(0);
   const url = window.location.href;
   const role = url.includes("freelancer") ? "freelancer" : "client";
+  const loggedUsername = localStorage.getItem("username");
+  const loggedRole = localStorage.getItem("role");
+
+  useEffect(() => {
+    if(loggedUsername === username){
+      const fetchNotifications = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8000/api/v1/${loggedRole}/get_notifications/${loggedUsername}`,{
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                }
+            });
+            const fetchedNotifications = response.data.data.notifications;
+            setNotifications(fetchedNotifications?.length);
+            
+        } catch (error) {
+            console.error("Fetch Notifications Error:", error);
+        }
+      };
+      fetchNotifications();
+    }
+
+  }, [loggedUsername, username, loggedRole]);
+
   let activeTab = "";
     if(url.includes("/projects")){
       activeTab="projects"
@@ -40,45 +68,50 @@ const Header: React.FC<Header> = ({}) => {
           </Link>
         </div>
 
-        <nav className="hidden md:flex space-x-6">
+        <nav className="flex justify-between items-center gap-10">
           <Link
             to="/"
             className="text-lg font-medium hover:text-gray-400 transition text-gray-600"
           >
-            Home
+            <Home/>
           </Link>
           <Link 
             to={`/${role}/projects/${username}`}
             className={`text-lg font-medium hover:text-gray-400 transition  ${activeTab==="projects" ? "text-gray-400" : "text-gray-600"}`}
           >
-            Projects
+            <File/>
           </Link>
           {role==="freelancer" ? null :(
           <Link 
             to={`/client/upload_project/${username}`}
             className={`text-lg font-medium hover:text-gray-400 transition  ${activeTab==="upload" ? "text-gray-400" : "text-gray-600"}`}
           >
-            Upload Project
+            <Upload/>
           </Link>
           )}
           <Link
             to={`/${role}/profile/${username}`}
             className={`text-lg font-medium hover:text-gray-400 transition  ${activeTab==="profile" ? "text-gray-400" : "text-gray-600"}`}
           >
-            Profile
+            <User/>
           </Link>
-          <Link
-            to={`/${role}/notifications/${username}`}
-            className={`text-lg font-medium hover:text-gray-400 transition  ${activeTab==="notifications" ? "text-gray-400" : "text-gray-600"}`}
-          >
-            Notifications
-          </Link>
-          <Link
+          {
+            loggedUsername === username ? (
+            <Link
+              to={`/${role}/notifications/${username}`}
+              className={`text-lg font-medium hover:text-gray-400 transition  ${activeTab==="notifications" ? "text-gray-400" : "text-gray-600"}`}
+            >
+              <Bell className=" mt-4"/>
+            <div className="rounded-full bg-red-600 h-4 w-4 -translate-y-7 translate-x-3 text-white flex justify-center items-center text-xs">{notifications} </div>
+            </Link>
+            ) : null
+          }
+          {/* <Link
             to="/contact"
             className={`text-lg font-medium hover:text-gray-400 transition  ${activeTab==="contact" ? "text-gray-400" : "text-gray-600"}`}
           >
-            Contact
-          </Link>
+            <UserCheck/>
+          </Link> */}
         </nav>
 
         {/* Mobile Menu Icon */}

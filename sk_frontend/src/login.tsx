@@ -29,7 +29,7 @@ const Login : React.FC<Login> = ({})=>{
                 password: password,
             });
             const accessToken = response.data.data.accessToken;
-            // console.log("accessToken",accessToken)
+            console.log("accessToken",accessToken)
             console.log("Login Successful:", response.data);
             localStorage.setItem("accessToken", JSON.stringify(accessToken));
             localStorage.setItem("role", role);

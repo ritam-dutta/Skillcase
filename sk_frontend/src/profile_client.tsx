@@ -101,9 +101,9 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                     if(fetchedUser.notifications && fetchedUser.notifications.some((notification: { type: string }) => notification.type === "connection_request" && notification.sender === loggedInUser.username)){
                         setConnectionRequest(true);
                     }
-                    // if(fetchedUser.connections.some((connection: { username: string }) => connection.username === loggedInUser.username)){
-                    //     setIsConnected(true);
-                    // }
+                    if(fetchedUser.connections && fetchedUser.connections.some((connection: { username: string }) => connection.username === loggedInUser.username)){
+                        setIsConnected(true);
+                    }
                 }
                 // console.log(fetchedUser)
               
@@ -239,7 +239,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
             if(connectionRequest){
                 setConnectionRequest(false);
             }
-            else{
+            else if(window.confirm("Are you sure you want to disconnect?")){
                 const accessToken = localStorage.getItem("accessToken");
                 const response = await axios.post(`http://localhost:8000/api/v1/client/disconnect/${username}`, {
                     username: username,
@@ -330,7 +330,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                 <div className="flex justify-evenly">
                     <div>
                     {/* <button className={isConnected ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" : "mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition" } onClick={() => {isConnected ? handleDisconnect() : handleConnect()}}>{isConnected ? "Connected" : "Connect"}</button> */}
-                    <button className={connectionRequest ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" : "mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition" } onClick={() => {connectionRequest ? handleDisconnect() :  sendConnectionRequest()}}>
+                    <button className={connectionRequest ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" : isConnected ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" : "mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition" } onClick={() => {connectionRequest ? handleDisconnect() : isConnected ? handleDisconnect() : sendConnectionRequest()}}>
                       {connectionRequest ? "Request Sent" : isConnected ? "Connected" : "Connect"}
                     </button>
                     </div>

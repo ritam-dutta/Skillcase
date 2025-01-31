@@ -10,14 +10,15 @@ interface Notifications {}
 const Notifications: React.FC<Notifications> = ({}) => {
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [messages, setMessages] = useState([]);
-    const [markAsReads, setMarkAsReads] = useState(false);
-    const [senders, setSenders] = useState([]);
-    const [receivers, setReceivers] = useState([]);
-    const [types, setTypes] = useState([]);
+    // const [messages, setMessages] = useState([]);
+    // const [markAsReads, setMarkAsReads] = useState(false);
+    // const [senders, setSenders] = useState([]);
+    // const [receivers, setReceivers] = useState([]);
+    // const [types, setTypes] = useState([]);
     const [isConnected, setIsConnected] = useState(false);
+    const [isRejected, setIsRejected] = useState(false);
     const navigate = useNavigate();
-    const currentRole = window.location.href.includes("client") ? "client" : "freelancer";
+    // const currentRole = window.location.href.includes("client") ? "client" : "freelancer";
     const loggedRole = localStorage.getItem("role");
     const loggedUsername = localStorage.getItem("username");
 
@@ -38,11 +39,11 @@ const Notifications: React.FC<Notifications> = ({}) => {
                 let sender = fetchedNotifications.map((notif) => notif.sender);
                 let receiver = fetchedNotifications.map((notif) => notif.receiver);
                 let type = fetchedNotifications.map((notif) => notif.type);
-                setMessages(message);
-                setMarkAsReads(markAsRead);
-                setSenders(sender);
-                setReceivers(receiver);
-                setTypes(type);
+                // setMessages(message);
+                // setMarkAsReads(markAsRead);
+                // setSenders(sender);
+                // setReceivers(receiver);
+                // setTypes(type);
             } catch (error) {
                 console.error("Fetch Notifications Error:", error);
             }
@@ -91,6 +92,7 @@ const Notifications: React.FC<Notifications> = ({}) => {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });  
+            setIsRejected(true);
             // console.log("Disconnect Response:", response.data);
         } catch (error) {
             console.error("Delete notification Error:", error);
@@ -142,13 +144,16 @@ const Notifications: React.FC<Notifications> = ({}) => {
     //   setNotifications(arr);
       
     return (
-        <div className="min-h-screen w-full bg-gray-100 p-6">
+        <div className="min-h-screen w-full bg-gray-100">
             <Header/>
-        <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-lg p-6 border border-gray-200">
-          <h2 className="text-2xl font-bold mb-4 flex items-center">
-            <Bell className="mr-2 text-blue-500" /> Notifications
-          </h2>
-  
+            <div className="h-[14vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-start px-8">
+                <h2 className="text-2xl text-white font-bold mb-4 flex items-center mt-6">
+                {/* <Bell className="mr-2 text-white" /> */}
+                 Notifications
+                </h2>
+            </div>
+        <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-lg p-6 border border-gray-200 mt-[-8vh]">
+            <h1 className="text-xl font-bold">New notifications</h1>
           {loading ? (
             <p className="text-gray-600">Loading notifications...</p>
           ) : notifications.length === 0 ? (
@@ -167,17 +172,21 @@ const Notifications: React.FC<Notifications> = ({}) => {
                   <div className="flex space-x-3">
                     {(notif.type === "follow_request" || notif.type === "connection_request") && !notif.markAsRead ? (
                         <div className="flex gap-4 w-full">
+                            
+                        {isRejected ? null :(
                         <button
                             onClick={() => {handleConnect(notif.sender, notif.senderRole)}}
                             className={isConnected ?" bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" : " bg-blue-500 text-white text-center px-3 py-1 rounded-lg shadow-md hover:bg-blue-600 transition"}>
                                 {isConnected ? "Accepted" : "Accept"}
-                        </button>
+                        </button>)}
+
                         {isConnected ? null :(
                         <button
                             onClick={() => {handleReject(notif.receiver, notif.type)}}
                             className=" bg-gray-200 text-blue-950 text-center px-3 py-1  rounded-lg shadow-md">
-                                Reject
+                                {isRejected ? "Rejected" : "Reject"}
                         </button>)}
+
                         </div>
                     )
                     :(

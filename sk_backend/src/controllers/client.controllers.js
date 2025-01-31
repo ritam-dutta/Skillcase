@@ -72,6 +72,7 @@ const registerClient = asyncHandler(async (req,res) => {
 })
 
 const loginClient = asyncHandler( async (req,res) => {
+    console.log("entered login")
     const {username, password} = req.body;
     if(!username || !password) {
         throw new ApiError(400, 'All fields are required');
@@ -474,8 +475,6 @@ const createNotification = asyncHandler(async (req, res) => {
 
 const getNotifications = asyncHandler(async (req, res) => {
     const {username} = req.params;
-    // const role = req.headers.role;
-    // let User = Client; 
     const client = await Client.findOne({username}).select('-password -refreshToken');
     if (!client) {
         throw new ApiError(404, `Client not found`);
