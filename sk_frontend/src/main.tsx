@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import Login from './login.tsx'
 import {Route,RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
+import App from './App.tsx'
 import Client_reg from './client_register.tsx'
 import Freelancer_reg from './freelancer_register.tsx'
 import Connector from './connector.tsx'
@@ -21,12 +22,15 @@ import Followers from './followers.tsx'
 import Followings from './followings.tsx'
 import Connections from './connections.tsx'
 import Notifications from './notifications.tsx'
+import { SocketProvider } from './context/socket.tsx'
+import { NotificationProvider } from './context/notifications.tsx'
 
 
 
 const router= createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" >
+    <Route path="/" element={<App/>}>
+      <Route path='' element={<HomePage/>}> </Route>
       <Route path='freelancer/login' element={<Login/>}> </Route>
       <Route path='client/login' element={<Login/>}> </Route>
       <Route path='client/register' element={<Client_reg/>}> </Route>
@@ -55,14 +59,17 @@ const router= createBrowserRouter(
       <Route path='freelancer/connections/:username' element={<Connections/>}> </Route>
       <Route path='freelancer/notifications/:username' element={<Notifications/>}> </Route>
       <Route path='client/notifications/:username' element={<Notifications/>}> </Route>
-      <Route path='' element={<HomePage/>}> </Route>
       <Route path="*" element={<Not_found/>}></Route>
     </Route>
   )
 )
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <RouterProvider router={router}/>
-  </React.StrictMode>,
+  // <React.StrictMode>
+    <SocketProvider>
+      <NotificationProvider>
+        <RouterProvider router={router}/>
+      </NotificationProvider>
+    </SocketProvider>
+  // </React.StrictMode>,
 )

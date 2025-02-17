@@ -5,6 +5,7 @@ import Header from "./components/header";
 import Loader from "./components/loader";
 import axios from "axios";
 import "./App.css"
+import { useSocket } from "./context/socket";
 interface ClientProfile {}
 const ClientProfile : React.FC<ClientProfile> = ({})=>{
 
@@ -17,6 +18,10 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
         userType="client"
     }
 
+    const socket = useSocket();
+    
+    const navigate = useNavigate();
+    
     const [user, setUser] = useState<any>();
     const [projects, setProjects] = useState([]);
     const [completedProjects, setCompletedProjects] = useState([]);
@@ -35,9 +40,22 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
     const [isFollowing, setIsFollowing] = useState(false);
     const [loading, setLoading] = useState(false);
     const [connectionRequest, setConnectionRequest] = useState(false);
-    const navigate = useNavigate();
     const accessToken = localStorage.getItem("accessToken");
     const loggedInRole = localStorage.getItem("role") || "";
+
+    useEffect(() => {
+        socket?.on("accept connection", (response) => {
+            console.log("connection accepted", response);
+            setConnectionRequest(false);
+            setIsConnected(true);
+        });
+
+        socket?.on("reject connection", (response) => {
+            console.log("connection rejected", response);
+            setConnectionRequest(false);
+            setIsConnected(false);
+        });
+    }, [socket]);
 
     useEffect(() => {
         // console.log("fetched token",accessToken)
@@ -98,7 +116,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                     if(fetchedUser.followers && fetchedUser.followers.some((follower: { username: string }) => follower.username === loggedInUser.username)){
                         setIsFollowing(true);
                     }
-                    if(fetchedUser.notifications && fetchedUser.notifications.some((notification: { type: string }) => notification.type === "connection_request" && notification.sender === loggedInUser.username)){
+                    if(fetchedUser.notifications && fetchedUser.notifications.some((notification: { type: string; sender: string }) => notification.type === "connection_request" && notification.sender === loggedInUser.username)){
                         setConnectionRequest(true);
                     }
                     if(fetchedUser.connections && fetchedUser.connections.some((connection: { username: string }) => connection.username === loggedInUser.username)){
@@ -137,8 +155,8 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                 const projects = response.data.data;
                 // console.log("prj",projects)
                 setProjects(projects);
-                let cp = projects.filter((project) => project.status === "Completed");
-                let ip = projects.filter((project) => project.status === "In Progress");
+                let cp = projects.filter((project: any) => project.status === "Completed");
+                let ip = projects.filter((project: any) => project.status === "In Progress");
                 setCompletedProjects(cp);
                 setInProgressProjects(ip);
             } catch (error) {
@@ -209,24 +227,40 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
     }
 
     const sendConnectionRequest = async () => {
+        
         try {
-            const response = await axios.post(`http://localhost:8000/api/v1/client/send_notification/${username}`, {
-                username: username,
-                receiverRole: "client",
-                notification:{
-                  message: `You have a new connection request from @${loggedUsername}`,
-                  type: "connection_request",
-                  sender: localStorage.getItem("username"),
-                  receiver: username,
-                  senderRole: localStorage.getItem("role"),
-                  markedAsRead: false,
-                }, 
-  
-            }, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
+            socket?.emit("notification", {
+                // username: username,
+                accessToken: accessToken,
+                notification: {
+                    message: `You have a new connection request from @${loggedUsername}`,
+                    type: "connection_request",
+                    sender: localStorage.getItem("username"),
+                    receiver: username,
+                    senderRole: localStorage.getItem("role"),
+                    receiverRole: "client",
+                    markedAsRead: false
+                }
             });
+            // const response = await axios.post(`http://localhost:8000/api/v1/client/send_notification/${username}`, {
+            //     // username: username,
+            //     // receiverRole: "client",
+            //     notification:{
+            //       message: `You have a new connection request from @${loggedUsername}`,
+            //       type: "connection_request",
+            //       sender: localStorage.getItem("username"),
+            //       receiver: username,
+            //       senderRole: localStorage.getItem("role"),
+            //       receiverRole: "client",
+            //       markedAsRead: false,
+            //     }, 
+  
+            // }, {
+            //     headers: {
+            //         Authorization: `Bearer ${accessToken}`,
+            //     },
+            // });
+
             setConnectionRequest(true);
             setIsConnected(false);
         } catch (error) {
@@ -237,6 +271,16 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
     const handleDisconnect = async () => {
         try {
             if(connectionRequest){
+                socket?.emit("delete notification", {
+                    accessToken: accessToken,
+                    info:{
+                            type: "connection_request",
+                            receiver: username,
+                            receiverRole: "client",
+                            markedAsRead: false
+                        }
+                    
+                });
                 setConnectionRequest(false);
             }
             else if(window.confirm("Are you sure you want to disconnect?")){
@@ -265,7 +309,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
     let completed=0;
     let cancelled=0;
     let total=projects.length;
-    projects.map((project)=>{
+    projects.map((project: { status: string })=>{
         if(project.status==="Not Started"){
             notStarted++;
         }
@@ -402,7 +446,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
         <div className="mb-8 overflow-auto bg-gray-100 px-4 py-6 rounded-lg border border-gray-200">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {inProgressProjects.length > 0 ? (
-                inProgressProjects.map((project) => (
+                inProgressProjects.map((project: { _id: string; title: string; description: string; industry: string }) => (
                     <div
                         key={project._id}
                         className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
@@ -456,7 +500,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
         <div className="mb-8 overflow-auto bg-gray-100 px-4 py-6 rounded-lg border border-gray-200">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {completedProjects.length > 0 ? (
-                completedProjects.map((project) => (
+                completedProjects.map((project: { _id: string; title: string; description: string; industry: string }) => (
                     <div
                         key={project._id}
                         className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"

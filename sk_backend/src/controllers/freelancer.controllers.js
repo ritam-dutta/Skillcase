@@ -502,7 +502,9 @@ const getConnections = asyncHandler(async (req, res) => {
 });
 
 const createNotification = asyncHandler(async (req, res) => {
-    const {username, receiverRole, notification} = req.body;
+    const {notification} = req.body;
+    const username = notification.receiver;
+    const receiverRole = notification.receiverRole;
     let User = receiverRole === "freelancer" ? Freelancer : Client; 
     const user = await User.findOneAndUpdate({username},
         {

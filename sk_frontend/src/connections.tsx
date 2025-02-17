@@ -6,16 +6,22 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 interface Connections {}
 const Connections: React.FC<Connections> = ({}) => {
-
+    
+    interface User {
+        _id: string;
+        username: string;
+        role: string;
+    }
     const [loading, setLoading] = useState(false);
     const [connections, setConnections] = useState([]);
     const [clientConnections, setClientConnections] = useState<any[]>([]);
     const [freelancerConnections, setFreelancerConnections] = useState<any[]>([]);
     const [isAlreadyConnected, setIsAlreadyConnected] = useState(false);
-    const [alreadyConnectedUser, setAlreadyConnectedUser] = useState({});
+    const [alreadyConnectedUser, setAlreadyConnectedUser] = useState<User>();
     const {username} = useParams();
     const navigate = useNavigate();
     const currentRole = window.location.href.includes("client") ? "client" : "freelancer";
+
 
     useEffect(() => {
         const fetchConnections = async () => {
@@ -27,9 +33,9 @@ const Connections: React.FC<Connections> = ({}) => {
                 let clientList: any[] = [];
                 let freelancerList: any[] = [];
                 let alreadyConnected = false;
-                let connectedUser = {};
+                let connectedUser: User | undefined = undefined;
                 
-                fetchedConnections.forEach(connection => {
+                fetchedConnections.forEach((connection: any) => {
                     if(connection.username === localStorage.getItem("username")) {
                         alreadyConnected = true;
                         connectedUser = connection;
@@ -68,7 +74,7 @@ const Connections: React.FC<Connections> = ({}) => {
                 <div className="space-y-6">
                     {/* Description */}
                     <div>
-                    {isAlreadyConnected ? (
+                    {isAlreadyConnected && alreadyConnectedUser ? (
                         <div  className="bg-slate-100 p-4 rounded-md shadow-md flex flex-col items-center justify-center gap-4 mb-5">
                             <p className="font-bold">You are connected with each other </p>
                             <div className="flex justify-between w-full -mt-4">

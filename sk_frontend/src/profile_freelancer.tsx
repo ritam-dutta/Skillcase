@@ -6,6 +6,7 @@ import Loader from "./components/loader";
 // import Footer from "./components/footer";
 import axios from "axios";
 import "./App.css"
+import { useSocket } from "./context/socket";
 interface FreelancerProfile {}
 const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
     const [user, setUser] = useState<any>();
@@ -18,6 +19,8 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
     else if(url.includes("client")){
         userType="client"
     }
+
+    const socket = useSocket();
 
     const[fullname,setFullname]=useState("");
     const[following, setFollowing]=useState(0);
@@ -36,10 +39,24 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
+    const accessToken = localStorage.getItem("accessToken");
+    const loggedInRole = localStorage.getItem("role") || "";
+    
+    useEffect(() => {
+          socket?.on("accept connection", (response) => {
+              console.log("connection accepted", response);
+              setConnectionRequest(false);
+              setIsConnected(true);
+          });
+
+          socket?.on("reject connection", (response) => {
+              console.log("connection rejected", response);
+              setConnectionRequest(false);
+              setIsConnected(false);
+          });
+      }, [socket]);
 
     useEffect(() => {
-        const accessToken = localStorage.getItem("accessToken");
-        const loggedInRole = localStorage.getItem("role") || "";
         // console.log("fetched token",accessToken)
         if (!accessToken) {
             navigate(`/${currentRole}/login`);
@@ -125,7 +142,6 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
 
     const handleFollow = async () => {
       try {
-          const accessToken = localStorage.getItem("accessToken");
           const response = await axios.post(`http://localhost:8000/api/v1/freelancer/follow/${username}`, {
               username: username,
               followerRole: localStorage.getItem("role"),
@@ -144,7 +160,6 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
 
   const handleUnFollow = async () => {
       try {
-          const accessToken = localStorage.getItem("accessToken");
           // console.log(")
           const response = await axios.post(`http://localhost:8000/api/v1/freelancer/unfollow/${username}`, {
               username: username,
@@ -164,25 +179,38 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
 
   const sendConnectionRequest = async () => {
       try {
-          const accessToken = localStorage.getItem("accessToken");
-
-          const response = await axios.post(`http://localhost:8000/api/v1/freelancer/send_notification/${username}`, {
-              username: username,
-              receiverRole: "freelancer",
-              notification:{
+          socket?.emit("notification", {
+            accessToken: accessToken,
+            notification: {
                 message: `You have a new connection request from @${loggedUsername}`,
                 type: "connection_request",
                 sender: localStorage.getItem("username"),
                 receiver: username,
                 senderRole: localStorage.getItem("role"),
-                markedAsRead: false,
-              }, 
+                receiverRole: "freelancer",
+                markedAsRead: false
+              }
+            });
+          // const accessToken = localStorage.getItem("accessToken");
 
-          }, {
-              headers: {
-                  Authorization: `Bearer ${accessToken}`,
-              },
-          });
+          // const response = await axios.post(`http://localhost:8000/api/v1/freelancer/send_notification/${username}`, {
+          //     // username: username,
+          //     // receiverRole: "freelancer",
+          //     notification:{
+          //       message: `You have a new connection request from @${loggedUsername}`,
+          //       type: "connection_request",
+          //       sender: localStorage.getItem("username"),
+          //       receiver: username,
+          //       senderRole: localStorage.getItem("role"),
+          //       receiverRole: "freelancer",
+          //       markedAsRead: false,
+          //     }, 
+
+          // }, {
+          //     headers: {
+          //         Authorization: `Bearer ${accessToken}`,
+          //     },
+          // });
           setConnectionRequest(true);
           setIsConnected(false);
       } catch (error) {
@@ -192,7 +220,6 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
 
   const handleConnect = async () => {
       try {
-          const accessToken = localStorage.getItem("accessToken");
           const response = await axios.post(`http://localhost:8000/api/v1/freelancer/connect/${username}`, {
               username: username,
               connectorRole: localStorage.getItem("role"),
@@ -212,10 +239,19 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
   const handleDisconnect = async () => {
       try {
           if(connectionRequest){
-            setConnectionRequest(false);
+              socket?.emit("delete notification", {
+                  accessToken: accessToken,
+                  info:{
+                          type: "connection_request",
+                          receiver: username,
+                          receiverRole: "freelancer",
+                          markedAsRead: false
+                      }
+                  
+              });
+              setConnectionRequest(false);
           }
           else if(window.confirm("Are you sure you want to disconnect?")){
-          const accessToken = localStorage.getItem("accessToken");
           const response = await axios.post(`http://localhost:8000/api/v1/freelancer/disconnect/${username}`, {
               username: username,
               disConnectorRole: localStorage.getItem("role"),
@@ -233,10 +269,6 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
       }
   }
 
-    // console.log(user.data.freelancer.fullname)
-    // export const temp=(s:string)=>({
-    //     setAbout({s})
-    // })
   return(
     <>
         

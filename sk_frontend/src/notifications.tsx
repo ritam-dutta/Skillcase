@@ -3,24 +3,46 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Header from "./components/header";
-import Loader from "./components/loader";
+// import Loader from "./components/loader";
 import { Bell, CheckCircle, Key, Trash2 } from "lucide-react";
+import { useSocket } from "./context/socket";
+import { useNotification } from "./context/notifications";
 
+interface Notification {
+    message: string;
+    markAsRead: boolean;
+    sender: string;
+    receiver: string;
+    type: string;
+    senderRole: string;
+}
 interface Notifications {}
 const Notifications: React.FC<Notifications> = ({}) => {
-    const [notifications, setNotifications] = useState([]);
+    // const [notifications, setNotifications] = useState<Notification[]>([]);
     const [loading, setLoading] = useState(false);
+    const socket = useSocket();
+    const { notifications, setNotifications} = useNotification();
+    // const {unreadNotifications, setUnreadNotifications} = useNotification();
     // const [messages, setMessages] = useState([]);
     // const [markAsReads, setMarkAsReads] = useState(false);
     // const [senders, setSenders] = useState([]);
     // const [receivers, setReceivers] = useState([]);
     // const [types, setTypes] = useState([]);
-    const [isConnected, setIsConnected] = useState(false);
-    const [isRejected, setIsRejected] = useState(false);
+    // const [isConnected, setIsConnected] = useState(false);
+    // const [isRejected, setIsRejected] = useState(false);
     const navigate = useNavigate();
     // const currentRole = window.location.href.includes("client") ? "client" : "freelancer";
     const loggedRole = localStorage.getItem("role");
     const loggedUsername = localStorage.getItem("username");
+    const accessToken = localStorage.getItem("accessToken");
+
+
+    // useEffect(() => {
+    //     socket?.on("notification", (notification : Notification) => {
+    //         console.log("Notification Received", notification);
+    //         setNotifications((prevNotifications) => [notification, ...prevNotifications]);
+    //     });
+    // }, [socket]);
 
     useEffect(() => {
         const fetchNotifications = async () => {
@@ -28,17 +50,17 @@ const Notifications: React.FC<Notifications> = ({}) => {
             try {
                 const response = await axios.get(`http://localhost:8000/api/v1/${loggedRole}/get_notifications/${loggedUsername}`,{
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                        Authorization: `Bearer ${accessToken}`,
                         // role: loggedRole,
                     }
                 });
                 const fetchedNotifications = response.data.data.notifications;
                 setNotifications(fetchedNotifications);
-                let message = fetchedNotifications.map((notif) => notif.message);
-                let markAsRead = fetchedNotifications.map((notif) => notif.markAsRead);
-                let sender = fetchedNotifications.map((notif) => notif.sender);
-                let receiver = fetchedNotifications.map((notif) => notif.receiver);
-                let type = fetchedNotifications.map((notif) => notif.type);
+                let message: string[] = fetchedNotifications.map((notif: Notification) => notif.message);
+                let markAsRead: boolean[] = fetchedNotifications.map((notif: Notification) => notif.markAsRead);
+                let sender: string[] = fetchedNotifications.map((notif: Notification) => notif.sender);
+                let receiver = fetchedNotifications.map((notif: Notification) => notif.receiver);
+                let type = fetchedNotifications.map((notif: Notification) => notif.type);
                 // setMessages(message);
                 // setMarkAsReads(markAsRead);
                 // setSenders(sender);
@@ -54,27 +76,36 @@ const Notifications: React.FC<Notifications> = ({}) => {
     // console.log("notifications",notifications)
     
     const handleConnect = async (username:String, role:string) => {
+        
         try {
-            const accessToken = localStorage.getItem("accessToken");
-            const response1 = await axios.post(`http://localhost:8000/api/v1/${loggedRole}/connect/${loggedUsername}`, {
-                username: username,
-                connectorRole: role,
-            }, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
+            setNotifications(notifications.filter((notif) => notif.sender !== username || notif.type !== "connection_request"));
+            socket?.emit("accept connection", {
+                accessToken: accessToken,
+                info:{
+                    sender: loggedUsername,
+                    receiver: username,
+                    senderRole: loggedRole,
+                    receiverRole: role,
+                }
             });
-            setIsConnected(true);
-            const response2 = await axios.post(`http://localhost:8000/api/v1/${loggedRole}/delete_notification/${loggedUsername}`, {
-                username: loggedUsername,
-                type: "connection_request",
-            }, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            });
-            // setConnections(connections+1);
-            // console.log("Connect Response:", response.data);
+            // const response1 = await axios.post(`http://localhost:8000/api/v1/${loggedRole}/connect/${loggedUsername}`, {
+            //     username: username,
+            //     connectorRole: role,
+            // }, {
+            //     headers: {
+            //         Authorization: `Bearer ${accessToken}`,
+            //     },
+            // });
+            // setIsConnected(true);
+            // const response2 = await axios.post(`http://localhost:8000/api/v1/${loggedRole}/delete_notification/${loggedUsername}`, {
+            //     username: loggedUsername,
+            //     type: "connection_request",
+            // }, {
+            //     headers: {
+            //         Authorization: `Bearer ${accessToken}`,
+            //     },
+            // });
+    
         } catch (error) {
             console.error("Connect Error:", error);
         }
@@ -82,22 +113,32 @@ const Notifications: React.FC<Notifications> = ({}) => {
 
     const handleReject = async ( username:string, type:string) => {
         try {
+            setNotifications(notifications.filter((notif) => notif.sender !== username  || notif.type !== type));
             // console.log(username,type)
-            const accessToken = localStorage.getItem("accessToken");
-            const response = await axios.post(`http://localhost:8000/api/v1/${loggedRole}/delete_notification/${notifications[0].receiver}`, {
-                username: username,
-                type: type,
-            }, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            });  
-            setIsRejected(true);
+            socket?.emit("reject connection", {
+                accessToken: accessToken,
+                info:{
+                    receiver: loggedUsername,
+                    sender: username,
+                    receiverRole: loggedRole,
+                    // receiverRole: role,
+                }
+            });
+            // const response = await axios.post(`http://localhost:8000/api/v1/${loggedRole}/delete_notification/${loggedUsername}`, {
+            //     username: username,
+            //     type: type,
+            // }, {
+            //     headers: {
+            //         Authorization: `Bearer ${accessToken}`,
+            //     },
+            // });  
+            // setIsRejected(true);
             // console.log("Disconnect Response:", response.data);
         } catch (error) {
             console.error("Delete notification Error:", error);
         }
     }
+    // console.log("notis", notifications)
 
     // const notifications =[
     //     {
@@ -173,19 +214,17 @@ const Notifications: React.FC<Notifications> = ({}) => {
                     {(notif.type === "follow_request" || notif.type === "connection_request") && !notif.markAsRead ? (
                         <div className="flex gap-4 w-full">
                             
-                        {isRejected ? null :(
                         <button
                             onClick={() => {handleConnect(notif.sender, notif.senderRole)}}
-                            className={isConnected ?" bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" : " bg-blue-500 text-white text-center px-3 py-1 rounded-lg shadow-md hover:bg-blue-600 transition"}>
-                                {isConnected ? "Accepted" : "Accept"}
-                        </button>)}
+                            className={" bg-blue-500 text-white text-center px-3 py-1 rounded-lg shadow-md hover:bg-blue-600 transition"}>
+                                {"Accept"}
+                        </button>
 
-                        {isConnected ? null :(
                         <button
-                            onClick={() => {handleReject(notif.receiver, notif.type)}}
+                            onClick={() => {handleReject(notif.sender, notif.type)}}
                             className=" bg-gray-200 text-blue-950 text-center px-3 py-1  rounded-lg shadow-md">
-                                {isRejected ? "Rejected" : "Reject"}
-                        </button>)}
+                                {"Reject"}
+                        </button>
 
                         </div>
                     )
