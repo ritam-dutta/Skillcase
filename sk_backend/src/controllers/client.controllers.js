@@ -488,14 +488,14 @@ const getNotifications = asyncHandler(async (req, res) => {
 });
 
 const deleteNotification = asyncHandler(async (req, res) => {
-    // console.log("entered deleteNotification");
-    const {username, type} = req.body;
+    console.log("entered deleteNotification");
+    const {sender, type} = req.body;
     // console.log(username)
+    // console.log(receiver, sender, type);
     
-    const client = await Client.findOneAndUpdate(
-        { username },
+    const client = await Client.findByIdAndUpdate(req.user?._id,
         {
-            $pull: { notifications: { type } }
+            $pull: {notifications: {sender : sender, type : type}}
         },
         {
             new: true
@@ -507,6 +507,23 @@ const deleteNotification = asyncHandler(async (req, res) => {
     return res
     .status(200)
     .json(new ApiResponse(200, {client}, 'Notification deleted successfully'));
+});
+
+const deleteAllNotifications = asyncHandler(async (req, res) => {
+    const client = await Client.findByIdAndUpdate(req.user?._id,
+        {
+            $set: {notifications: []}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!client) {
+        throw new ApiError(404, 'Client not found');
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {client}, 'All notifications deleted successfully'));
 });
 
 export {
@@ -528,4 +545,5 @@ export {
     createNotification,
     getNotifications,
     deleteNotification,
+    deleteAllNotifications,
 }

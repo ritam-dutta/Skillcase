@@ -537,11 +537,10 @@ const getNotifications = asyncHandler(async (req, res) => {
 });
 
 const deleteNotification = asyncHandler(async (req, res) => {
-    const {username, type} = req.body;
-    const freelancer = await Freelancer.findOneAndUpdate(
-        { username, 'notifications.type': type },
+    const {sender, type} = req.body;
+    const freelancer = await Freelancer.findByIdAndUpdate(req.user?._id,
         {
-            $pull: { notifications: { type } }
+            $pull: { notifications: {sender: sender, type : type } }
         },
         {
             new: true
@@ -554,6 +553,23 @@ const deleteNotification = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, {freelancer}, 'Notification deleted successfully'));
 });
+
+const deleteAllNotifications = asyncHandler(async (req, res) => {
+    const freelancer = await Freelancer.findByIdAndUpdate(req.user?._id,
+        {
+            $set: {notifications: []}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!freelancer) {
+        throw new ApiError(404, 'Freelancer not found');
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {freelancer}, 'All notifications deleted successfully'));
+}); 
 
 // const updateFreelancerCoverImage = asyncHandler(async (req, res) => {
 //     const coverImageLocalPath = req.file?.path;
@@ -601,6 +617,7 @@ export {
     getConnections,
     createNotification,
     getNotifications,
-    deleteNotification
+    deleteNotification,
+    deleteAllNotifications,
     // updateFreelancerCoverImage
 }

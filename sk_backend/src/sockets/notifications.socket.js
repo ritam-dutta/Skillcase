@@ -24,37 +24,37 @@ export const notifications = () => {
         })
         socket.on("accept connection", async (data) => {
             const {accessToken, info} = data;
-            const response1 = await axios.post(`http://localhost:8000/api/v1/${info.senderRole}/connect/${info.sender}`, {
-                username: info.receiver,
-                connectorRole: info.receiverRole,
+            const response1 = await axios.post(`http://localhost:8000/api/v1/${info.receiverRole}/connect/${info.receiver}`, {
+                username: info.sender,
+                connectorRole: info.senderRole,
             }, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
-            const response2 = await axios.post(`http://localhost:8000/api/v1/${info.senderRole}/delete_notification/${info.sender}`, {
-                username: info.sender,
+            const response2 = await axios.post(`http://localhost:8000/api/v1/${info.receiverRole}/delete_notification/${info.receiver}`, {
+                sender: info.sender,
                 type: "connection_request",
             }, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
-            socket.to(info.receiver).emit("accept connection", response1.data.data);
+            socket.to(info.sender).emit("accept connection", response1.data.data);
         })
         socket.on("reject connection", async (data) => {
             // console.log("reject connection")
             const {accessToken, info} = data;
             console.log("info", info);
             const response = await axios.post(`http://localhost:8000/api/v1/${info.receiverRole}/delete_notification/${info.receiver}`, {
-                username: info.receiver,
+                sender: info.sender,
                 type: "connection_request",
             }, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
-            console.log("receiver", info.sender);
+            console.log("sender", info.sender);
             socket.to(info.sender).emit("reject connection", response.data.data);
             // console.log("exit")
         })
@@ -62,15 +62,40 @@ export const notifications = () => {
         socket.on("delete notification", async (data) => {
             const {accessToken, info} = data;
             const response = await axios.post(`http://localhost:8000/api/v1/${info.receiverRole}/delete_notification/${info.receiver}`, {
-                username: info.receiver,
+                sender: info.sender,
                 type: info.type,
             }, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
-            socket.to(info.receiver).emit("delete notification", response.data.data);
+            socket.to(info.sender).emit("delete notification", response.data.data);
         })
+
+        socket.on("delete all notifications", async (data) => {
+            const {accessToken, info} = data;
+            console.log("info")
+            console.log(accessToken, info);
+            await axios.post(`http://localhost:8000/api/v1/${info.userRole}/delete_all_notifications/${info.user}`, {},
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            // socket.to(info.sender).emit("delete all notifications", response.data.data);
+        })
+
+        // socket.on("following", async (data) => {
+        //     const {accessToken, info} = data;
+        //     const response = await axios.post(`http://localhost:8000/api/v1/${info.receiverRole}/send_notification/${info.receiver}`, {
+        //         notification: info.notification,
+        //     }, {
+        //         headers: {
+        //             Authorization: `Bearer ${accessToken}`,
+        //         },
+        //     });
+        //     socket.to(info.receiver).emit("following", info.notification);
+        // })
 
 
     })

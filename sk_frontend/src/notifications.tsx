@@ -4,9 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Header from "./components/header";
 // import Loader from "./components/loader";
-import { Bell, CheckCircle, Key, Trash2 } from "lucide-react";
-import { useSocket } from "./context/socket";
-import { useNotification } from "./context/notifications";
+import { Bell, CheckCircle, Key, Trash2, User } from "lucide-react";
+import { useSocket } from "./context/socket.context";
+import { useNotification } from "./context/notifications.context";
 
 interface Notification {
     message: string;
@@ -18,11 +18,10 @@ interface Notification {
 }
 interface Notifications {}
 const Notifications: React.FC<Notifications> = ({}) => {
-    // const [notifications, setNotifications] = useState<Notification[]>([]);
     const [loading, setLoading] = useState(false);
     const socket = useSocket();
     const { notifications, setNotifications} = useNotification();
-    // const {unreadNotifications, setUnreadNotifications} = useNotification();
+    const {unreadNotifications, setUnreadNotifications} = useNotification();
     // const [messages, setMessages] = useState([]);
     // const [markAsReads, setMarkAsReads] = useState(false);
     // const [senders, setSenders] = useState([]);
@@ -37,13 +36,6 @@ const Notifications: React.FC<Notifications> = ({}) => {
     const accessToken = localStorage.getItem("accessToken");
 
 
-    // useEffect(() => {
-    //     socket?.on("notification", (notification : Notification) => {
-    //         console.log("Notification Received", notification);
-    //         setNotifications((prevNotifications) => [notification, ...prevNotifications]);
-    //     });
-    // }, [socket]);
-
     useEffect(() => {
         const fetchNotifications = async () => {
             setLoading(true);
@@ -55,7 +47,9 @@ const Notifications: React.FC<Notifications> = ({}) => {
                     }
                 });
                 const fetchedNotifications = response.data.data.notifications;
-                setNotifications(fetchedNotifications);
+                console.log(fetchNotifications)
+                setNotifications(fetchedNotifications.reverse());
+                setUnreadNotifications(fetchedNotifications.filter((notif : Notification) => !notif.markAsRead));
                 let message: string[] = fetchedNotifications.map((notif: Notification) => notif.message);
                 let markAsRead: boolean[] = fetchedNotifications.map((notif: Notification) => notif.markAsRead);
                 let sender: string[] = fetchedNotifications.map((notif: Notification) => notif.sender);
@@ -75,43 +69,26 @@ const Notifications: React.FC<Notifications> = ({}) => {
     }, [loggedUsername, navigate]);
     // console.log("notifications",notifications)
     
-    const handleConnect = async (username:String, role:string) => {
+    const handleConnect = (username:String, role:string) => {
         
         try {
             setNotifications(notifications.filter((notif) => notif.sender !== username || notif.type !== "connection_request"));
             socket?.emit("accept connection", {
                 accessToken: accessToken,
                 info:{
-                    sender: loggedUsername,
-                    receiver: username,
-                    senderRole: loggedRole,
-                    receiverRole: role,
+                    sender: username,
+                    receiver: loggedUsername,
+                    senderRole: role,
+                    receiverRole: loggedRole,
                 }
             });
-            // const response1 = await axios.post(`http://localhost:8000/api/v1/${loggedRole}/connect/${loggedUsername}`, {
-            //     username: username,
-            //     connectorRole: role,
-            // }, {
-            //     headers: {
-            //         Authorization: `Bearer ${accessToken}`,
-            //     },
-            // });
-            // setIsConnected(true);
-            // const response2 = await axios.post(`http://localhost:8000/api/v1/${loggedRole}/delete_notification/${loggedUsername}`, {
-            //     username: loggedUsername,
-            //     type: "connection_request",
-            // }, {
-            //     headers: {
-            //         Authorization: `Bearer ${accessToken}`,
-            //     },
-            // });
     
         } catch (error) {
             console.error("Connect Error:", error);
         }
     }
 
-    const handleReject = async ( username:string, type:string) => {
+    const handleReject = ( username:string, type:string) => {
         try {
             setNotifications(notifications.filter((notif) => notif.sender !== username  || notif.type !== type));
             // console.log(username,type)
@@ -121,68 +98,45 @@ const Notifications: React.FC<Notifications> = ({}) => {
                     receiver: loggedUsername,
                     sender: username,
                     receiverRole: loggedRole,
-                    // receiverRole: role,
                 }
             });
-            // const response = await axios.post(`http://localhost:8000/api/v1/${loggedRole}/delete_notification/${loggedUsername}`, {
-            //     username: username,
-            //     type: type,
-            // }, {
-            //     headers: {
-            //         Authorization: `Bearer ${accessToken}`,
-            //     },
-            // });  
-            // setIsRejected(true);
             // console.log("Disconnect Response:", response.data);
         } catch (error) {
             console.error("Delete notification Error:", error);
         }
     }
-    // console.log("notis", notifications)
+    
+    const deleteNotification = (username: string, type: string) => {
+        try {
+            setNotifications(notifications.filter((notif) => notif.sender !== username || notif.type !== type));
+            socket?.emit("delete notification", {
+                accessToken: accessToken,
+                info:{
+                    receiver: loggedUsername,
+                    receiverRole: loggedRole,
+                    sender: username,
+                    type: type,
+                }
+            });
+        } catch (error) {
+            console.error("Delete notification Error:", error);
+        }
+    }
 
-    // const notifications =[
-    //     {
-    //       "_id": "1",
-    //       "recipient": "john_doe",
-    //       "message": "Alice started following you.",
-    //       "type": "follow",
-    //       "read": false,
-    //       "createdAt": "2025-01-30T10:00:00Z"
-    //     },
-    //     {
-    //       "_id": "2",
-    //       "recipient": "john_doe",
-    //       "message": "Your project 'Website Design' received a new proposal from Mark.",
-    //       "type": "proposal",
-    //       "read": false,
-    //       "createdAt": "2025-01-30T09:45:00Z"
-    //     },
-    //     {
-    //       "_id": "3",
-    //       "recipient": "john_doe",
-    //       "message": "Sarah sent you a new message.",
-    //       "type": "message",
-    //       "read": true,
-    //       "createdAt": "2025-01-30T09:30:00Z"
-    //     },
-    //     {
-    //       "_id": "4",
-    //       "recipient": "john_doe",
-    //       "message": "Your proposal for 'Logo Design' was accepted!",
-    //       "type": "proposal_accepted",
-    //       "read": false,
-    //       "createdAt": "2025-01-30T09:00:00Z"
-    //     },
-    //     {
-    //       "_id": "5",
-    //       "recipient": "john_doe",
-    //       "message": "Your payment for 'Mobile App Development' has been processed.",
-    //       "type": "payment",
-    //       "read": true,
-    //       "createdAt": "2025-01-29T15:30:00Z"
-    //     }
-    //   ]
-    //   setNotifications(arr);
+    const deleteAllNotifications = () => {
+        try {
+            setNotifications([]);
+            socket?.emit("delete all notifications", {
+                accessToken: accessToken,
+                info:{
+                    user: loggedUsername,
+                    userRole: loggedRole,
+                }
+            });
+        } catch (error) {
+            console.error("Delete all notifications Error:", error);
+        }
+    }
       
     return (
         <div className="min-h-screen w-full bg-gray-100">
@@ -193,8 +147,16 @@ const Notifications: React.FC<Notifications> = ({}) => {
                  Notifications
                 </h2>
             </div>
-        <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-lg p-6 border border-gray-200 mt-[-8vh]">
-            <h1 className="text-xl font-bold">New notifications</h1>
+        <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-6 border border-gray-200 mt-[-8vh]">
+            <div className="flex items-center justify-between">
+                <h1 className="text-xl font-bold">New notifications</h1>
+                {notifications.length > 0 ?(
+                <button className="flex text-green-500 hover:text-green-700" onClick={deleteAllNotifications}>
+                    <CheckCircle size={20}/>
+                    <p> All </p>
+                </button>)
+                : null}
+            </div>
           {loading ? (
             <p className="text-gray-600">Loading notifications...</p>
           ) : notifications.length === 0 ? (
@@ -203,15 +165,20 @@ const Notifications: React.FC<Notifications> = ({}) => {
             <div className="space-y-4">
               {notifications.map((notif,index) => (
                 <div key={index}
-                  className={`flex items-center justify-between px-3 py-2 rounded-lg border border-gray-300 shadow-sm 
+                  className={`flex items-center justify-between px-3 py-2 rounded-lg border border-gray-300 shadow-sm mt-2
                     ${notif.markAsRead ? "bg-gray-100" : "bg-blue-100"}`}
                 >
                   <div className="flex gap-4">
-                    <Link to={`/${notif.senderRole}/profile/${notif.sender}`} className="text-sm font-medium">@{notif.sender}</Link><p className="text-sm font-medium">{notif.message}</p>
+                    <Link to={`/${notif.senderRole}/profile/${notif.sender}`}>
+                        <div className="flex justify-center items-center rounded-full h-6 w-6 bg-gray-400">
+                            <img src="/images/user.png" alt="User" className="h-4 w-4" />
+                        </div>
+                    </Link>
+                    <p className="text-sm font-medium">{notif.message}</p>
                     {/* <p className="text-xs text-gray-500">{new Date(notif.createdAt).toLocaleString()}</p> */}
                   </div>
                   <div className="flex space-x-3">
-                    {(notif.type === "follow_request" || notif.type === "connection_request") && !notif.markAsRead ? (
+                    {(notif.type === "connection_request") && !notif.markAsRead ? (
                         <div className="flex gap-4 w-full">
                             
                         <button
@@ -229,19 +196,19 @@ const Notifications: React.FC<Notifications> = ({}) => {
                         </div>
                     )
                     :(
-                        <div>
+                        <div className="flex gap-4 w-full">
                         <button
-                            // onClick={() => setMarkAsRead(true)}
+                            onClick={() => {deleteNotification( notif.sender, notif.type)}}
                             className="text-green-500 hover:text-green-700"
                         >
                             <CheckCircle size={18} />
                         </button>
-                        <button
+                        {/* <button
                         //   onClick={() => deleteNotification(notif._id)}
                         className="text-red-500 hover:text-red-700"
                         >
                         <Trash2 size={18} />
-                        </button>
+                        </button> */}
                         </div>)
                         
                     }

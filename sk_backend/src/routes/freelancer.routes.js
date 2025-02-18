@@ -19,6 +19,7 @@ import {
     createNotification,
     getNotifications,
     deleteNotification,
+    deleteAllNotifications
 } from "../controllers/freelancer.controllers.js";
 import {upload} from "../middlewares/multer.middlewares.js"
 import { verifyJWT } from "../middlewares/auth.middlewares.js";
@@ -74,6 +75,8 @@ freelancerRouter.route("/send_notification/:username").post(verifyJWT, createNot
 freelancerRouter.route("/get_notifications/:username").get(verifyJWT, getNotifications);
 
 freelancerRouter.route("/delete_notification/:username").post(verifyJWT, deleteNotification);
+
+freelancerRouter.route("/delete_all_notifications/:username").post(verifyJWT, deleteAllNotifications);
 
 freelancerRouter.route("/update_avatar/:username").post(verifyJWT, upload.single("avatar"), updateFreelancerAvatar);
 export default freelancerRouter;

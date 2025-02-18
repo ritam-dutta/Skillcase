@@ -3,8 +3,8 @@ import "../App.css";
 import { Bell,User, Home, Upload , UserCheck, File } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useSocket } from "../context/socket";
-import { useNotification } from "../context/notifications";
+import { useSocket } from "../context/socket.context";
+import { useNotification } from "../context/notifications.context";
 
 interface Header {}
 
@@ -109,12 +109,15 @@ const Header: React.FC<Header> = ({}) => {
           >
             <Home/>
           </Link>
+          {loggedUsername === username ?  (
           <Link 
             to={`/${role}/projects/${username}`}
             className={`text-lg font-medium hover:text-gray-400 transition  ${activeTab==="projects" ? "text-gray-400" : "text-gray-600"}`}
           >
             <File/>
-          </Link>
+          </Link>)
+          : null
+          }
           {role==="freelancer" ? null :(
           <Link 
             to={`/client/upload_project/${username}`}

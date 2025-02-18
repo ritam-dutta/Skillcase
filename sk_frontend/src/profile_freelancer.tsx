@@ -6,7 +6,7 @@ import Loader from "./components/loader";
 // import Footer from "./components/footer";
 import axios from "axios";
 import "./App.css"
-import { useSocket } from "./context/socket";
+import { useSocket } from "./context/socket.context";
 interface FreelancerProfile {}
 const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
     const [user, setUser] = useState<any>();
@@ -151,7 +151,18 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
               },
           });
           setIsFollowing(true);
-          setFollowers(followers+1);
+          socket?.emit("notification", {
+            accessToken: accessToken,
+            notification: {
+                message: `@${loggedUsername} has started following you!`,
+                type: "following",
+                sender: localStorage.getItem("username"),
+                receiver: username,
+                senderRole: localStorage.getItem("role"),
+                receiverRole: "freelancer",
+                markedAsRead: false
+            }
+          });
           // console.log("Follow Response:", response.data);
       } catch (error) {
           console.error("Follow Error:", error);
@@ -170,7 +181,7 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
               },
           });
           setIsFollowing(false);
-          setFollowers(followers-1);
+          // setFollowers(followers-1);
           // console.log("UnFollow Response:", response.data);
       } catch (error) {
           console.error("UnFollow Error:", error);
@@ -229,7 +240,7 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
               },
           });
           setIsConnected(true);
-          setConnections(connections+1);
+          // setConnections(connections+1);
           // console.log("Connect Response:", response.data);
       } catch (error) {
           console.error("Connect Error:", error);
@@ -261,7 +272,7 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
               },
           });
           setIsConnected(false);
-          setConnections(connections-1);
+          // setConnections(connections-1);
         }
           // console.log("Disconnect Response:", response.data);
       } catch (error) {

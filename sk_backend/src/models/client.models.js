@@ -74,6 +74,10 @@ const clientSchema = new mongoose.Schema({
         type: Array,
         required: false,
     },
+    collaborations:{
+        type: [mongoose.Schema.Types.ObjectId],
+        required: false,
+    },
     refreshToken:{
         type: String,
         required: false,

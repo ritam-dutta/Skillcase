@@ -1,5 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { useSocket } from "./socket";
+import { createContext, useContext, useState } from "react";
 
 const NotificationContext = createContext<{
     noOfMessages: number,
@@ -25,7 +24,6 @@ const NotificationContext = createContext<{
   setGotNotification: () => {}
 })
 
-// const socket = useSocket();
 
 export const useNotification = () => useContext(NotificationContext);
 
@@ -35,13 +33,6 @@ export const NotificationProvider = ({ children } : { children : React.ReactNode
     const [notifications, setNotifications] = useState<any[]>([]);
     const [unreadNotifications, setUnreadNotifications] = useState<any[]>([]);
     const [gotNotification, setGotNotification] = useState(false);
-
-    // useEffect(() => {
-    //     socket?.on("notification", (notification : Notification) => {
-    //         console.log("Notification Received", notification);
-    //         setNotifications((prevNotifications) => [notification, ...prevNotifications]);
-    //     });
-    // }, [socket]);
     
     return (
         <NotificationContext.Provider value={{ noOfMessages, setNoOfMessages, noOfSenders, setNoOfSenders, notifications, setNotifications, unreadNotifications, setUnreadNotifications, gotNotification, setGotNotification }}>

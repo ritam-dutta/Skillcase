@@ -22,8 +22,8 @@ import Followers from './followers.tsx'
 import Followings from './followings.tsx'
 import Connections from './connections.tsx'
 import Notifications from './notifications.tsx'
-import { SocketProvider } from './context/socket.tsx'
-import { NotificationProvider } from './context/notifications.tsx'
+import { SocketProvider } from './context/socket.context.tsx'
+import { NotificationProvider } from './context/notifications.context.tsx'
 
 
 

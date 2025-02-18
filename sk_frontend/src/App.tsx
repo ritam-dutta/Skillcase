@@ -1,9 +1,9 @@
 // import axios from 'axios';
 import { useEffect, useState } from 'react';
 // import io from 'socket.io-client'
-import { useNotification } from './context/notifications';
+import { useNotification } from './context/notifications.context';
 import { Outlet } from 'react-router-dom';
-import { useSocket } from './context/socket';
+import { useSocket } from './context/socket.context';
 
 interface App {}
 const App: React.FC<App> = ({}) => {
@@ -18,6 +18,7 @@ const App: React.FC<App> = ({}) => {
 
     const socket = useSocket();
     const {notifications, setNotifications} = useNotification();
+    // const {unreadNotifications, setUnreadNotifications} = useNotification();
 
     useEffect(() => {
         socket?.on("notification", (notification : Notification) => {
