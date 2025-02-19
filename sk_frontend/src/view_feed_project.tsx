@@ -20,6 +20,7 @@ const ViewFeedProject: React.FC<ViewFeedProject> = ({})=>{
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const {projectid} = useParams();
+    const loggedUsername = localStorage.getItem("username");
 
 
 
@@ -117,7 +118,7 @@ const ViewFeedProject: React.FC<ViewFeedProject> = ({})=>{
                 
                 <button
                 className="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-                onClick={() => navigate(`/client/projects/${username}`)}
+                onClick={() => navigate(`/client/projects/${loggedUsername}`)}
                 >
                 Go Back
                 </button>

@@ -1,10 +1,23 @@
 import React,{ useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
+import Header from "./components/header";
 import Loader from "./components/loader";
 import axios from "axios";
+import { Zap } from "lucide-react";
 import "./App.css"
+import { useNotification } from "./context/notifications.context";
 interface ViewProjects {}
+interface Project {
+    title: string;
+    description: string;
+    budget: string;
+    duration: string;
+    industry: string;
+    employer: string;
+    status: string;
+    _id: string;
+}
 const ViewProjects : React.FC<ViewProjects> = ({})=>{
     const [user, setUser] = useState<any>();
     const [projects, setProjects] = useState([]);
@@ -14,6 +27,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
     const [onHoldProjects, setOnHoldProjects] = useState([]);
     const [cancelledProjects, setCancelledProjects] = useState([]);
     const [loading, setLoading] = useState(false);
+    const {requests} = useNotification();
 
     const url = window.location.href;
     let userType="";
@@ -42,8 +56,6 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
         const fetchUserData = async () => {
             setLoading(true);
             try {
-                // console.log(`loggedIn${loggedInRole[0].toUpperCase()}${loggedInRole.slice(1)}`)
-                // console.log(currentRole,loggedInRole)
                 const responseLoggedUser = await axios.get(`http://localhost:8000/api/v1/${loggedInRole}/loggedIn${loggedInRole[0].toUpperCase()}${loggedInRole.slice(1)}`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
@@ -55,8 +67,6 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                         Authorization: `Bearer ${accessToken}`,
                     },
                 });
-                // console.log("respone of current user",responseCurrentUser)
-                // console.log("response of logged in user",responseLoggedUser)
                 let currentUser ;
                 let loggedInUser;
                 let fetchedUser;
@@ -80,8 +90,6 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                         loggedInUser = responseLoggedUser.data?.data?.freelancer;
                     }
                 }  
-                // console.log("currentUser",currentUser)
-                // console.log("loggedInUser",loggedInUser)
                 if(loggedInUser.username === currentUser.username){
                     fetchedUser = loggedInUser;
                     setLoggedUsername(loggedInUser.username);   
@@ -90,7 +98,6 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                     fetchedUser = currentUser;
                     setLoggedUsername(loggedInUser.username);
                 }
-                // console.log(fetchedUser)
               
                 setUser(fetchedUser);
                 setRole(fetchedUser?.role || "")
@@ -115,11 +122,11 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
         
                 const projects = response.data.data;
                 setProjects(projects);
-                let compProjects = projects.filter((project) => project.status === "Completed");
-                let inprogProjects = projects.filter((project) => project.status === "In Progress");
-                let notStartProjects = projects.filter((project) => project.status === "Not Started");
-                let holdProjects = projects.filter((project) => project.status === "On Hold");
-                let cancelProjects = projects.filter((project) => project.status === "Cancelled");
+                let compProjects = projects.filter((project : Project) => project.status === "Completed");
+                let inprogProjects = projects.filter((project : Project) => project.status === "In Progress");
+                let notStartProjects = projects.filter((project : Project) => project.status === "Not Started");
+                let holdProjects = projects.filter((project : Project) => project.status === "On Hold");
+                let cancelProjects = projects.filter((project : Project) => project.status === "Cancelled");
                 setCompletedProjects(compProjects);
                 setInProgressProjects(inprogProjects);
                 setNotStartedProjects(notStartProjects);
@@ -141,7 +148,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
     let completed=0;
     let cancelled=0;
     let total=projects.length;
-    projects.map((project)=>{
+    projects.map((project : Project)=>{
         if(project.status==="Not Started"){
             notStarted++;
         }
@@ -163,8 +170,8 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
     <>
         
         <div className="min-h-screen w-full bg-[url('/images/background.jpg')] bg-cover bg-center">
-      {/* <Header/> */}
-      <header className="h-[8vh] w-full bg-gradient-to-r from-gray-50 to-gray-200 text-white shadow-md">
+      <Header/>
+      {/* <header className="h-[8vh] w-full bg-gradient-to-r from-gray-50 to-gray-200 text-white shadow-md">
       <div className="container mx-auto h-full px-6 flex justify-between items-center">
         <div className="flex items-center">
 
@@ -177,7 +184,6 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
           
         </nav>
 
-        {/* Mobile Menu Icon */}
         <div className=" flex items-center">
           <button className="text-white focus:outline-none">
             <svg
@@ -197,7 +203,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
           </button>
         </div>
       </div>
-    </header>
+    </header> */}
         {/* Main Content Area */}
       <div className="h-[18vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-start px-8">
         <h1 className="text-3xl text-white font-bold mt-6">All Projects</h1>
@@ -237,7 +243,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
         <div className="mb-8 overflow-auto bg-gray-200 px-4 py-6 rounded-lg border border-gray-200">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {completedProjects.length > 0 ? (
-                completedProjects.map((project) => (
+                completedProjects.map((project : Project) => (
                     <div
                         key={project._id}
                         className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
@@ -254,7 +260,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                             <div>
                                 <button
                                     className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
-                                    onClick={() => navigate(`/client/view_project/${project._id}`)}
+                                    onClick={() => navigate(`/client/view_project/${username}/${project._id}`)}
                                     >
                                     View Project
                                 </button>
@@ -293,7 +299,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
         <div className="mb-8 overflow-auto bg-gray-200 px-4 py-6 rounded-lg border border-gray-200">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {notStartedProjects.length > 0 ? (
-                notStartedProjects.map((project) => (
+                notStartedProjects.map((project : Project) => (
                     <div
                         key={project._id}
                         className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
@@ -310,7 +316,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                             <div>
                                 <button
                                     className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
-                                    onClick={() => navigate(`/client/view_project/${project._id}`)}
+                                    onClick={() => navigate(`/client/view_project/${username}/${project._id}`)}
                                     >
                                     View Project
                                 </button>
@@ -349,11 +355,10 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
         <div className="mb-8 overflow-auto bg-gray-200 px-4 py-6 rounded-lg border border-gray-200">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {inProgressProjects.length > 0 ? (
-                inProgressProjects.map((project) => (
+                inProgressProjects.map((project : Project) => (
                     <div
                         key={project._id}
-                        className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
-                    >
+                        className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition">
                         <div className="w-full flex justify-between items-end">
                             <div>
                                 <h3 className="text-lg font-semibold text-gray-800 truncate">
@@ -363,11 +368,23 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                                     {project.description || "No description provided."}
                                 </p>
                             </div>
-                            <div>
+                            <div className="flex flex-col">
+                                <div className="flex justify-end items-center mb-3">
+                                    {requests.filter((request:any)=>request.projectId===project._id).length>0 ? (
                                 <button
-                                    className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
-                                    onClick={() => navigate(`/client/view_project/${project._id}`)}
-                                    >
+                                    className="flex justify-center items-center bg-red-500 text-white h-5 w-5 rounded-full hover:text-white hover:bg-red-400 transition"
+                                    onClick={() => navigate(`/client/requests/${username}/${project._id}`)}
+                                >
+                                    <Zap size={16} />
+                                </button>) 
+                                : null
+                                }
+                                </div>
+
+                                <button
+                                    className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition min-w-[120px]"
+                                    onClick={() => navigate(`/client/view_project/${username}/${project._id}`)}
+                                >
                                     View Project
                                 </button>
                             </div>
@@ -385,6 +402,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                                 Edit Project
                                 </button>
                             </div>)
+                            
                             :null
                         }
                     </div>
@@ -403,7 +421,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
         <div className="mb-8 overflow-auto bg-gray-200 px-4 py-6 rounded-lg border border-gray-200">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {onHoldProjects.length > 0 ? (
-                onHoldProjects.map((project) => (
+                onHoldProjects.map((project : Project) => (
                     <div
                         key={project._id}
                         className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
@@ -420,7 +438,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                             <div>
                                 <button
                                     className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
-                                    onClick={() => navigate(`/client/view_project/${project._id}`)}
+                                    onClick={() => navigate(`/client/view_project/${username}/${project._id}`)}
                                     >
                                     View Project
                                 </button>
@@ -458,7 +476,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
         <div className="mb-8 overflow-auto bg-gray-200 px-4 py-6 rounded-lg border border-gray-200">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {cancelledProjects.length > 0 ? (
-                cancelledProjects.map((project) => (
+                cancelledProjects.map((project : Project) => (
                     <div
                         key={project._id}
                         className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
@@ -475,7 +493,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                             <div>
                                 <button
                                     className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
-                                    onClick={() => navigate(`/client/view_project/${project._id}`)}
+                                    onClick={() => navigate(`/client/view_project/${username}/${project._id}`)}
                                     >
                                     View Project
                                 </button>

@@ -4,7 +4,10 @@ import Footer from "./components/footer";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-interface Followings {}
+interface Followings {
+    username: string;
+    role: string;
+}
 const Followings: React.FC<Followings> = ({}) => {
 
     const [loading, setLoading] = useState(false);
@@ -12,7 +15,7 @@ const Followings: React.FC<Followings> = ({}) => {
     const [clientFollowings, setClientFollowings] = useState<any[]>([]);
     const [freelancerFollowings, setFreelancerFollowings] = useState<any[]>([]);
     const [isAlreadyFollowing, setIsAlreadyFollowing] = useState(false);
-    const [alreadyFollowingUser, setAlreadyFollowingUser] = useState({});
+    const [alreadyFollowingUser, setAlreadyFollowingUser] = useState<Followings>();
     const {username} = useParams();
     const navigate = useNavigate();
     const currentRole = window.location.href.includes("client") ? "client" : "freelancer";
@@ -28,9 +31,9 @@ const Followings: React.FC<Followings> = ({}) => {
                 let clientList: any[] = [];
                 let freelancerList: any[] = [];
                 let alreadyFollowing = false;
-                let followingUser = {};
+                let followingUser: Followings | undefined = undefined;
 
-                fetchedFollowings.forEach(following => {
+                fetchedFollowings.forEach((following: any) => {
                     if(following.username === localStorage.getItem("username")) {
                         alreadyFollowing = true;
                         followingUser = following;
@@ -79,13 +82,17 @@ const Followings: React.FC<Followings> = ({}) => {
                                         <img src="/images/user.png" alt=""  className="h-5 w-5"/>
                                     </div>
                                     <div >
-                                        <Link to={`/${alreadyFollowingUser.role}/profile/${alreadyFollowingUser.username}`} className="text-xl">@{alreadyFollowingUser.username}</Link>
+                                        <Link to={`/${alreadyFollowingUser?.role}/profile/${alreadyFollowingUser?.username}`} className="text-xl">@{alreadyFollowingUser?.username}</Link>
                                     </div>
                                 </div>
                                 <div>
                                     <button
                                     className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                                    onClick={() => navigate(`/${alreadyFollowingUser.role}/view_projects/${alreadyFollowingUser.username}`)}
+                                    onClick={() => {
+                                        if (alreadyFollowingUser) {
+                                            navigate(`/${alreadyFollowingUser.role}/view_projects/${alreadyFollowingUser.username}`);
+                                        }
+                                    }}
                                     >
                                     View Projects
                                     </button>

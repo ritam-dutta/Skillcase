@@ -5,6 +5,10 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
 interface EditProject {}
+interface Industry {
+  id: string;
+  label: string;
+}
 const EditProject: React.FC<EditProject> = () => {
   const [projectTitle, setProjectTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -195,7 +199,7 @@ const EditProject: React.FC<EditProject> = () => {
                 required
             >
                 <option value="">{ industry ? industry : "Select an industry"}</option>
-                {industries.map((industry) => (
+                {industries.map((industry : Industry) => (
                 <option key={industry.id} value={industry.label}>
                     {industry.label}
                 </option>

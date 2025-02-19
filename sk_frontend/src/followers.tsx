@@ -4,7 +4,10 @@ import Footer from "./components/footer";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-interface Followers {}
+interface Followers {
+    username: string;
+    role: string;
+}
 const Followers: React.FC<Followers> = ({}) => {
 
     const [loading, setLoading] = useState(false);
@@ -12,7 +15,7 @@ const Followers: React.FC<Followers> = ({}) => {
     const [clientFollowers, setClientFollowers] = useState<any[]>([]);
     const [freelancerFollowers, setFreelancerFollowers] = useState<any[]>([]);
     const [isAlreadyFollowing, setIsAlreadyFollowing] = useState(false);
-    const [alreadyFollowingUser, setAlreadyFollowingUser] = useState({});
+    const [alreadyFollowingUser, setAlreadyFollowingUser] = useState<Followers>();
     const {username} = useParams();
     const navigate = useNavigate();
     const currentRole = window.location.href.includes("client") ? "client" : "freelancer";
@@ -29,9 +32,9 @@ const Followers: React.FC<Followers> = ({}) => {
                 let clientList: any[] = [];
                 let freelancerList: any[] = [];
                 let alreadyFollowing = false;
-                let followingUser = {};
+                let followingUser: Followers | undefined = undefined;
                 
-                fetchedFollowers.forEach(follower => {
+                fetchedFollowers.forEach((follower: any) => {
                     // console.log("username",follower.username);
                     if(follower.username === loggedUsername) {
                         alreadyFollowing = true;
@@ -84,13 +87,15 @@ const Followers: React.FC<Followers> = ({}) => {
                                         <img src="/images/user.png" alt=""  className="h-5 w-5"/>
                                     </div>
                                     <div >
-                                        <Link to={`/${alreadyFollowingUser.role}/profile/${alreadyFollowingUser.username}`} className="text-xl">@{alreadyFollowingUser.username}</Link>
+                                        {alreadyFollowingUser && (
+                                            <Link to={`/${alreadyFollowingUser.role}/profile/${alreadyFollowingUser.username}`} className="text-xl">@{alreadyFollowingUser.username}</Link>
+                                        )}
                                     </div>
                                 </div>
                                 <div>
                                     <button
                                     className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                                    onClick={() => navigate(`/${alreadyFollowingUser.role}/projects/${alreadyFollowingUser.username}`)}
+                                    onClick={() => alreadyFollowingUser && navigate(`/${alreadyFollowingUser.role}/projects/${alreadyFollowingUser.username}`)}
                                     >
                                     View Projects
                                     </button>

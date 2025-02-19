@@ -19,9 +19,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
     }
 
     const socket = useSocket();
-    
     const navigate = useNavigate();
-    
     const [user, setUser] = useState<any>();
     const [projects, setProjects] = useState([]);
     const [completedProjects, setCompletedProjects] = useState([]);
@@ -313,6 +311,19 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
         }
     }
 
+    // const demo = async () => {
+    //     try {
+    //         const response = await axios.get("http://localhost:8000/api/v1/client/demo",{
+    //             headers: {
+    //                 Authorization: `Bearer ${accessToken}`,
+    //             }
+    //         });
+    //         console.log("demo",response)
+    //     } catch (error) {
+    //         console.error("Fetch Projects Error:", error);
+    //     }
+    // }
+
 
     let notStarted=0;
     let inProgress=0;
@@ -416,14 +427,14 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
             ></textarea>
           </div>
             {username === loggedUsername ?
-            (<Link
-                to={`/${userType}/edit/${username}`}
-                className="mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"
-            >
-                Edit Profile
-            </Link>)
-            :null
-          }
+                (<Link
+                    to={`/${userType}/edit/${username}`}
+                    className="mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"
+                >
+                    Edit Profile
+                </Link>)
+                :null
+             }
         </div>
 
         {/* Main Content Area */}
@@ -474,7 +485,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                             <div>
                                 <button
                                     className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
-                                    onClick={() => navigate(`/${userType}/view_project/${project._id}`)}
+                                    onClick={() => navigate(`/${userType}/view_project/${username}/${project._id}`)}
                                     >
                                     View Project
                                 </button>
@@ -528,7 +539,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                             <div>
                                 <button
                                     className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
-                                    onClick={() => navigate(`/${userType}/view_project/${project._id}`)}
+                                    onClick={() => navigate(`/${userType}/view_project/${username}/${project._id}`)}
                                     >
                                     View Project
                                 </button>
@@ -567,6 +578,12 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                     >
                     View All Projects
                 </button>
+                {/* <button
+                    className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-1/6"
+                    onClick={demo}
+                    >
+                    demo
+                </button> */}
             </div>
       </div>
     {/* <Footer/> */}

@@ -30,18 +30,13 @@ const projectSchema = new mongoose.Schema({
         required: true,
     },
     collaborators: {
-        type: [mongoose.Schema.Types.ObjectId],
+        type: Array,
         required: false,
     },
-    employees: {
-        type: [mongoose.Schema.Types.ObjectId],
+    freelancers: {
+        type: Array,
         required: false,
     },
-    // freelancer: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Freelancer",
-    //     required: false,
-    // },
     status: {
         type: String,
         required: true,

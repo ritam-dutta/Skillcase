@@ -18,7 +18,10 @@ import {
     createNotification,
     getNotifications,
     deleteNotification,
-    deleteAllNotifications
+    deleteAllNotifications,
+    acceptApplication,
+    acceptCollaboration,
+    // demo
 } from "../controllers/client.controllers.js"
 import { verifyJWT } from "../middlewares/auth.middlewares.js";
 
@@ -61,6 +64,12 @@ clientRouter.route("/get_notifications/:username").get(verifyJWT, getNotificatio
 clientRouter.route("/delete_notification/:username").post(verifyJWT, deleteNotification);
 
 clientRouter.route("/delete_all_notifications/:username").post(verifyJWT, deleteAllNotifications);
+
+clientRouter.route("/accept_application/:username").post(verifyJWT, acceptApplication);
+
+clientRouter.route("/accept_collaboration/:username").post(verifyJWT, acceptCollaboration);
+
+// clientRouter.route("/demo").get(verifyJWT,demo);
 
 // clientRouter.route("/:username/update_avatar").post(verifyJWT, upload.single("avatar"), updateClientAvatar);
 

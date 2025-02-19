@@ -48,13 +48,13 @@ const Notifications: React.FC<Notifications> = ({}) => {
                 });
                 const fetchedNotifications = response.data.data.notifications;
                 console.log(fetchNotifications)
-                setNotifications(fetchedNotifications.reverse());
+                setNotifications(fetchedNotifications.filter((notif : Notification) => notif.type !== "apply for project" && notif.type !== "collaborate on project"));
                 setUnreadNotifications(fetchedNotifications.filter((notif : Notification) => !notif.markAsRead));
-                let message: string[] = fetchedNotifications.map((notif: Notification) => notif.message);
-                let markAsRead: boolean[] = fetchedNotifications.map((notif: Notification) => notif.markAsRead);
-                let sender: string[] = fetchedNotifications.map((notif: Notification) => notif.sender);
-                let receiver = fetchedNotifications.map((notif: Notification) => notif.receiver);
-                let type = fetchedNotifications.map((notif: Notification) => notif.type);
+                // let message: string[] = fetchedNotifications.map((notif: Notification) => notif.message);
+                // let markAsRead: boolean[] = fetchedNotifications.map((notif: Notification) => notif.markAsRead);
+                // let sender: string[] = fetchedNotifications.map((notif: Notification) => notif.sender);
+                // let receiver = fetchedNotifications.map((notif: Notification) => notif.receiver);
+                // let type = fetchedNotifications.map((notif: Notification) => notif.type);
                 // setMessages(message);
                 // setMarkAsReads(markAsRead);
                 // setSenders(sender);
@@ -183,14 +183,14 @@ const Notifications: React.FC<Notifications> = ({}) => {
                             
                         <button
                             onClick={() => {handleConnect(notif.sender, notif.senderRole)}}
-                            className={" bg-blue-500 text-white text-center px-3 py-1 rounded-lg shadow-md hover:bg-blue-600 transition"}>
-                                {"Accept"}
+                            className=" bg-blue-500 text-white text-center px-3 py-1 rounded-lg shadow-md hover:bg-blue-600 transition">
+                                Accept
                         </button>
 
                         <button
                             onClick={() => {handleReject(notif.sender, notif.type)}}
-                            className=" bg-gray-200 text-blue-950 text-center px-3 py-1  rounded-lg shadow-md">
-                                {"Reject"}
+                            className=" bg-gray-200 text-blue-950 text-center px-3 py-1  rounded-lg shadow-md hover:bg-gray-300 transition">
+                                Reject
                         </button>
 
                         </div>

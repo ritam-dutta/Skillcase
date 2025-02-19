@@ -4,14 +4,14 @@ import axios from "axios"
 export const notifications = () => {
     io.on("connection", (socket) => {
         socket.on("joinNotification", (username) => {
-            console.log("joinNotification", username);
+            // console.log("joinNotification", username);
             socket.join(username);
         })
         socket.on("notification", async (data) => {
 
             // console.log("aagaye notifictaion", data);
             const {accessToken, notification} = data;
-            // console.log("accesstoken",accessToken);
+            // console.log("notification",notification);
 
             const response = await axios.post(`http://localhost:8000/api/v1/${notification.receiverRole}/send_notification/${notification.receiver}`, {
                 notification: notification,
@@ -45,7 +45,7 @@ export const notifications = () => {
         socket.on("reject connection", async (data) => {
             // console.log("reject connection")
             const {accessToken, info} = data;
-            console.log("info", info);
+            // console.log("info", info);
             const response = await axios.post(`http://localhost:8000/api/v1/${info.receiverRole}/delete_notification/${info.receiver}`, {
                 sender: info.sender,
                 type: "connection_request",
@@ -54,7 +54,7 @@ export const notifications = () => {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
-            console.log("sender", info.sender);
+            // console.log("sender", info.sender);
             socket.to(info.sender).emit("reject connection", response.data.data);
             // console.log("exit")
         })
@@ -63,7 +63,7 @@ export const notifications = () => {
             const {accessToken, info} = data;
             const response = await axios.post(`http://localhost:8000/api/v1/${info.receiverRole}/delete_notification/${info.receiver}`, {
                 sender: info.sender,
-                type: info.type,
+                type: info.type
             }, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -74,8 +74,8 @@ export const notifications = () => {
 
         socket.on("delete all notifications", async (data) => {
             const {accessToken, info} = data;
-            console.log("info")
-            console.log(accessToken, info);
+            // console.log("info")
+            // console.log(accessToken, info);
             await axios.post(`http://localhost:8000/api/v1/${info.userRole}/delete_all_notifications/${info.user}`, {},
             {
                 headers: {
@@ -85,17 +85,76 @@ export const notifications = () => {
             // socket.to(info.sender).emit("delete all notifications", response.data.data);
         })
 
-        // socket.on("following", async (data) => {
-        //     const {accessToken, info} = data;
-        //     const response = await axios.post(`http://localhost:8000/api/v1/${info.receiverRole}/send_notification/${info.receiver}`, {
-        //         notification: info.notification,
-        //     }, {
-        //         headers: {
-        //             Authorization: `Bearer ${accessToken}`,
-        //         },
-        //     });
-        //     socket.to(info.receiver).emit("following", info.notification);
-        // })
+        socket.on("accept application", async (data) => {
+            const {accessToken, info} = data;
+            const response1 = await axios.post(`http://localhost:8000/api/v1/client/accept_application/${info.receiver}`, {
+                sender: info.sender,
+                projectId: info.projectId,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            const response2 = await axios.post(`http://localhost:8000/api/v1/client/delete_notification/${info.receiver}`, {
+                sender: info.sender,
+                type: "apply for project",
+                projectId: info.projectId,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            socket.to(info.sender).emit("accept application", response1.data.data);
+        })
+
+        socket.on("reject application", async (data) => {
+            const {accessToken, info} = data;
+            const response = await axios.post(`http://localhost:8000/api/v1/client/delete_notification/${info.receiver}`, {
+                sender: info.sender,
+                type: "apply for project",
+                projectId: info.projectId,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            socket.to(info.sender).emit("reject application", response.data.data);
+        })
+
+        socket.on("accept collaboration", async (data) => {
+            const {accessToken, info} = data;
+            const response1 = await axios.post(`http://localhost:8000/api/v1/client/accept_collaboration/${info.receiver}`, {
+                sender: info.sender,
+                projectId: info.projectId,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            const response2 = await axios.post(`http://localhost:8000/api/v1/client/delete_notification/${info.receiver}`, {
+                sender: info.sender,
+                type: "collaborate on project",
+            }, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            socket.to(info.sender).emit("accept collaboration", response1.data.data);
+        })
+
+        socket.on("reject collaboration", async (data) => {
+            const {accessToken, info} = data;
+            const response = await axios.post(`http://localhost:8000/api/v1/client/delete_notification/${info.receiver}`, {
+                sender: info.sender,
+                type: "collaborate on project",
+                projectId: info.projectId,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            socket.to(info.sender).emit("reject collaboration", response.data.data);
+        })
 
 
     })

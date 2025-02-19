@@ -76,6 +76,7 @@ const clientSchema = new mongoose.Schema({
     },
     collaborations:{
         type: [mongoose.Schema.Types.ObjectId],
+        ref: "Project",
         required: false,
     },
     refreshToken:{

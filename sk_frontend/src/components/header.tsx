@@ -7,6 +7,14 @@ import { useSocket } from "../context/socket.context";
 import { useNotification } from "../context/notifications.context";
 
 interface Header {}
+interface Notification {
+  message: string;
+  markAsRead: boolean;
+  sender: string;
+  receiver: string;
+  type: string;
+  senderRole: string;
+}
 
 const Header: React.FC<Header> = ({}) => {
 
@@ -16,58 +24,36 @@ const Header: React.FC<Header> = ({}) => {
   const role = url.includes("freelancer") ? "freelancer" : "client";
   const loggedUsername = localStorage.getItem("username");
   const loggedRole = localStorage.getItem("role");
+  const accessToken = localStorage.getItem("accessToken");
 
   const socket = useSocket();
-  const {notifications} = useNotification();
+  const {notifications, setNotifications} = useNotification();
 
   useEffect(() => {
     socket?.emit("joinNotification", loggedUsername);
 
   },[socket])
 
+  useEffect(() => {
+    const fetchNotifications = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8000/api/v1/${loggedRole}/get_notifications/${loggedUsername}`,{
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    // role: loggedRole,
+                }
+            });
+            const fetchedNotifications = response.data.data.notifications;
+            console.log(fetchNotifications)
+            setNotifications(fetchedNotifications.filter((notif : Notification) => notif.type !== "apply for project" && notif.type !== "collaborate on project"));
+          
+        } catch (error) {
+            console.error("Fetch Notifications Error:", error);
+        }
+    };
+    fetchNotifications();
+}, [loggedUsername]);
 
-  // useEffect(() => {
-  //   if(loggedUsername === username){
-  //     const fetchNotifications = async () => {
-  //       try {
-  //           const response = await axios.get(`http://localhost:8000/api/v1/${loggedRole}/get_notifications/${loggedUsername}`,{
-  //               headers: {
-  //                   Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-  //               }
-  //           });
-  //           const fetchedNotifications = response.data.data.notifications;
-  //           setNotifications(fetchedNotifications);
-  //           // setTotalNotifications(fetchedNotifications.length);
-            
-  //       } catch (error) {
-  //           console.error("Fetch Notifications Error:", error);
-  //       }
-  //     };
-  //     fetchNotifications();
-  //   }
-
-  // }, [username]);
-
-  // useEffect(() => {
-  //   const handleNewNotification = (notification: Notification) => {
-  //       console.log("Notification Received", notification);
-        
-  //       // setNotifications((prevNotifications) => {
-  //       //     const updatedNotifications = [notification, ...prevNotifications];
-  //       //     return updatedNotifications;
-  //       // });
-
-  //       setUnreadNotifications((prevNotifications) => [notification, ...prevNotifications]); 
-  //   };
-
-    // socket?.on("notification", handleNewNotification);
-
-    // return () => {
-    //     socket?.off("notification", handleNewNotification); // Only remove the specific listener
-    // };
-
-
-// }, [socket]);
 
   let activeTab = "";
     if(url.includes("/projects")){

@@ -355,13 +355,15 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
               className="w-full mt-2 p-3 text-sm bg-gray-50 border border-gray-200 rounded-md resize-none"
             ></textarea>
           </div>
-
-          <Link
-            to={`/${userType}/edit/${username}`}
-            className="mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"
-          >
-            Edit Profile
-          </Link>
+          {username === loggedUsername ?
+            (<Link
+                to={`/${userType}/edit/${username}`}
+                className="mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"
+            >
+                Edit Profile
+            </Link>)
+            :null
+          }
         </div>
 
         {/* Main Content Area */}

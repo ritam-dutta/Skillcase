@@ -5,6 +5,10 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
 interface UploadProject {}
+interface Industry {
+    id: string;
+    label: string;
+}
 const UploadProject: React.FC<UploadProject> = () => {
   const [projectTitle, setProjectTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -158,7 +162,7 @@ const UploadProject: React.FC<UploadProject> = () => {
                 required
             >
                 <option value="">Select an industry</option>
-                {industries.map((industry) => (
+                {industries.map((industry : Industry) => (
                 <option key={industry.id} value={industry.label}>
                     {industry.label}
                 </option>

@@ -1,6 +1,7 @@
 import { asyncHandler } from '../utils/AsyncHandler.js';
 import { Client } from '../models/client.models.js';
 import { Freelancer } from '../models/freelancer.models.js';
+import { Project } from '../models/project.models.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
 import jwt from 'jsonwebtoken';
@@ -489,18 +490,28 @@ const getNotifications = asyncHandler(async (req, res) => {
 
 const deleteNotification = asyncHandler(async (req, res) => {
     console.log("entered deleteNotification");
-    const {sender, type} = req.body;
-    // console.log(username)
-    // console.log(receiver, sender, type);
-    
-    const client = await Client.findByIdAndUpdate(req.user?._id,
-        {
-            $pull: {notifications: {sender : sender, type : type}}
-        },
-        {
-            new: true
-        }
-    ).select('-password -refreshToken');
+    const {sender, type, projectId} = req.body;
+    let client = {};
+    if(!projectId){
+        client = await Client.findByIdAndUpdate(req.user?._id,
+            {
+                $pull: {notifications: {sender : sender, type : type}}
+            },
+            {
+                new: true
+            }
+        ).select('-password -refreshToken');
+    }
+    else {
+        client = await Client.findByIdAndUpdate(req.user?._id,
+            {
+                $pull: {notifications: {sender : sender, type : type, projectId: projectId}}
+            },
+            {
+                new: true
+            }
+        ).select('-password -refreshToken');
+    }
     if (!client) {
         throw new ApiError(404, 'Client not found');
     }
@@ -526,6 +537,84 @@ const deleteAllNotifications = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {client}, 'All notifications deleted successfully'));
 });
 
+const acceptApplication = asyncHandler(async (req, res) => {
+    const {sender, projectId} = req.body;
+    // console.log("freelancer", sender)
+    const freelancer = await Freelancer.findOneAndUpdate({ username : sender },
+        {
+            $addToSet: {projects: projectId}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!freelancer) {
+        throw new ApiError(404, 'Freelancer not found');
+    }
+    const project = await Project.findByIdAndUpdate(projectId,
+        {
+            $addToSet: {freelancers: sender}
+        },
+        {
+            new: true
+        }
+    );
+    if (!project) {
+        throw new ApiError(404, 'Project not found');
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {freelancer, project}, 'Application accepted successfully'));
+});
+
+const acceptCollaboration = asyncHandler(async (req, res) => {
+    const {sender, projectId} = req.body;
+    const client = await Client.findOneAndUpdate({ username : sender },
+        {
+            $addToSet: {collaborations: projectId}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!client) {
+        throw new ApiError(404, 'Client not found');
+    }
+    const project = await Project.findByIdAndUpdate(projectId,
+        {
+            $addToSet: {collaborators: sender}
+        },
+        {
+            new: true
+        }
+    );
+    if (!project) {
+        throw new ApiError(404, 'Project not found');
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {client, project}, 'Collaboration accepted successfully'));
+});
+
+
+
+
+// const demo = asyncHandler(async (req, res) => {
+//     const client = await Client.findByIdAndUpdate(req.user?._id,
+//         {
+//             $pull: {"notifications": {"project":{$exists: true}}}
+//         },
+//         {
+//             new: true
+//         }
+//     )
+    
+//     .select('-password -refreshToken');
+//     return res
+//     .status(200)
+//     .json(new ApiResponse(200,{client} ,'Demo'));
+// });
+
 export {
     registerClient,
     loginClient,
@@ -546,4 +635,7 @@ export {
     getNotifications,
     deleteNotification,
     deleteAllNotifications,
+    acceptApplication,
+    acceptCollaboration,
+    // demo
 }

@@ -13,17 +13,20 @@ interface Project {
     duration: string;
     industry: string;
     employer: string;
+    collaborators: string[];
+    freelancers: string[];
+    status: string;
     _id: string;
 }
 const ProjectPage: React.FC<ProjectPage> = ({}) => {
     const {username} = useParams<{ username: string }>();
-    const url = window.location.href;
-    const role = url.includes("freelancer") ? "freelancer" : "client";
+    // const url = window.location.href;
+    // const role = url.includes("freelancer") ? "freelancer" : "client";
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(false);
     const loggedRole = localStorage.getItem("role");
-    const loggedUsername = localStorage.getItem("username");
-    const accessToken = localStorage.getItem("accessToken");
+    const loggedUsername = localStorage.getItem("username") || "";
+    const accessToken = localStorage.getItem("accessToken") || "";
     const socket = useSocket();
     const navigate = useNavigate();
     useEffect(() => {
@@ -32,7 +35,7 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
             try {
                 const response = await axios.get("http://localhost:8000/api/v1/root/getprojects");
                 const projects = response.data.data;
-                setProjects(projects);
+                setProjects(projects.filter((project: Project) => project.status === "In Progress"));
                 console.log("Projects:", projects);
             } catch (error) {
                 console.error("Fetch Projects Error:", error);
@@ -47,10 +50,10 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
         try {
             socket?.emit("notification", { 
                 accessToken: accessToken,
-                info: {
+                notification: {
                     sender: loggedUsername,
                     senderRole: "freelancer",
-                    project: id,
+                    projectId: id,
                     type: "apply for project",
                     receiver: employer,
                     receiverRole: "client",
@@ -66,10 +69,10 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
         try {
             socket?.emit("notification", { 
                 accessToken: accessToken,
-                info: {
+                notification: {
                     sender: loggedUsername,
                     senderRole: "client",
-                    project: id,
+                    projectId: id,
                     type: "collaborate on project",
                     receiver: employer,
                     receiverRole: "client",
@@ -82,19 +85,9 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
         }
     };
 
-    // const navView = (id) => {
-    //     if (id) {
-    //         localStorage.setItem("projectId", id);
-    //         navigate(`/client/view_feed_project/${username}`);
-    //     } else {
-    //         console.error("Invalid project ID");
-    //     }
-    // }
-
     return (
         <>
-            
-            <div className=" h-full flex flex-col items-center text-[#1e3a8a] bg-[url('/images/background.jpg')] bg-cover bg-center">
+            <div className={projects.length > 6 ? " h-full flex flex-col items-center text-[#1e3a8a] bg-[url('/images/background.jpg')] bg-cover bg-center" : " h-lvh flex flex-col items-center text-[#1e3a8a] bg-[url('/images/background.jpg')] bg-cover bg-center"}>
             <Header />
             <main className="flex-grow w-[90%] max-w-[1200px] py-10">
                 <h2 className="text-3xl font-semibold mb-8">Available Projects</h2>
@@ -120,16 +113,19 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
                             <div className="flex gap-2">
                                 <button
                                     className="w-full mt-2 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-300"
-                                    onClick={() => navigate(`/client/view_feed_project/${project._id}`)}
+                                    onClick={() => navigate(`/client/view_feed_project/${username}/${project._id}`)}
                                 >
                                     View
                                 </button>
+                                {loggedUsername === project.employer ? null : (
                                 <button
-                                    className="w-full mt-2 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-300"
-                                    onClick={() => {loggedRole === "freelancer" ? applyProject(project._id, project.employer) : collaborateProject(project._id, project.employer)}}
+                                    className={ (project.collaborators.includes(loggedUsername) ||project.freelancers.includes(loggedUsername) ) ? "w-full mt-2 py-2 bg-gray-300 text-blue-950 rounded-lg hover:bg-gray-300 transition-colors duration-300" : "w-full mt-2 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-300"}
+                                    onClick={() => {loggedRole === "freelancer" ? project.freelancers.includes(loggedUsername) ? null : applyProject(project._id, project.employer) : project.collaborators.includes(loggedUsername) ? null : collaborateProject(project._id, project.employer)}}
                                 >
-                                    {loggedRole === "freelancer" ? "Apply" : "Collaborate"}
+                                    {loggedRole === "freelancer" ? project.freelancers.includes(loggedUsername) ? "Applied" : "Apply" : project.collaborators.includes(loggedUsername) ? "Collaborated" : "Collaborate"}
                                 </button>
+                                )
+                                }
                             </div>
                         </div>
                     ))}
