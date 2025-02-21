@@ -471,6 +471,33 @@ const createNotification = asyncHandler(async (req, res) => {
     if (!user) {
         throw new ApiError(404, `${User} not found`);
     }
+    if(notification.type === "apply for project" || notification.type === "collaborate on project") {
+        const project = await Project.findByIdAndUpdate(notification.projectId,
+            {
+                $addToSet: {requests: notification.sender}
+            },
+            {
+                new: true
+            }
+        );
+        if (!project) {
+            throw new ApiError(404, 'Project not found');
+        }
+        if(notification.type === "apply for project") {
+            const freelancer = await Freelancer.findOneAndUpdate({username: notification.sender},
+                {
+                    $addToSet: {applications: {client: notification.receiver, projectId: notification.projectId}}
+                },
+                {
+                    new: true
+                }
+            );
+            if (!freelancer) {
+                throw new ApiError(404, 'Freelancer not found');
+            }
+        }
+    }
+
     return res
     .status(200)
     .json(new ApiResponse(200, {user}, 'Notification created successfully'));
@@ -492,6 +519,8 @@ const deleteNotification = asyncHandler(async (req, res) => {
     console.log("entered deleteNotification");
     const {sender, type, projectId} = req.body;
     let client = {};
+    let project = {};
+    let freelancer = {};
     if(!projectId){
         client = await Client.findByIdAndUpdate(req.user?._id,
             {
@@ -511,8 +540,26 @@ const deleteNotification = asyncHandler(async (req, res) => {
                 new: true
             }
         ).select('-password -refreshToken');
+        project = await Project.findByIdAndUpdate(projectId,
+            {
+                $pull: {requests: sender}
+            },
+            {
+                new: true
+            }
+        )
+        if (type === "apply for project") {
+            freelancer = await Freelancer.findOneAndUpdate({username: sender},
+                {
+                    $pull: {applications: {client: req.user?.username, projectId: projectId}}
+                },
+                {
+                    new: true
+                }
+            );
+        }
     }
-    if (!client) {
+    if (!client || !project) {
         throw new ApiError(404, 'Client not found');
     }
     return res
@@ -553,7 +600,8 @@ const acceptApplication = asyncHandler(async (req, res) => {
     }
     const project = await Project.findByIdAndUpdate(projectId,
         {
-            $addToSet: {freelancers: sender}
+            $addToSet: {freelancers: sender},
+            $pull: {requests: sender}
         },
         {
             new: true
@@ -582,7 +630,8 @@ const acceptCollaboration = asyncHandler(async (req, res) => {
     }
     const project = await Project.findByIdAndUpdate(projectId,
         {
-            $addToSet: {collaborators: sender}
+            $addToSet: {collaborators: sender},
+            $pull: {requests: sender}
         },
         {
             new: true

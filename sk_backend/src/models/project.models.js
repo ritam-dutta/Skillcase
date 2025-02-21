@@ -33,6 +33,10 @@ const projectSchema = new mongoose.Schema({
         type: Array,
         required: false,
     },
+    requests: {
+        type: Array,
+        required: false,
+    },
     freelancers: {
         type: Array,
         required: false,

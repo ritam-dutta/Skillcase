@@ -34,10 +34,11 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
     const [loggedUsername, setLoggedUsername] = useState("");
     const [isConnected, setIsConnected] = useState(false);
     const [connectionRequest, setConnectionRequest] = useState(false);
-    
+    const [inProgressProjects, setInProgressProjects] = useState([]);
+    const [completedProjects, setCompletedProjects] = useState([]);
     const [isFollowing, setIsFollowing] = useState(false);
     const [loading, setLoading] = useState(false);
-
+    const [projects, setProjects] = useState([]);
     const navigate = useNavigate();
     const accessToken = localStorage.getItem("accessToken");
     const loggedInRole = localStorage.getItem("role") || "";
@@ -138,6 +139,31 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
             setLoading(false);
         };
         fetchUserData();
+        const fetchUserProjects = async () => {
+            setLoading(true);
+            try {
+                const response = await axios.get("http://localhost:8000/api/v1/root/getuserprojects",{
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        username: username,
+                        role: "freelancer",
+                    }
+                });
+
+                const projects = response.data.data;
+                // console.log("prj",projects)
+                setProjects(projects);
+                let cp = projects.filter((project: any) => project.status === "Completed");
+                let ip = projects.filter((project: any) => project.status === "In Progress");
+                setCompletedProjects(cp);
+                setInProgressProjects(ip);
+            } catch (error) {
+                console.error("Fetch Projects Error:", error);
+            }
+            setLoading(false);
+        };
+
+        fetchUserProjects();
     }, [username,navigate]);
 
     const handleFollow = async () => {
@@ -367,38 +393,117 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
         </div>
 
         {/* Main Content Area */}
-        <div className="w-[65%] bg-white shadow-lg rounded-lg p-8 ml-6 border border-gray-200">
-          <h2 className="text-2xl font-bold mb-4">Stats</h2>
+        <div className="w-[65%] h-[83vh] bg-slate-50 shadow-lg rounded-lg p-8 ml-6 border border-gray-200 overflow-auto">
+          <h2 className="text-2xl font-bold mb-4">Projects Status</h2>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-3 gap-6 mb-8">
-            <div className="bg-gray-50 p-4 shadow-sm border border-gray-200 rounded-lg">
-              <h3 className="text-lg font-semibold text-gray-700">Stat 1</h3>
+          <div className="grid grid-cols-3 gap-4 mb-8">
+            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+              <h3 className="text-lg font-semibold text-gray-700">Completed: {0}</h3>
             </div>
-            <div className="bg-gray-50 p-4 shadow-sm border border-gray-200 rounded-lg">
-              <h3 className="text-lg font-semibold text-gray-700">Stat 2</h3>
+            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+              <h3 className="text-lg font-semibold text-gray-700">In Progress: {0}</h3>
             </div>
-            <div className="bg-gray-50 p-4 shadow-sm border border-gray-200 rounded-lg">
-              <h3 className="text-lg font-semibold text-gray-700">Stat 3</h3>
-            </div>
-          </div>
-
-          {/* Paid Projects */}
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-3">Paid Projects</h2>
-            <div className="bg-gray-100 h-40 rounded-lg flex items-center justify-center border border-gray-200">
-              <p className="text-gray-600">No data available</p>
+            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+              <h3 className="text-lg font-semibold text-gray-700">Total: {0}</h3>
             </div>
           </div>
 
-          {/* Unpaid Projects */}
-          <div>
-            <h2 className="text-xl font-semibold mb-3">Unpaid Projects</h2>
-            <div className="bg-gray-100 h-40 rounded-lg flex items-center justify-center border border-gray-200">
-              <p className="text-gray-600">No data available</p>
+          {/* In Progress Projects */}
+          <h2 className="text-xl font-semibold mb-3 text-black"> Projects In Progress</h2>
+        <div className="mb-8 overflow-auto bg-gray-100 px-4 py-6 rounded-lg border border-gray-200">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {inProgressProjects.length > 0 ? (
+                inProgressProjects.map((project: { _id: string; title: string; description: string; industry: string }) => (
+                    <div
+                        key={project._id}
+                        className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
+                    >
+                        <div className="w-full flex justify-between items-end ">
+                            <div>
+                                <h3 className="text-lg font-semibold text-gray-800 truncate">
+                                    {project.title}
+                                </h3>
+                                <p className="text-sm text-gray-600 mt-1 truncate">
+                                    {(project.description.length > 15 ? project.description.slice(0,15)+"..." : project.description) || "No description provided."}
+                                </p>
+                            </div>
+                            <div>
+                                <button
+                                    className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
+                                    onClick={() => navigate(`/${userType}/view_project/${username}/${project._id}`)}
+                                    >
+                                    View Project
+                                </button>
+                            </div>
+                        </div>
+                        
+                    </div>
+                ))
+                ) : (
+                <div className="col-span-full bg-gray-100 rounded-lg flex items-center justify-center">
+                    <p className="text-gray-600">No completed projects available</p>
+                </div>
+                )}
             </div>
-          </div>
         </div>
+
+
+          {/* Completed Projects */}
+          <h2 className="text-xl font-semibold mb-3 text-blue-700">Completed Projects</h2>
+        <div className="mb-8 overflow-auto bg-gray-100 px-4 py-6 rounded-lg border border-gray-200">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {completedProjects.length > 0 ? (
+                completedProjects.map((project: { _id: string; title: string; description: string; industry: string }) => (
+                    <div
+                        key={project._id}
+                        className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
+                    >
+                        <div className="w-full flex justify-between items-end">
+                            <div>
+                                <h3 className="text-lg font-semibold text-gray-800 truncate">
+                                    {project.title}
+                                </h3>
+                                <p className="text-sm text-gray-600 mt-1 truncate">
+                                    {(project.description.length > 15 ? project.description.slice(0,15)+"..." : project.description) || "No description provided."}
+                                </p>
+                            </div>
+                            <div>
+                                <button
+                                    className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
+                                    onClick={() => navigate(`/${userType}/view_project/${username}/${project._id}`)}
+                                    >
+                                    View Project
+                                </button>
+                            </div>
+                        </div>
+                        {/* <p className="text-sm text-gray-600 mt-1 truncate">
+                            {project.status || "No status provided."}
+                        </p> */}
+                    </div>
+                ))
+                ) : (
+                <div className="col-span-full bg-gray-100 rounded-lg flex items-center justify-center">
+                    <p className="text-gray-600">No completed projects available</p>
+                </div>
+                )}
+            </div>
+        </div>
+            <div className="w-full flex justify-center items-center">
+                <button
+                    className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-1/6"
+                    onClick={() => navigate(`/freelancer/view_projects/${username}`)}
+                    >
+                    View All Projects
+                </button>
+                {/* <button
+                    className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-1/6"
+                    onClick={demo}
+                    >
+                    demo
+                </button> */}
+            </div>
+      </div>
       </div>)
       : (
       <div className="h-[70vh] w-full flex justify-center items-center">

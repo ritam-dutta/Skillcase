@@ -69,61 +69,63 @@ const ViewFeedProject: React.FC<ViewFeedProject> = ({})=>{
         {/* Main Content */}
         <main className="h-[72vh] flex-grow w-full flex justify-center items-start py-6">
             {!loading ? (
-            <div className="w-11/12 lg:w-3/5 bg-slate-50 shadow-lg rounded-lg p-8 mt-[-13vh]">
-            {/* Form Content */}
-            <div className="space-y-6">
+            <div className="w-11/12 lg:w-3/5 h-[85vh] bg-slate-50 shadow-lg rounded-lg p-8 mt-[-13vh] flex flex-col">
+            {/* Scrollable Content */}
+            <div className="space-y-6 overflow-auto flex-grow pr-2">
                 {/* Description */}
                 <div>
-                <label className="block text-md font-medium text-gray-700">Description</label>
-                <div className="mt-1 h-24 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
-                    {description}
+                    <label className="block text-md font-medium text-gray-700">Description</label>
+                    <textarea
+                        className="mt-1 h-48 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2 resize-none overflow-auto"
+                        value={description}
+                        readOnly
+                    />
                 </div>
-                </div>
-
+        
                 {/* Industry */}
                 <div>
-                <label className="block text-md font-medium text-gray-700">Industry</label>
-                <div className="mt-1 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
-                    {industry}
+                    <label className="block text-md font-medium text-gray-700">Industry</label>
+                    <div className="mt-1 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
+                        {industry}
+                    </div>
                 </div>
-                </div>
-
+        
                 {/* Budget */}
                 <div>
-                <label className="block text-md font-medium text-gray-700">Budget</label>
-                <div className="mt-1 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
-                    {budget}
+                    <label className="block text-md font-medium text-gray-700">Budget</label>
+                    <div className="mt-1 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
+                        {budget}
+                    </div>
                 </div>
-                </div>
-
+        
                 {/* Duration */}
                 <div>
-                <label className="block text-md font-medium text-gray-700">Duration</label>
-                <div className="mt-1 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
-                    {duration}
+                    <label className="block text-md font-medium text-gray-700">Duration</label>
+                    <div className="mt-1 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
+                        {duration}
+                    </div>
                 </div>
-                </div>
-
+        
                 {/* Status */}
                 <div>
-                <label className="block text-md font-medium text-gray-700">Status</label>
-                <div className="mt-1 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
-                    {status}
-                </div>
+                    <label className="block text-md font-medium text-gray-700">Status</label>
+                    <div className="mt-1 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
+                        {status}
+                    </div>
                 </div>
             </div>
-
-            {/* Action Buttons */}
+        
+            {/* Action Button (Fixed at Bottom) */}
             <div className="mt-6 flex justify-center items-center">
-                
                 <button
-                className="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-                onClick={() => navigate(`/client/projects/${loggedUsername}`)}
+                    className="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                    onClick={() => navigate(`/client/projects/${loggedUsername}`)}
                 >
-                Go Back
+                    Go Back
                 </button>
             </div>
-            </div>):
+        </div>
+        ):
             (
                 <div className="h-[70vh] w-[50vw] flex justify-center items-center bg-slate-50 rounded-md shadow-lg mt-[-13vh]">
                     <Loader />

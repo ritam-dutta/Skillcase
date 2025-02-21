@@ -4,7 +4,10 @@ import Footer from "./components/footer";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-interface Followers {
+interface Followers {}
+
+interface Follower{
+    _id: string;
     username: string;
     role: string;
 }
@@ -15,7 +18,7 @@ const Followers: React.FC<Followers> = ({}) => {
     const [clientFollowers, setClientFollowers] = useState<any[]>([]);
     const [freelancerFollowers, setFreelancerFollowers] = useState<any[]>([]);
     const [isAlreadyFollowing, setIsAlreadyFollowing] = useState(false);
-    const [alreadyFollowingUser, setAlreadyFollowingUser] = useState<Followers>();
+    const [alreadyFollowingUser, setAlreadyFollowingUser] = useState<Follower>();
     const {username} = useParams();
     const navigate = useNavigate();
     const currentRole = window.location.href.includes("client") ? "client" : "freelancer";

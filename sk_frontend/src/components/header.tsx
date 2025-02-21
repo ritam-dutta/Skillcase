@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import "../App.css";
-import { Bell,User, Home, Upload , UserCheck, File } from "lucide-react";
+import { Bell,User, Home, Upload , UserCheck, File, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSocket } from "../context/socket.context";
@@ -71,6 +71,9 @@ const Header: React.FC<Header> = ({}) => {
     else if(url.includes("/notifications")){
       activeTab="notifications"
     }
+    else if(url.includes("/my_requests")){
+      activeTab="requests"
+    }
     else{
       activeTab="home"
     }
@@ -119,13 +122,25 @@ const Header: React.FC<Header> = ({}) => {
             <User/>
           </Link>
           {
+            loggedRole === "freelancer" && loggedUsername === username ? (
+            <Link
+              to={`/freelancer/my_requests/${username}`}
+              className={`text-lg font-medium hover:text-gray-400 transition  ${activeTab==="requests" ? "text-gray-400" : "text-gray-600"}`}
+            >
+              <div>
+                <Zap />
+              </div>
+            </Link>
+            ) : null
+          }
+          {
             loggedUsername === username ? (
             <Link
               to={`/${role}/notifications/${username}`}
               className={`text-lg font-medium hover:text-gray-400 transition  ${activeTab==="notifications" ? "text-gray-400" : "text-gray-600"}`}
             >
               <Bell className=" mt-4"/>
-            <div className="rounded-full bg-red-600 h-4 w-5 -translate-y-7 translate-x-3 text-white flex justify-center items-center text-xs">{notifications.length < 10 ? notifications.length : "9+"} </div>
+            <div className="rounded-full bg-red-600 h-4 w-4 -translate-y-7 translate-x-3 text-white flex justify-center items-center text-xs">{notifications.length < 10 ? notifications.length : "9+"} </div>
             </Link>
             ) : null
           }

@@ -16,11 +16,13 @@ const ViewProject: React.FC<ViewProject> = ({})=>{
     const [budget, setBudget] = useState("");
     const [duration, setDuration] = useState("");
     const [status, setStatus] = useState("");
-    const [username, setUsername] = useState("");
+    const [employer, setEmployer] = useState("");
+    // const [username, setUsername] = useState("");
+    const {username} = useParams<{username:string}>();
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const {projectid} = useParams();
-
+    const currentRole = window.location.href.includes("client") ? "client" : "freelancer";
 
 
     useEffect(() => {
@@ -38,11 +40,12 @@ const ViewProject: React.FC<ViewProject> = ({})=>{
                 console.log(project)
                 setProject(project);
                 setTitle(project.title);
+                setEmployer(project.employer);
                 setDescription(project.description);
                 setIndustry(project.industry);
                 setBudget(project.budget);
                 setDuration(project.duration);
-                setUsername(project.employer);
+                // setUsername(project.employer);
                 setStatus(project.status);
                 console.log("Projects:", project);
             } catch (error) {
@@ -59,7 +62,7 @@ const ViewProject: React.FC<ViewProject> = ({})=>{
     return(
         <>
         <Header />
-        <div className="h-[85vh] w-screen bg-[url('/images/background.jpg')] bg-cover bg-center flex flex-col justify-between">
+        <div className="h-[92vh] w-screen bg-[url('/images/background.jpg')] bg-cover bg-center flex flex-col justify-between">
         {/* Title Section */}
         <div className="h-[15vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center px-8">
             <h1 className="text-3xl text-white font-bold">{title}</h1>
@@ -68,67 +71,77 @@ const ViewProject: React.FC<ViewProject> = ({})=>{
         {/* Main Content */}
         <main className="h-[72vh] flex-grow w-full flex justify-center items-start py-6">
             {!loading ? (
-            <div className="w-11/12 lg:w-3/5 bg-slate-50 shadow-lg rounded-lg p-8 mt-[-13vh]">
-            {/* Form Content */}
-            <div className="space-y-6">
-                {/* Description */}
-                <div>
-                <label className="block text-md font-medium text-gray-700">Description</label>
-                <div className="mt-1 h-24 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
-                    {description}
+            <div className="w-11/12 lg:w-3/5 h-[85vh] bg-slate-50 shadow-lg rounded-lg p-8 mt-[-13vh] flex flex-col">
+            {/* Scrollable Content */}
+                <div className="space-y-6 overflow-auto flex-grow pr-2">
+                    {/* Description */}
+                    <div>
+                        <label className="block text-md font-medium text-gray-700">Description</label>
+                        <textarea
+                            className="mt-1 h-24 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2 resize-none overflow-auto"
+                            value={description}
+                            readOnly
+                        />
+                    </div>
+            
+                    {/* Employer */}
+                    <div>
+                        <label className="block text-md font-medium text-gray-700">Employer</label>
+                        <div className="mt-1 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
+                            {employer}
+                        </div>
+                    </div>
+            
+                    {/* Industry */}
+                    <div>
+                        <label className="block text-md font-medium text-gray-700">Industry</label>
+                        <div className="mt-1 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
+                            {industry}
+                        </div>
+                    </div>
+            
+                    {/* Budget */}
+                    <div>
+                        <label className="block text-md font-medium text-gray-700">Budget</label>
+                        <div className="mt-1 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
+                            {budget}
+                        </div>
+                    </div>
+            
+                    {/* Duration */}
+                    <div>
+                        <label className="block text-md font-medium text-gray-700">Duration</label>
+                        <div className="mt-1 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
+                            {duration}
+                        </div>
+                    </div>
+            
+                    {/* Status */}
+                    <div>
+                        <label className="block text-md font-medium text-gray-700">Status</label>
+                        <div className="mt-1 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
+                            {status}
+                        </div>
+                    </div>
                 </div>
-                </div>
-
-                {/* Industry */}
-                <div>
-                <label className="block text-md font-medium text-gray-700">Industry</label>
-                <div className="mt-1 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
-                    {industry}
-                </div>
-                </div>
-
-                {/* Budget */}
-                <div>
-                <label className="block text-md font-medium text-gray-700">Budget</label>
-                <div className="mt-1 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
-                    {budget}
-                </div>
-                </div>
-
-                {/* Duration */}
-                <div>
-                <label className="block text-md font-medium text-gray-700">Duration</label>
-                <div className="mt-1 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
-                    {duration}
-                </div>
-                </div>
-
-                {/* Status */}
-                <div>
-                <label className="block text-md font-medium text-gray-700">Status</label>
-                <div className="mt-1 w-full rounded-md bg-slate-100 border-blue-300 border-[1px] shadow-sm px-4 py-2">
-                    {status}
-                </div>
+            
+                {/* Action Buttons (Sticky at Bottom) */}
+                <div className="mt-6 flex gap-10 justify-center items-center">
+                    <button
+                        className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                        onClick={() => navigate(`/${currentRole}/profile/${username}`)}
+                    >
+                        Go to Profile
+                    </button>
+                    <button
+                        className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                        onClick={() => navigate(`/${currentRole}/view_projects/${username}`)}
+                    >
+                        View All Projects
+                    </button>
                 </div>
             </div>
-
-            {/* Action Buttons */}
-            <div className="mt-6 flex gap-10 justify-center items-center">
-                
-                <button
-                className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                onClick={() => navigate(`/client/profile/${username}`)}
-                >
-                Go to Profile
-                </button>
-                <button
-                className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                onClick={() => navigate(`/client/view_projects/${username}`)}
-                >
-                View All Projects
-                </button>
-            </div>
-            </div>)
+        )
             :(
                 <div>
                     <div className="h-[65vh] w-[50vw] flex justify-center items-center bg-slate-50 rounded-md shadow-lg mt-[-13vh]">
@@ -139,7 +152,7 @@ const ViewProject: React.FC<ViewProject> = ({})=>{
         }
         </main>
         </div>
-        <Footer />
+        {/* <Footer /> */}
 
         </>
     )

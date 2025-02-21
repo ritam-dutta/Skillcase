@@ -16,93 +16,77 @@ const createProject = asyncHandler(async (req, res) => {
     } = req.body;
     const employerId = req.user._id;
     const employer = await Client.findById(employerId).select("-password -refreshToken");
-    try {
-        console.log(title, description, budget, duration, industry, employer.username, status)
-        const project = await Project.create({
-            title,
-            description,
-            budget,
-            duration,
-            industry,
-            employer: employer.username,
-            status
-        });
+    console.log(title, description, budget, duration, industry, employer.username, status)
+    const project = await Project.create({
+        title,
+        description,
+        budget,
+        duration,
+        industry,
+        employer: employer.username,
+        status
+    });
 
-        if (!project) {
-            return res
-                .status(400)
-                .json(new ApiError(400, null, "Project could not be created"));
-        }
-
+    if (!project) {
         return res
-            .status(201)
-            .json(new ApiResponse(201, project, "Project created successfully"));
-    } catch (error) {
-        return res
-            .status(500)
-            .json(new ApiError(500, null, "An error occurred while creating project"));
+            .status(400)
+            .json(new ApiError(400, null, "Project could not be created"));
     }
+
+    return res
+    .status(201)
+    .json(new ApiResponse(201, project, "Project created successfully"));
+    
 });
 
 const getProjects = asyncHandler(async (req, res) => {
 
     const query = {};
-    try {
-        const projects = await Project.find(query);
-        // const projects = await Project.deleteMany({title:"abc"});
-        return res
-            .status(200)
-            .json(new ApiResponse(200, projects, "Projects fetched successfully"));
-    } catch (error) {
-        return res
-            .status(500)
-            .json(new ApiError(500, null, "An error occurred while fetching projects"));
-    }
+    const projects = await Project.find(query);
+    // const projects = await Project.deleteMany({title:"abc"});
+    return res
+        .status(200)
+        .json(new ApiResponse(200, projects, "Projects fetched successfully"));
+    
 
 });
 
 const getUserProjects = asyncHandler(async (req, res) => {
 
-    const query = {};
-
-    query.employer = req.headers.username || "";
+    const user = req.headers.username;
+    const role = req.headers.role || "";
+    let projects = {};
     // if (status) query.status = status;
     // if (industry) query.industry = industry;
     // if (skills) query.skills = skills;
-
-    try {
-        const projects = await Project.find(query);
-        // const projects = await Project.deleteMany({title:"abc"});
-        return res
-            .status(200)
-            .json(new ApiResponse(200, projects, "Projects fetched successfully"));
-    } catch (error) {
-        return res
-            .status(500)
-            .json(new ApiError(500, null, "An error occurred while fetching projects"));
+    if(role === "freelancer") {
+        projects = await Project.find({freelancers : user});
     }
+    // const projects = await Project.deleteMany({title:"abc"});
+    else {
+        projects = await Project.find({employer : user});
+    }
+    return res
+        .status(200)
+        .json(new ApiResponse(200, projects, "Projects fetched successfully"));
+    
 
 });
 
 const getCurrentProject = asyncHandler(async (req, res) => {
     const projectId =req.headers.projectid;
-    try {
-        const project = await Project.findById(projectId);
+    const project = await Project.findById(projectId);
 
-        if (!project) {
-            return res
-                .status(404)
-                .json(new ApiError(404, null, "Project not found"));
-        }
-
+    if (!project) {
         return res
-            .status(200)
-            .json(new ApiResponse(200, project, "Project fetched successfully"));
-    } catch (error) {
-        return res
-            .status(500)
-            .json(new ApiError(500, null, "An error occurred while fetching project"));
+            .status(404)
+            .json(new ApiError(404, null, "Project not found"));
     }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, project, "Project fetched successfully"));
+    
 });
 
 const updateProjectDetails = asyncHandler(async (req, res) => {

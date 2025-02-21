@@ -20,7 +20,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
 
     const socket = useSocket();
     const navigate = useNavigate();
-    const [user, setUser] = useState<any>();
+    // const [user, setUser] = useState<any>();
     const [projects, setProjects] = useState([]);
     const [completedProjects, setCompletedProjects] = useState([]);
     const [inProgressProjects, setInProgressProjects] = useState([]);
@@ -123,7 +123,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                 }
                 // console.log(fetchedUser)
               
-                setUser(fetchedUser);
+                // setUser(fetchedUser);
                 setFullname(fetchedUser?.fullname || "");
                 setFollowing(fetchedUser?.following.length || 0);
                 setFollowers(fetchedUser?.followers.length || 0);
@@ -216,24 +216,24 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
         }
     }
 
-    const handleConnect = async () => {
-        try {
-            const accessToken = localStorage.getItem("accessToken");
-            const response = await axios.post(`http://localhost:8000/api/v1/client/connect/${username}`, {
-                username: username,
-                connectorRole: localStorage.getItem("role"),
-            }, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            });
-            setIsConnected(true);
-            // setConnections(connections+1);
-            // console.log("Connect Response:", response.data);
-        } catch (error) {
-            console.error("Connect Error:", error);
-        }
-    }
+    // const handleConnect = async () => {
+    //     try {
+    //         const accessToken = localStorage.getItem("accessToken");
+    //         const response = await axios.post(`http://localhost:8000/api/v1/client/connect/${username}`, {
+    //             username: username,
+    //             connectorRole: localStorage.getItem("role"),
+    //         }, {
+    //             headers: {
+    //                 Authorization: `Bearer ${accessToken}`,
+    //             },
+    //         });
+    //         setIsConnected(true);
+    //         // setConnections(connections+1);
+    //         // console.log("Connect Response:", response.data);
+    //     } catch (error) {
+    //         console.error("Connect Error:", error);
+    //     }
+    // }
 
     const sendConnectionRequest = async () => {
         
@@ -447,10 +447,10 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
               <h3 className="text-lg font-semibold text-gray-700">Completed: {completed}</h3>
             </div>
             <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
-              <h3 className="text-lg font-semibold text-gray-700">Not Started: {notStarted}</h3>
+              <h3 className="text-lg font-semibold text-gray-700">In Progress: {inProgress}</h3>
             </div>
             <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
-              <h3 className="text-lg font-semibold text-gray-700">In Progress: {inProgress}</h3>
+              <h3 className="text-lg font-semibold text-gray-700">Not Started: {notStarted}</h3>
             </div>
             <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
               <h3 className="text-lg font-semibold text-gray-700">On Hold: {onHold}</h3>
@@ -479,7 +479,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                                     {project.title}
                                 </h3>
                                 <p className="text-sm text-gray-600 mt-1 truncate">
-                                    {project.description || "No description provided."}
+                                    {(project.description.length > 15 ? project.description.slice(0,15)+"..." : project.description)|| "No description provided."}
                                 </p>
                             </div>
                             <div>
@@ -533,7 +533,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                                     {project.title}
                                 </h3>
                                 <p className="text-sm text-gray-600 mt-1 truncate">
-                                    {project.description || "No description provided."}
+                                    {(project.description.length > 15 ? project.description.slice(0,15)+"..." : project.description) || "No description provided."}
                                 </p>
                             </div>
                             <div>
@@ -586,7 +586,6 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                 </button> */}
             </div>
       </div>
-    {/* <Footer/> */}
     </div>):
     (
         <div className="h-[70vh] w-full flex justify-center items-center">

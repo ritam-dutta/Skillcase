@@ -43,31 +43,6 @@ const App: React.FC<App> = ({}) => {
         });
     }, [socket]);
 
-    // useEffect(() => {
-
-    //     const fetchUser = async () => {
-    //         if(!accessToken) return;
-    //         if(!loggedInRole) return;
-
-    //         const responseLoggedUser = await axios.get(`http://localhost:8000/api/v1/${loggedInRole}/loggedIn${loggedInRole[0].toUpperCase()}${loggedInRole.slice(1)}`, {
-    //             headers: {
-    //                 Authorization: `Bearer ${accessToken}`,
-    //             },
-    //         });
-
-    //         loggedInRole === "client" ? setUser(responseLoggedUser.data.data.client) : setUser(responseLoggedUser.data.data.freelancer);
-    //     }
-        
-    //     fetchUser();
-    // }, []);
-
-    // const {unreadNotifications, setUnreadNotifications} = useNotification();
-
-    // setUnreadNotifications(user?.notifications || []);
-
-        
-
-
     return (
         <Outlet/>
     )

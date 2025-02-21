@@ -22,7 +22,8 @@ import Followers from './followers.tsx'
 import Followings from './followings.tsx'
 import Connections from './connections.tsx'
 import Notifications from './notifications.tsx'
-import Requests from './requests.tsx'
+import Requests from './requests_client.tsx'
+import MyRequests from './requests_freelancer.tsx'
 import { SocketProvider } from './context/socket.context.tsx'
 import { NotificationProvider } from './context/notifications.context.tsx'
 
@@ -48,6 +49,7 @@ const router= createBrowserRouter(
       <Route path='client/upload_project/:username' element={<UploadProject/>}> </Route>
       <Route path='client/edit_project/:username/:projectid' element={<EditProject/>}> </Route>
       <Route path='client/view_projects/:username' element={<ViewProjects/>}> </Route>
+      <Route path='freelancer/view_projects/:username' element={<ViewProjects/>}> </Route>
       <Route path='client/view_project/:username/:projectid' element={<ViewProject/>}> </Route>
       <Route path='freelancer/view_project/:username/:projectid' element={<ViewProject/>}> </Route>
       <Route path='client/view_feed_project/:username/:projectid' element={<ViewFeedProject/>}> </Route>
@@ -61,6 +63,7 @@ const router= createBrowserRouter(
       <Route path='freelancer/notifications/:username' element={<Notifications/>}> </Route>
       <Route path='client/notifications/:username' element={<Notifications/>}> </Route>
       <Route path='client/requests/:username/:projectid' element={<Requests/>}> </Route>
+      <Route path='freelancer/my_requests/:username' element={<MyRequests/>}> </Route>
       <Route path="*" element={<Not_found/>}></Route>
     </Route>
   )

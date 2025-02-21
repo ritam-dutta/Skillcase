@@ -19,7 +19,7 @@ interface Project {
     _id: string;
 }
 const ViewProjects : React.FC<ViewProjects> = ({})=>{
-    const [user, setUser] = useState<any>();
+    // const [user, setUser] = useState<any>();
     const [projects, setProjects] = useState([]);
     const [completedProjects, setCompletedProjects] = useState([]);
     const [inProgressProjects, setInProgressProjects] = useState([]);
@@ -28,6 +28,9 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
     const [cancelledProjects, setCancelledProjects] = useState([]);
     const [loading, setLoading] = useState(false);
     const {requests} = useNotification();
+    const loggedInRole = localStorage.getItem("role") || "";
+    const loggedUsername = localStorage.getItem("username") || "";
+    const accessToken = localStorage.getItem("accessToken");
 
     const url = window.location.href;
     let userType="";
@@ -38,77 +41,75 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
         userType="client"
     }
 
-    const[currentRole,setRole]=useState(userType);
+    // const[currentRole,setRole]=useState(userType);
     const {username} = useParams<{ username: string }>();
-    const [loggedUsername, setLoggedUsername] = useState("");
+    // const [loggedUsername, setLoggedUsername] = useState("");
     
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        const accessToken = localStorage.getItem("accessToken");
-        const loggedInRole = localStorage.getItem("role") || "";
         // console.log("fetched token",accessToken)
         if (!accessToken) {
-            navigate(`/${currentRole}/login`);
+            navigate(`/${userType}/login`);
         } 
 
-        const fetchUserData = async () => {
-            setLoading(true);
-            try {
-                const responseLoggedUser = await axios.get(`http://localhost:8000/api/v1/${loggedInRole}/loggedIn${loggedInRole[0].toUpperCase()}${loggedInRole.slice(1)}`, {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                });
+        // const fetchUserData = async () => {
+        //     setLoading(true);
+        //     try {
+        //         const responseLoggedUser = await axios.get(`http://localhost:8000/api/v1/${loggedInRole}/loggedIn${loggedInRole[0].toUpperCase()}${loggedInRole.slice(1)}`, {
+        //             headers: {
+        //                 Authorization: `Bearer ${accessToken}`,
+        //             },
+        //         });
 
-                const responseCurrentUser = await axios.get(`http://localhost:8000/api/v1/${currentRole}/profile/${username}`, {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                });
-                let currentUser ;
-                let loggedInUser;
-                let fetchedUser;
-                if(currentRole===loggedInRole){
-                    if(currentRole==="freelancer"){
-                        currentUser = responseCurrentUser.data?.data?.freelancer;
-                        loggedInUser = responseLoggedUser.data?.data?.freelancer;
-                    }
-                    else if(currentRole==="client"){
-                        currentUser = responseCurrentUser.data?.data?.client;
-                        loggedInUser = responseLoggedUser.data?.data?.client;
-                    } 
-                }
-                else{
-                    if(currentRole==="freelancer"){
-                        currentUser = responseCurrentUser.data?.data?.freelancer;
-                        loggedInUser = responseLoggedUser.data?.data?.client;
-                    }
-                    else if(currentRole==="client"){
-                        currentUser = responseCurrentUser.data?.data?.client;
-                        loggedInUser = responseLoggedUser.data?.data?.freelancer;
-                    }
-                }  
-                if(loggedInUser.username === currentUser.username){
-                    fetchedUser = loggedInUser;
-                    setLoggedUsername(loggedInUser.username);   
-                }
-                else{
-                    fetchedUser = currentUser;
-                    setLoggedUsername(loggedInUser.username);
-                }
+        //         const responseCurrentUser = await axios.get(`http://localhost:8000/api/v1/${currentRole}/profile/${username}`, {
+        //             headers: {
+        //                 Authorization: `Bearer ${accessToken}`,
+        //             },
+        //         });
+        //         let currentUser ;
+        //         let loggedInUser;
+        //         let fetchedUser;
+        //         if(currentRole===loggedInRole){
+        //             if(currentRole==="freelancer"){
+        //                 currentUser = responseCurrentUser.data?.data?.freelancer;
+        //                 loggedInUser = responseLoggedUser.data?.data?.freelancer;
+        //             }
+        //             else if(currentRole==="client"){
+        //                 currentUser = responseCurrentUser.data?.data?.client;
+        //                 loggedInUser = responseLoggedUser.data?.data?.client;
+        //             } 
+        //         }
+        //         else{
+        //             if(currentRole==="freelancer"){
+        //                 currentUser = responseCurrentUser.data?.data?.freelancer;
+        //                 loggedInUser = responseLoggedUser.data?.data?.client;
+        //             }
+        //             else if(currentRole==="client"){
+        //                 currentUser = responseCurrentUser.data?.data?.client;
+        //                 loggedInUser = responseLoggedUser.data?.data?.freelancer;
+        //             }
+        //         }  
+        //         if(loggedInUser.username === currentUser.username){
+        //             fetchedUser = loggedInUser;
+        //             setLoggedUsername(loggedInUser.username);   
+        //         }
+        //         else{
+        //             fetchedUser = currentUser;
+        //             setLoggedUsername(loggedInUser.username);
+        //         }
               
-                setUser(fetchedUser);
-                setRole(fetchedUser?.role || "")
-            } catch (error) {
-                console.error("error fetching user data",error);
-                navigate(`/${currentRole}/login`);
-            } finally{
-                setLoading(false);
-            }
-        };
-        fetchUserData();
+        //         setUser(fetchedUser);
+        //         setRole(fetchedUser?.role || "")
+        //     } catch (error) {
+        //         console.error("error fetching user data",error);
+        //         navigate(`/${currentRole}/login`);
+        //     } finally{
+        //         setLoading(false);
+        //     }
+        // };
+        // fetchUserData();
         const fetchUserProjects = async () => {
             setLoading(true);
             try {
@@ -117,6 +118,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                         username: username,
+                        role: userType,
                     },
                 });
         
@@ -216,26 +218,41 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
           <h2 className="text-2xl font-bold mb-4">Projects Status</h2>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-3 gap-4 mb-8">
-            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
-              <h3 className="text-lg font-semibold text-gray-700">Completed: {completed}</h3>
-            </div>
-            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
-              <h3 className="text-lg font-semibold text-gray-700">Not Started: {notStarted}</h3>
-            </div>
-            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
-              <h3 className="text-lg font-semibold text-gray-700">In Progress: {inProgress}</h3>
-            </div>
-            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
-              <h3 className="text-lg font-semibold text-gray-700">On Hold: {onHold}</h3>
-            </div>
-            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
-              <h3 className="text-lg font-semibold text-gray-700">Cancelled: {cancelled}</h3>
-            </div>
-            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
-              <h3 className="text-lg font-semibold text-gray-700">Total: {total}</h3>
-            </div>
+          {loggedInRole === "client" ? (
+            <div className="grid grid-cols-3 gap-4 mb-8">
+                <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+                <h3 className="text-lg font-semibold text-gray-700">Completed: {completed}</h3>
+                </div>
+                <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+                <h3 className="text-lg font-semibold text-gray-700">In Progress: {inProgress}</h3>
+                </div>
+                <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+                <h3 className="text-lg font-semibold text-gray-700">Not Started: {notStarted}</h3>
+                </div>
+                <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+                <h3 className="text-lg font-semibold text-gray-700">On Hold: {onHold}</h3>
+                </div>
+                <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+                <h3 className="text-lg font-semibold text-gray-700">Cancelled: {cancelled}</h3>
+                </div>
+                <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+                <h3 className="text-lg font-semibold text-gray-700">Total: {total}</h3>
+                </div>
+            </div>)
+          :(
+            <div className="grid grid-cols-3 gap-4 mb-8">
+                <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+                <h3 className="text-lg font-semibold text-gray-700">Completed: {completed}</h3>
+                </div>
+                <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+                <h3 className="text-lg font-semibold text-gray-700">In Progress: {inProgress}</h3>
+                </div>
+                <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+                <h3 className="text-lg font-semibold text-gray-700">Total: {total}</h3>
+                </div>
           </div>
+          )}
+
 
             {/*completed projects*/}
 
@@ -254,13 +271,13 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                                     {project.title}
                                 </h3>
                                 <p className="text-sm text-gray-600 mt-1 truncate">
-                                    {project.description || "No description provided."}
+                                    {(project.description.length > 15 ? project.description.slice(0,15)+"..." : project.description) || "No description provided."}
                                 </p>
                             </div>
                             <div>
                                 <button
                                     className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
-                                    onClick={() => navigate(`/client/view_project/${username}/${project._id}`)}
+                                    onClick={() => navigate(`/${userType}/view_project/${username}/${project._id}`)}
                                     >
                                     View Project
                                 </button>
@@ -269,7 +286,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                         {/* <p className="text-sm text-gray-600 mt-1 truncate">
                             {project.status || "No status provided."}
                         </p> */}
-                        {username === loggedUsername ? (    
+                        {(username === loggedUsername && loggedInRole === "client") ? (    
                             <div className="mt-4 flex items-center justify-between gap-4">
                                 <span className="text-sm text-blue-500 font-medium">
                                 {project.industry || "Uncategorized"}
@@ -294,60 +311,64 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
         </div>
 
          {/*Not started projects*/}
-
-         <h2 className="text-xl font-semibold mb-3 text-black">Not Started Projects</h2>
-        <div className="mb-8 overflow-auto bg-gray-200 px-4 py-6 rounded-lg border border-gray-200">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {notStartedProjects.length > 0 ? (
-                notStartedProjects.map((project : Project) => (
-                    <div
-                        key={project._id}
-                        className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
-                    >
-                        <div className="w-full flex justify-between items-end">
-                            <div>
-                                <h3 className="text-lg font-semibold text-gray-800 truncate">
-                                    {project.title}
-                                </h3>
-                                <p className="text-sm text-gray-600 mt-1 truncate">
-                                    {project.description || "No description provided."}
-                                </p>
+         {userType==="client" ? (
+            <div>
+                <h2 className="text-xl font-semibold mb-3 text-black">Not Started Projects</h2>
+                <div className="mb-8 overflow-auto bg-gray-200 px-4 py-6 rounded-lg border border-gray-200">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {notStartedProjects.length > 0 ? (
+                        notStartedProjects.map((project : Project) => (
+                            <div
+                                key={project._id}
+                                className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
+                            >
+                                <div className="w-full flex justify-between items-end">
+                                    <div>
+                                        <h3 className="text-lg font-semibold text-gray-800 truncate">
+                                            {project.title}
+                                        </h3>
+                                        <p className="text-sm text-gray-600 mt-1 truncate">
+                                            {(project.description.length > 15 ? project.description.slice(0,15)+"..." : project.description) || "No description provided."}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <button
+                                            className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
+                                            onClick={() => navigate(`/client/view_project/${username}/${project._id}`)}
+                                            >
+                                            View Project
+                                        </button>
+                                    </div>
+                                </div>
+                                {/* <p className="text-sm text-gray-600 mt-1 truncate">
+                                    {project.status || "No status provided."}
+                                </p> */}
+                                {username === loggedUsername ? (    
+                                    <div className="mt-4 flex items-center justify-between gap-4">
+                                        <span className="text-sm text-blue-500 font-medium">
+                                        {project.industry || "Uncategorized"}
+                                        </span>
+                                        <button
+                                        className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
+                                        onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
+                                        >
+                                        Edit Project
+                                        </button>
+                                    </div>)
+                                    :null
+                                }
                             </div>
-                            <div>
-                                <button
-                                    className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
-                                    onClick={() => navigate(`/client/view_project/${username}/${project._id}`)}
-                                    >
-                                    View Project
-                                </button>
-                            </div>
+                        ))
+                        ) : (
+                        <div className="col-span-full bg-gray-200 rounded-lg flex items-center justify-center">
+                            <p className="text-gray-600">No Data available</p>
                         </div>
-                        {/* <p className="text-sm text-gray-600 mt-1 truncate">
-                            {project.status || "No status provided."}
-                        </p> */}
-                        {username === loggedUsername ? (    
-                            <div className="mt-4 flex items-center justify-between gap-4">
-                                <span className="text-sm text-blue-500 font-medium">
-                                {project.industry || "Uncategorized"}
-                                </span>
-                                <button
-                                className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
-                                onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
-                                >
-                                Edit Project
-                                </button>
-                            </div>)
-                            :null
-                        }
+                        )}
                     </div>
-                ))
-                ) : (
-                <div className="col-span-full bg-gray-200 rounded-lg flex items-center justify-center">
-                    <p className="text-gray-600">No Data available</p>
                 </div>
-                )}
-            </div>
-        </div>
+            </div>)
+            : null
+            }
 
          {/*In progress projects*/}
 
@@ -365,7 +386,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                                     {project.title}
                                 </h3>
                                 <p className="text-sm text-gray-600 mt-1 truncate">
-                                    {project.description || "No description provided."}
+                                    {(project.description.length > 15 ? project.description.slice(0,15)+"..." : project.description) || "No description provided."}
                                 </p>
                             </div>
                             <div className="flex flex-col">
@@ -383,14 +404,14 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
 
                                 <button
                                     className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition min-w-[120px]"
-                                    onClick={() => navigate(`/client/view_project/${username}/${project._id}`)}
+                                    onClick={() => navigate(`/${userType}/view_project/${username}/${project._id}`)}
                                 >
                                     View Project
                                 </button>
                             </div>
                         </div>
                         
-                        {username === loggedUsername ? (    
+                        {(username === loggedUsername && loggedInRole === "client") ? (    
                             <div className="mt-4 flex items-center justify-between gap-4">
                                 <span className="text-sm text-blue-500 font-medium">
                                 {project.industry || "Uncategorized"}
@@ -416,120 +437,124 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
         </div>
 
          {/*On hold projects*/}
-
-         <h2 className="text-xl font-semibold mb-3 text-black">Projects On Hold</h2>
-        <div className="mb-8 overflow-auto bg-gray-200 px-4 py-6 rounded-lg border border-gray-200">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {onHoldProjects.length > 0 ? (
-                onHoldProjects.map((project : Project) => (
-                    <div
-                        key={project._id}
-                        className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
-                    >
-                        <div className="w-full flex justify-between items-end">
-                            <div>
-                                <h3 className="text-lg font-semibold text-gray-800 truncate">
-                                    {project.title}
-                                </h3>
-                                <p className="text-sm text-gray-600 mt-1 truncate">
-                                    {project.description || "No description provided."}
-                                </p>
+         {userType === "client"? (
+        <div>
+            <h2 className="text-xl font-semibold mb-3 text-black">Projects On Hold</h2>
+            <div className="mb-8 overflow-auto bg-gray-200 px-4 py-6 rounded-lg border border-gray-200">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {onHoldProjects.length > 0 ? (
+                    onHoldProjects.map((project : Project) => (
+                        <div
+                            key={project._id}
+                            className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
+                        >
+                            <div className="w-full flex justify-between items-end">
+                                <div>
+                                    <h3 className="text-lg font-semibold text-gray-800 truncate">
+                                        {project.title}
+                                    </h3>
+                                    <p className="text-sm text-gray-600 mt-1 truncate">
+                                        {(project.description.length > 15 ? project.description.slice(0,15)+"..." : project.description) || "No description provided."}
+                                    </p>
+                                </div>
+                                <div>
+                                    <button
+                                        className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
+                                        onClick={() => navigate(`/${userType}/view_project/${username}/${project._id}`)}
+                                        >
+                                        View Project
+                                    </button>
+                                </div>
                             </div>
-                            <div>
-                                <button
-                                    className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
-                                    onClick={() => navigate(`/client/view_project/${username}/${project._id}`)}
+                            {/* <p className="text-sm text-gray-600 mt-1 truncate">
+                                {project.status || "No status provided."}
+                            </p> */}
+                            {username === loggedUsername ? (    
+                                <div className="mt-4 flex items-center justify-between gap-4">
+                                    <span className="text-sm text-blue-500 font-medium">
+                                    {project.industry || "Uncategorized"}
+                                    </span>
+                                    <button
+                                    className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
+                                    onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
                                     >
-                                    View Project
-                                </button>
-                            </div>
+                                    Edit Project
+                                    </button>
+                                </div>)
+                                :null
+                            }
                         </div>
-                        {/* <p className="text-sm text-gray-600 mt-1 truncate">
-                            {project.status || "No status provided."}
-                        </p> */}
-                        {username === loggedUsername ? (    
-                            <div className="mt-4 flex items-center justify-between gap-4">
-                                <span className="text-sm text-blue-500 font-medium">
-                                {project.industry || "Uncategorized"}
-                                </span>
-                                <button
-                                className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
-                                onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
-                                >
-                                Edit Project
-                                </button>
-                            </div>)
-                            :null
-                        }
+                    ))
+                    ) : (
+                    <div className="col-span-full bg-gray-200 rounded-lg flex items-center justify-center">
+                        <p className="text-gray-600">No completed projects available</p>
                     </div>
-                ))
-                ) : (
-                <div className="col-span-full bg-gray-200 rounded-lg flex items-center justify-center">
-                    <p className="text-gray-600">No completed projects available</p>
+                    )}
                 </div>
-                )}
             </div>
-        </div>
 
-          {/* Cancelled Projects */}
-          <h2 className="text-xl font-semibold mb-3 text-black"> Cancelled Progress</h2>
-        <div className="mb-8 overflow-auto bg-gray-200 px-4 py-6 rounded-lg border border-gray-200">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {cancelledProjects.length > 0 ? (
-                cancelledProjects.map((project : Project) => (
-                    <div
-                        key={project._id}
-                        className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
-                    >
-                        <div className="w-full flex justify-between items-end">
-                            <div>
-                                <h3 className="text-lg font-semibold text-gray-800 truncate">
-                                    {project.title}
-                                </h3>
-                                <p className="text-sm text-gray-600 mt-1 truncate">
-                                    {project.description || "No description provided."}
-                                </p>
+            {/* Cancelled Projects */}
+            <h2 className="text-xl font-semibold mb-3 text-black"> Cancelled Progress</h2>
+            <div className="mb-8 overflow-auto bg-gray-200 px-4 py-6 rounded-lg border border-gray-200">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {cancelledProjects.length > 0 ? (
+                    cancelledProjects.map((project : Project) => (
+                        <div
+                            key={project._id}
+                            className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
+                        >
+                            <div className="w-full flex justify-between items-end">
+                                <div>
+                                    <h3 className="text-lg font-semibold text-gray-800 truncate">
+                                        {project.title}
+                                    </h3>
+                                    <p className="text-sm text-gray-600 mt-1 truncate">
+                                        {(project.description.length > 15 ? project.description.slice(0,15)+"..." : project.description) || "No description provided."}
+                                    </p>
+                                </div>
+                                <div>
+                                    <button
+                                        className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
+                                        onClick={() => navigate(`/${userType}/view_project/${username}/${project._id}`)}
+                                        >
+                                        View Project
+                                    </button>
+                                </div>
                             </div>
-                            <div>
-                                <button
-                                    className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition mr-1"
-                                    onClick={() => navigate(`/client/view_project/${username}/${project._id}`)}
+                            {/* <p className="text-sm text-gray-600 mt-1 truncate">
+                                {project.status || "No status provided."}
+                            </p> */}
+                            {username === loggedUsername ? (    
+                                <div className="mt-4 flex items-center justify-between gap-4">
+                                    <span className="text-sm text-blue-500 font-medium">
+                                    {project.industry || "Uncategorized"}
+                                    </span>
+                                    <button
+                                    className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
+                                    onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
                                     >
-                                    View Project
-                                </button>
-                            </div>
+                                    Edit Project
+                                    </button>
+                                </div>)
+                                :null
+                            }
                         </div>
-                        {/* <p className="text-sm text-gray-600 mt-1 truncate">
-                            {project.status || "No status provided."}
-                        </p> */}
-                        {username === loggedUsername ? (    
-                            <div className="mt-4 flex items-center justify-between gap-4">
-                                <span className="text-sm text-blue-500 font-medium">
-                                {project.industry || "Uncategorized"}
-                                </span>
-                                <button
-                                className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-2/4"
-                                onClick={() => navigate(`/client/edit_project/${username}/${project._id}`)}
-                                >
-                                Edit Project
-                                </button>
-                            </div>)
-                            :null
-                        }
+                    ))
+                    ) : (
+                    <div className="col-span-full bg-gray-200 rounded-lg flex items-center justify-center">
+                        <p className="text-gray-600">No completed projects available</p>
                     </div>
-                ))
-                ) : (
-                <div className="col-span-full bg-gray-200 rounded-lg flex items-center justify-center">
-                    <p className="text-gray-600">No completed projects available</p>
+                    )}
                 </div>
-                )}
             </div>
-        </div>          
+            </div> )
+        : null   
+        }      
 
             <div className="w-full flex justify-center items-center">
                 <button
                     className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                    onClick={() => navigate(`/client/profile/${username}`)}
+                    onClick={() => navigate(`/${userType}/profile/${username}`)}
                     >
                     Go to Profile
                 </button>

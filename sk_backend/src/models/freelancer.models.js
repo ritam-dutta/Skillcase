@@ -69,6 +69,22 @@ const freelancerSchema = new mongoose.Schema({
         type: Array,
         required: false,
     },
+    applications:{
+        type: [
+            {
+                client:{
+                    type: String,
+                    required: true,
+                },
+                projectId:{
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "Project",
+                    required: true,
+                }
+            }
+        ],
+        required: false,
+    },
     projects:{
         type: [mongoose.Schema.Types.ObjectId],
         ref: "Project",

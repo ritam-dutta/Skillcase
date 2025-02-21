@@ -24,18 +24,48 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
     // const role = url.includes("freelancer") ? "freelancer" : "client";
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(false);
-    const loggedRole = localStorage.getItem("role");
+    const loggedRole = localStorage.getItem("role") || "";
     const loggedUsername = localStorage.getItem("username") || "";
     const accessToken = localStorage.getItem("accessToken") || "";
+    // const [isApplied, setIsApplied] = useState(false);
     const socket = useSocket();
     const navigate = useNavigate();
+    // const [gotProjects, setGotProjects] = useState<Project[]>([]);
     useEffect(() => {
         const fetchProjects = async () => {
             setLoading(true);
             try {
                 const response = await axios.get("http://localhost:8000/api/v1/root/getprojects");
-                const projects = response.data.data;
-                setProjects(projects.filter((project: Project) => project.status === "In Progress"));
+                const response2 = await axios.get("http://localhost:8000/api/v1/root/getuserprojects",{
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        username: loggedUsername,
+                        role: loggedRole
+                    }
+                });
+                const responseLoggedUser = await axios.get(`http://localhost:8000/api/v1/${loggedRole}/loggedIn${loggedRole[0].toUpperCase()}${loggedRole.slice(1)}`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+                const fetchedProjects = response.data.data;
+                let gotProjects = response2.data.data;
+                let appliedProjects = responseLoggedUser.data.data.freelancer.applications;
+                let newFetchedProjects = fetchedProjects
+                                        .filter((project: Project) => project.status === "In Progress")
+                                        .filter((project: Project) => 
+                                            !gotProjects.some((gotProject: Project) => gotProject._id === project._id) &&
+                                            !appliedProjects.some((appliedProject: Project) => appliedProject._id === project._id)
+                                        );
+
+                // console.log("newFetchedProjects:", newFetchedProjects);
+                // console.log("GotProjects:", gotProjects);
+                // console.log("AppliedProjects:", appliedProjects);
+                
+                setProjects(newFetchedProjects);
+                // if(fetchedProjects.requests.includes(loggedUsername)){
+                //     setIsApplied(true);
+                // }
                 console.log("Projects:", projects);
             } catch (error) {
                 console.error("Fetch Projects Error:", error);
@@ -48,6 +78,7 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
 
     const applyProject = (id: string, employer: string ) => {
         try {
+            setProjects(projects.filter((project: Project) => project._id !== id));
             socket?.emit("notification", { 
                 accessToken: accessToken,
                 notification: {
@@ -60,6 +91,7 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
                     message: `@${loggedUsername} wants to apply for this project.`	
                 }
             });
+            // setIsApplied(true);
         } catch (error) {
             console.error("Apply Project Error:", error);
         }
@@ -79,6 +111,7 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
                     message: `@${loggedUsername} wants to collaborate with you on this project.`
                 }
             });
+            // setIsApplied(true);
         }
         catch (error) {
             console.error("Collaborate Project Error:", error);
@@ -99,7 +132,7 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
                             className="project-card bg-slate-100 shadow-md rounded-lg p-6 border-t-4 border-blue-500 hover:shadow-lg transition-shadow duration-300"
                         >
                             <h3 className="text-xl font-bold mb-2">{project.title}</h3>
-                            <p className="text-sm mb-4">Description: {project.description}</p>
+                            <p className="text-sm mb-4">Description: {(project.description.length > 30 ? project.description.slice(0,30)+"..." : project.description)}</p>
                             <div className="flex justify-between align-center">
                                 <div>
                                     <p className="text-sm font-medium">Budget: {project.budget}</p>
@@ -120,9 +153,9 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
                                 {loggedUsername === project.employer ? null : (
                                 <button
                                     className={ (project.collaborators.includes(loggedUsername) ||project.freelancers.includes(loggedUsername) ) ? "w-full mt-2 py-2 bg-gray-300 text-blue-950 rounded-lg hover:bg-gray-300 transition-colors duration-300" : "w-full mt-2 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-300"}
-                                    onClick={() => {loggedRole === "freelancer" ? project.freelancers.includes(loggedUsername) ? null : applyProject(project._id, project.employer) : project.collaborators.includes(loggedUsername) ? null : collaborateProject(project._id, project.employer)}}
+                                    onClick={() => {loggedRole === "freelancer" ? applyProject(project._id, project.employer) : collaborateProject(project._id, project.employer)}}
                                 >
-                                    {loggedRole === "freelancer" ? project.freelancers.includes(loggedUsername) ? "Applied" : "Apply" : project.collaborators.includes(loggedUsername) ? "Collaborated" : "Collaborate"}
+                                    {loggedRole === "freelancer" ?  "Apply" : "Collaborate"}
                                 </button>
                                 )
                                 }
