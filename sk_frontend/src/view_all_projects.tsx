@@ -17,6 +17,7 @@ interface Project {
     employer: string;
     status: string;
     _id: string;
+    requests: Array<any>;
 }
 const ViewProjects : React.FC<ViewProjects> = ({})=>{
     // const [user, setUser] = useState<any>();
@@ -28,6 +29,8 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
     const [cancelledProjects, setCancelledProjects] = useState([]);
     const [loading, setLoading] = useState(false);
     const {requests} = useNotification();
+    const [requestedProjects, setRequestedProjects] = useState<string[]>([]);
+    // console.log("requests", requests);
     const loggedInRole = localStorage.getItem("role") || "";
     const loggedUsername = localStorage.getItem("username") || "";
     const accessToken = localStorage.getItem("accessToken");
@@ -126,9 +129,12 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                 setProjects(projects);
                 let compProjects = projects.filter((project : Project) => project.status === "Completed");
                 let inprogProjects = projects.filter((project : Project) => project.status === "In Progress");
+                let requestedProjectsIds = inprogProjects.map((project : Project) => project.requests.length > 0 ? project._id : "").filter((id: string) => id !== "");
                 let notStartProjects = projects.filter((project : Project) => project.status === "Not Started");
                 let holdProjects = projects.filter((project : Project) => project.status === "On Hold");
                 let cancelProjects = projects.filter((project : Project) => project.status === "Cancelled");
+                setRequestedProjects(requestedProjectsIds);
+                console.log("Projects:", requestedProjectsIds);
                 setCompletedProjects(compProjects);
                 setInProgressProjects(inprogProjects);
                 setNotStartedProjects(notStartProjects);
@@ -386,18 +392,25 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
                                     {project.title}
                                 </h3>
                                 <p className="text-sm text-gray-600 mt-1 truncate">
-                                    {(project.description.length > 15 ? project.description.slice(0,15)+"..." : project.description) || "No description provided."}
+                                    {(project.description.length > 5 ? project.description.slice(0,5)+"..." : project.description) || "No description provided."}
                                 </p>
                             </div>
                             <div className="flex flex-col">
                                 <div className="flex justify-end items-center mb-3">
-                                    {requests.filter((request:any)=>request.projectId===project._id).length>0 ? (
+                                    {requests.filter((request:any)=>request.projectId===project._id).length > 0 ? (
                                 <button
                                     className="flex justify-center items-center bg-red-500 text-white h-5 w-5 rounded-full hover:text-white hover:bg-red-400 transition"
                                     onClick={() => navigate(`/client/requests/${username}/${project._id}`)}
                                 >
                                     <Zap size={16} />
                                 </button>) 
+                                : requestedProjects.includes(project._id) ? (
+                                    <button
+                                    className="flex justify-center items-center bg-red-500 text-white h-5 w-5 rounded-full hover:text-white hover:bg-red-400 transition"
+                                    onClick={() => navigate(`/client/requests/${username}/${project._id}`)}
+                                >
+                                    <Zap size={16} />
+                                </button>)
                                 : null
                                 }
                                 </div>

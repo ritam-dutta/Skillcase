@@ -50,17 +50,17 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
                 });
                 const fetchedProjects = response.data.data;
                 let gotProjects = response2.data.data;
-                let appliedProjects = responseLoggedUser.data.data.freelancer.applications;
+                let appliedProjects = responseLoggedUser.data.data.freelancer?.applications;
                 let newFetchedProjects = fetchedProjects
                                         .filter((project: Project) => project.status === "In Progress")
                                         .filter((project: Project) => 
-                                            !gotProjects.some((gotProject: Project) => gotProject._id === project._id) &&
-                                            !appliedProjects.some((appliedProject: Project) => appliedProject._id === project._id)
+                                            !(gotProjects || []).some((gotProject: Project) => gotProject._id === project._id) &&
+                                            !(appliedProjects || []).some((appliedProject: Project) => appliedProject._id === project._id)
                                         );
-
-                // console.log("newFetchedProjects:", newFetchedProjects);
-                // console.log("GotProjects:", gotProjects);
-                // console.log("AppliedProjects:", appliedProjects);
+                console.log("fetched projects",fetchedProjects)
+                console.log("GotProjects:", gotProjects);
+                console.log("AppliedProjects:", appliedProjects);
+                console.log("newFetchedProjects:", newFetchedProjects);
                 
                 setProjects(newFetchedProjects);
                 // if(fetchedProjects.requests.includes(loggedUsername)){

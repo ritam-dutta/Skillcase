@@ -44,7 +44,7 @@ const Header: React.FC<Header> = ({}) => {
                 }
             });
             const fetchedNotifications = response.data.data.notifications;
-            console.log(fetchNotifications)
+            // console.log(fetchNotifications)
             setNotifications(fetchedNotifications.filter((notif : Notification) => notif.type !== "apply for project" && notif.type !== "collaborate on project"));
           
         } catch (error) {
@@ -132,6 +132,18 @@ const Header: React.FC<Header> = ({}) => {
               </div>
             </Link>
             ) : null
+          }
+          {
+            loggedRole === "client" && loggedUsername === username ? (
+              <Link
+                to={`/client/requests/${username}`}
+                className={`text-lg font-medium hover:text-gray-400 transition  ${activeTab==="requests" ? "text-gray-400" : "text-gray-600"}`}
+              >
+                <div>
+                  <Zap />
+                </div>
+              </Link>
+              ) : null
           }
           {
             loggedUsername === username ? (

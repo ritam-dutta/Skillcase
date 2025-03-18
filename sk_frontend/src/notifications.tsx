@@ -47,7 +47,7 @@ const Notifications: React.FC<Notifications> = ({}) => {
                     }
                 });
                 const fetchedNotifications = response.data.data.notifications;
-                console.log(fetchNotifications)
+                console.log(fetchedNotifications)
                 setNotifications(fetchedNotifications.filter((notif : Notification) => notif.type !== "apply for project" && notif.type !== "collaborate on project"));
                 setUnreadNotifications(fetchedNotifications.filter((notif : Notification) => !notif.markAsRead));
                 // let message: string[] = fetchedNotifications.map((notif: Notification) => notif.message);

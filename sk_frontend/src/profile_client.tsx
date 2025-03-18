@@ -479,7 +479,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                                     {project.title}
                                 </h3>
                                 <p className="text-sm text-gray-600 mt-1 truncate">
-                                    {(project.description.length > 15 ? project.description.slice(0,15)+"..." : project.description)|| "No description provided."}
+                                    {(project.description.length > 5 ? project.description.slice(0,5)+"..." : project.description)|| "No description provided."}
                                 </p>
                             </div>
                             <div>
@@ -533,7 +533,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                                     {project.title}
                                 </h3>
                                 <p className="text-sm text-gray-600 mt-1 truncate">
-                                    {(project.description.length > 15 ? project.description.slice(0,15)+"..." : project.description) || "No description provided."}
+                                    {(project.description.length > 10 ? project.description.slice(0,10)+"..." : project.description) || "No description provided."}
                                 </p>
                             </div>
                             <div>

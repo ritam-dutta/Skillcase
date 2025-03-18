@@ -619,7 +619,7 @@ const acceptCollaboration = asyncHandler(async (req, res) => {
     const {sender, projectId} = req.body;
     const client = await Client.findOneAndUpdate({ username : sender },
         {
-            $addToSet: {collaborations: projectId}
+            $addToSet: {collaborations: projectId, projects: projectId}
         },
         {
             new: true

@@ -87,7 +87,7 @@ const registerFreelancer = asyncHandler(async (req,res) => {
 const loginFreelancer = asyncHandler( async (req,res) => {
     // console.log("logging in");
     const {username, password} = req.body;
-    console.log(username, password);
+    console.log(username);
     if(!username || !password) {
         throw new ApiError(400, 'All fields are required');
     }

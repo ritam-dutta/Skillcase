@@ -79,6 +79,11 @@ const clientSchema = new mongoose.Schema({
         ref: "Project",
         required: false,
     },
+    projects:{
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "Project",
+        required: false,
+    },
     refreshToken:{
         type: String,
         required: false,

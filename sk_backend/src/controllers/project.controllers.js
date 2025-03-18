@@ -26,6 +26,7 @@ const createProject = asyncHandler(async (req, res) => {
         employer: employer.username,
         status
     });
+    await Client.findByIdAndUpdate(employerId, { $push: { projects: project._id } });
 
     if (!project) {
         return res
@@ -56,15 +57,17 @@ const getUserProjects = asyncHandler(async (req, res) => {
     const user = req.headers.username;
     const role = req.headers.role || "";
     let projects = {};
-    // if (status) query.status = status;
-    // if (industry) query.industry = industry;
-    // if (skills) query.skills = skills;
     if(role === "freelancer") {
         projects = await Project.find({freelancers : user});
     }
-    // const projects = await Project.deleteMany({title:"abc"});
     else {
-        projects = await Project.find({employer : user});
+        projects = await Project.find({
+            $or: [
+            { employer: user },
+            { collaborators: user }
+            ]
+        });
+        
     }
     return res
         .status(200)

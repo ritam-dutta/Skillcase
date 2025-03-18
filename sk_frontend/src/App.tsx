@@ -42,6 +42,7 @@ const App: React.FC<App> = ({}) => {
             }
         });
     }, [socket]);
+    // console.log("requests:", requests);
 
     return (
         <Outlet/>
