@@ -1,5 +1,6 @@
 import Header from "./components/header";
-import Loader from "./components/loader";
+// import Loader from "./components/loader";
+import { Skeleton } from "./components/ui/skeleton";
 import Footer from "./components/footer";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -49,9 +50,9 @@ const Requests: React.FC<Requests> = ({}) => {
                 console.error("Fetch Notifications Error:", error);
             }
             console.log("req", requests)
-            setLoading(false);
         };
         fetchRequests();
+        setTimeout(() => setLoading(false), 200);
     }, [loggedUsername, navigate]);
 
     const acceptApplication = (sender: string, projectId: string) => {
@@ -220,7 +221,7 @@ const Requests: React.FC<Requests> = ({}) => {
                         
                         <button
                         className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                        onClick={() => navigate(`/${loggedRole}/view_projects/${loggedUsername}`)}
+                        onClick={() => navigate(`/${loggedRole}/my_projects/${loggedUsername}`)}
                         >
                         Go Back
                         </button>
@@ -230,8 +231,17 @@ const Requests: React.FC<Requests> = ({}) => {
             </div>)
             :(
                 <div>
-                    <div className="h-[65vh] w-[50vw] flex justify-center items-center bg-slate-50 rounded-md shadow-lg mt-[-13vh]">
-                        <Loader />
+                    <div className="h-[65vh] w-[50vw] flex flex-col gap-3 justify-center items-start bg-slate-50 rounded-md mt-[-13vh] p-4">
+                        <Skeleton className="w-4/5 h-12" />
+                        <Skeleton className="w-3/5 h-10" />
+                        <Skeleton className="w-3/5 h-10" />
+                        <Skeleton className="w-2/5 h-8" />
+                        <Skeleton className="w-5/6 h-16" />
+                        <Skeleton className="w-5/6 h-16" />
+                        <Skeleton className="w-full h-12" />
+                        <Skeleton className="w-4/6 h-8" />
+                        <Skeleton className="w-4/6 h-10" />
+                        <Skeleton className="w-1/3 h-10" />
                     </div>
                 </div>
             )

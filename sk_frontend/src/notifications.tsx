@@ -1,6 +1,6 @@
 import "./App.css";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Header from "./components/header";
 // import Loader from "./components/loader";
@@ -22,6 +22,8 @@ const Notifications: React.FC<Notifications> = ({}) => {
     const socket = useSocket();
     const { notifications, setNotifications} = useNotification();
     const {unreadNotifications, setUnreadNotifications} = useNotification();
+    const {username} = useParams<{ username: string }>();
+    const role = window.location.href.includes("client") ? "client" : "freelancer";
     // const [messages, setMessages] = useState([]);
     // const [markAsReads, setMarkAsReads] = useState(false);
     // const [senders, setSenders] = useState([]);
@@ -39,6 +41,7 @@ const Notifications: React.FC<Notifications> = ({}) => {
     useEffect(() => {
         const fetchNotifications = async () => {
             setLoading(true);
+            loggedUsername !== username ? navigate(`/${role}/profile/${username}`) : null;
             try {
                 const response = await axios.get(`http://localhost:8000/api/v1/${loggedRole}/get_notifications/${loggedUsername}`,{
                     headers: {

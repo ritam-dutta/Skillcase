@@ -2,8 +2,9 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Header from "./components/header";
-import Loader from "./components/loader";
+// import Loader from "./components/loader";
 import { useSocket } from "./context/socket.context";
+import { Skeleton } from "./components/ui/skeleton";
 
 interface ProjectPage {}
 interface Project {
@@ -25,6 +26,7 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(false);
     const loggedRole = localStorage.getItem("role") || "";
+    const role = window.location.href.includes("freelancer") ? "freelancer" : "client";
     const loggedUsername = localStorage.getItem("username") || "";
     const accessToken = localStorage.getItem("accessToken") || "";
     // const [isApplied, setIsApplied] = useState(false);
@@ -34,6 +36,7 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
     useEffect(() => {
         const fetchProjects = async () => {
             setLoading(true);
+            loggedUsername !== username ? navigate(`/${role}/profile/${username}`) : null;
             try {
                 const response = await axios.get("http://localhost:8000/api/v1/root/getprojects");
                 const response2 = await axios.get("http://localhost:8000/api/v1/root/getuserprojects",{
@@ -70,10 +73,10 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
             } catch (error) {
                 console.error("Fetch Projects Error:", error);
             }
-            setLoading(false);
         };
-
+        
         fetchProjects();
+        setTimeout(() => setLoading(false), 200);
     }, []);
 
     const applyProject = (id: string, employer: string ) => {
@@ -126,6 +129,7 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
                 <h2 className="text-3xl font-semibold mb-8">Available Projects</h2>
                 {!loading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 bg-slate-50 p-8 rounded-md overflow-auto">
+                    {projects.length === 0 ? <p className="text-lg font-semibold">No projects available</p> : null}
                     {projects.map(project => (
                         <div
                             key={project._id}
@@ -146,7 +150,7 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
                             <div className="flex gap-2">
                                 <button
                                     className="w-full mt-2 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-300"
-                                    onClick={() => navigate(`/client/view_feed_project/${username}/${project._id}`)}
+                                    onClick={() => navigate(`/${role}/view_feed_project/${username}/${project._id}`)}
                                 >
                                     View
                                 </button>
@@ -164,8 +168,13 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
                     ))}
                 </div>)
                 :(
-                    <div className="h-[50vh] flex justify-center items-center bg-slate-50">
-                        <Loader />
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 bg-slate-50 p-8 rounded-md overflow-auto">
+                        <Skeleton className="w-full h-36" />
+                        <Skeleton className="w-full h-36" />
+                        <Skeleton className="w-full h-36" />
+                        <Skeleton className="w-full h-36" />
+                        <Skeleton className="w-full h-36" />
+                        <Skeleton className="w-full h-36" />
                     </div>
                 )}
             </main>

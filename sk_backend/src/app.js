@@ -15,7 +15,7 @@ const io = new Server(server, {
 })
 
 server.listen(process.env.WS_PORT, () => {
-    console.log(`Server is running on port ${process.env.WS_PORT}`)
+    console.log(`WS_Server is running on port ${process.env.WS_PORT}`)
 })
 
 app.use(cors({

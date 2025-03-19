@@ -1,8 +1,9 @@
 import React,{ useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { Skeleton } from "./components/ui/skeleton";
 import Header from "./components/header";
-import Loader from "./components/loader";
+// import Loader from "./components/loader";
 import axios from "axios";
 import "./App.css"
 import { useSocket } from "./context/socket.context";
@@ -36,7 +37,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
     const [loggedUsername, setLoggedUsername] = useState("");
     const [isConnected, setIsConnected] = useState(false);
     const [isFollowing, setIsFollowing] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [connectionRequest, setConnectionRequest] = useState(false);
     const accessToken = localStorage.getItem("accessToken");
     const loggedInRole = localStorage.getItem("role") || "";
@@ -60,7 +61,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
         if (!accessToken) {
             navigate(`/${currentRole}/login`);
         } 
-
+        
         const fetchUserData = async () => {
             setLoading(true);
             try {
@@ -137,11 +138,9 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                 console.error("error fetching user data",error);
                 navigate(`/${currentRole}/login`);
             }
-            setLoading(false);
         };
         fetchUserData();
         const fetchUserProjects = async () => {
-            setLoading(true);
             try {
                 const response = await axios.get("http://localhost:8000/api/v1/root/getuserprojects",{
                     headers: {
@@ -160,10 +159,10 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
             } catch (error) {
                 console.error("Fetch Projects Error:", error);
             }
-            setLoading(false);
         };
-
+        
         fetchUserProjects();
+        setTimeout(() => setLoading(false), 200);
     }, [username,navigate]);
     // console.log("following",isFollowing)
     const handleFollow = async () => {
@@ -216,25 +215,6 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
         }
     }
 
-    // const handleConnect = async () => {
-    //     try {
-    //         const accessToken = localStorage.getItem("accessToken");
-    //         const response = await axios.post(`http://localhost:8000/api/v1/client/connect/${username}`, {
-    //             username: username,
-    //             connectorRole: localStorage.getItem("role"),
-    //         }, {
-    //             headers: {
-    //                 Authorization: `Bearer ${accessToken}`,
-    //             },
-    //         });
-    //         setIsConnected(true);
-    //         // setConnections(connections+1);
-    //         // console.log("Connect Response:", response.data);
-    //     } catch (error) {
-    //         console.error("Connect Error:", error);
-    //     }
-    // }
-
     const sendConnectionRequest = async () => {
         
         try {
@@ -251,25 +231,6 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                     markedAsRead: false
                 }
             });
-            // const response = await axios.post(`http://localhost:8000/api/v1/client/send_notification/${username}`, {
-            //     // username: username,
-            //     // receiverRole: "client",
-            //     notification:{
-            //       message: `You have a new connection request from @${loggedUsername}`,
-            //       type: "connection_request",
-            //       sender: localStorage.getItem("username"),
-            //       receiver: username,
-            //       senderRole: localStorage.getItem("role"),
-            //       receiverRole: "client",
-            //       markedAsRead: false,
-            //     }, 
-  
-            // }, {
-            //     headers: {
-            //         Authorization: `Bearer ${accessToken}`,
-            //     },
-            // });
-
             setConnectionRequest(true);
             setIsConnected(false);
         } catch (error) {
@@ -303,9 +264,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                     },
                 });
                 setIsConnected(false);
-                // setConnections(connections-1);
             }
-            // console.log("Disconnect Response:", response.data);
         } catch (error) {
             console.error("Disconnect Error:", error);
         }
@@ -352,19 +311,19 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
     console.log("loggeduser", loggedUsername)
 
   return(
-    <>
-        
-        <div className="min-h-screen w-full bg-gray-100">
+
+    <div className="min-h-screen w-full bg-gray-100">
       {/* Header */}
       <Header/>
       <div className="h-[18vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-start px-8">
         <h1 className="text-3xl text-white font-bold mt-6">Profile</h1>
       </div>
-        {!loading ? (
+      {/* <Skeleton className="w-[100px] h-[20px] rounded-full" /> */}
+
       <div className="flex flex-row justify-center mt-[-10vh]">
         {/* Sidebar Profile Card */}
+        {!loading ? (
         <div className="w-[25%] h-[83vh] bg-slate-50 shadow-lg rounded-lg p-6 flex flex-col items-center border border-gray-200">
-
           <div className="bg-gray-100 rounded-full w-24 h-24 flex items-center justify-center border border-gray-300">
             <img
               src={avatar || "/images/freelancer.png"}
@@ -408,7 +367,6 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                 
           </div>
             
-
           <div className="w-full mt-6">
             <h3 className="font-semibold text-gray-800">About</h3>
             <textarea
@@ -435,9 +393,58 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                 </Link>)
                 :null
              }
-        </div>
+        </div>) : (
+            <div className="w-[25%] h-[83vh] bg-slate-50 shadow-lg rounded-lg p-6 flex flex-col items-center border border-gray-200">
+                {/* Profile Image Skeleton */}
+                <div className="bg-gray-100 rounded-full w-24 h-24 flex items-center justify-center border border-gray-300">
+                <Skeleton className="w-full h-full rounded-full" />
+                </div>
+
+                {/* Name & Username Skeleton */}
+                <Skeleton className="w-3/5 h-6 mt-4" />
+                <Skeleton className="w-2/5 h-4 mt-2" />
+                <Skeleton className="w-1/4 h-4 mt-2" />
+
+                {/* Stats Skeleton */}
+                <div className="flex justify-evenly w-full mt-4 text-center">
+                <div className="flex flex-col items-center">
+                    <Skeleton className="w-8 h-6" />
+                    <Skeleton className="w-16 h-4 mt-1" />
+                </div>
+                <div className="flex flex-col items-center">
+                    <Skeleton className="w-8 h-6" />
+                    <Skeleton className="w-16 h-4 mt-1" />
+                </div>
+                <div className="flex flex-col items-center">
+                    <Skeleton className="w-8 h-6" />
+                    <Skeleton className="w-16 h-4 mt-1" />
+                </div>
+                </div>
+
+                {/* Buttons Skeleton */}
+                <div className="flex justify-evenly w-full mt-4">
+                <Skeleton className="w-24 h-10 rounded-lg" />
+                <Skeleton className="w-24 h-10 rounded-lg" />
+                </div>
+
+                {/* About & Experience Sections */}
+                <div className="w-full mt-6">
+                <Skeleton className="w-1/3 h-5" />
+                <Skeleton className="w-full h-20 mt-2" />
+                </div>
+
+                <div className="w-full mt-6">
+                <Skeleton className="w-1/3 h-5" />
+                <Skeleton className="w-full h-20 mt-2" />
+                </div>
+
+                {/* Edit Profile Button Skeleton */}
+                <Skeleton className="w-32 h-10 mt-6 rounded-lg" />
+                </div>
+        )}
 
         {/* Main Content Area */}
+        {!loading ? (
         <div className="w-[65%] h-[83vh] bg-slate-50 shadow-lg rounded-lg p-8 ml-6 border border-gray-200 overflow-auto">
           <h2 className="text-2xl font-bold mb-4">Projects Status</h2>
 
@@ -507,6 +514,8 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                         }
                         
                     </div>
+                    
+
                 ))
                 ) : (
                 <div className="col-span-full bg-gray-100 rounded-lg flex items-center justify-center">
@@ -571,34 +580,97 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                 )}
             </div>
         </div>
-            <div className="w-full flex justify-center items-center">
+        {loggedUsername !== username ? 
+            (<div className="w-full flex justify-center items-center">
                 <button
                     className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-1/6"
-                    onClick={() => navigate(`/client/view_projects/${username}`)}
+                    onClick={() => navigate(`/client/my_projects/${username}`)}
                     >
                     View All Projects
                 </button>
-                {/* <button
-                    className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-1/6"
-                    onClick={demo}
-                    >
-                    demo
-                </button> */}
+            </div>)
+            : null
+        }
+      </div>)
+      :(
+        <div className="w-[65%] h-[83vh] bg-slate-50 shadow-lg rounded-lg p-8 ml-6 border border-gray-200 flex flex-col gap-4 overflow-auto">
+            <div className="grid grid-cols-3 gap-4 mb-8">
+            {Array(6).fill(0).map((_, index) => (
+                <div key={index} className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+                <Skeleton className="w-3/5 h-6" />
+                </div>
+            ))}
             </div>
-      </div>
-    </div>):
-    (
-        <div className="h-[70vh] w-full flex justify-center items-center">
-            <div className="h-[70vh] w-[50vw] flex justify-center items-center bg-slate-50">
-                <Loader />
+            <div className="mb-3">
+                <Skeleton className="w-1/3 h-8 bg-gray-300 rounded-md" />
             </div>
-        </div>
-    )
-    }
-            
-    </div>
+            <div className="mb-8 bg-gray-100 px-4 py-6 rounded-lg border border-gray-200">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array(3).fill(0).map((_, index) => (
+                <div
+                    key={index}
+                    className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition flex flex-col gap-3"
+                >
+                    <div className="flex justify-between items-start">
+                    <div className="w-3/4">
+                        <Skeleton className="w-full h-6 mb-2" />
+                        <Skeleton className="w-4/5 h-4" />
+                    </div>
+                    <Skeleton className="w-24 h-8" />
+                    </div>
+                    <div className="mt-2 flex items-center justify-between">
+                    <Skeleton className="w-1/4 h-5" />
+                    <Skeleton className="w-2/4 h-8" />
+                    </div>
+                </div>
+                ))}
+            </div>
+            </div>
 
-    </>
+
+            <div className="mb-3">
+                <Skeleton className="w-1/3 h-8 bg-gray-300 rounded-md" />
+            </div>
+            <div className="mb-8 bg-gray-100 px-4 py-6 rounded-lg border border-gray-200">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array(3).fill(0).map((_, index) => (
+                <div
+                    key={index}
+                    className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition flex flex-col gap-3"
+                >
+                    <div className="flex justify-between items-start">
+                    <div className="w-3/4">
+                        <Skeleton className="w-full h-6 mb-2" />
+                        <Skeleton className="w-4/5 h-4" />
+                    </div>
+                    <Skeleton className="w-24 h-8" />
+                    </div>
+                    <div className="mt-2 flex items-center justify-between">
+                    <Skeleton className="w-1/4 h-5" />
+                    <Skeleton className="w-2/4 h-8" />
+                    </div>
+                </div>
+                ))}
+            </div>
+            </div>
+
+
+
+
+        </div>
+      )
+}
+    </div>
+    {/* // ):
+    // (
+    //     <div className="h-[70vh] w-full flex justify-center items-center">
+    //         <div className="h-[70vh] w-[50vw] flex justify-center items-center bg-slate-50">
+    //             <Loader />
+    //         </div>
+    //     </div>
+    // )
+    // }         */}
+    </div>
   )
 }
 export default ClientProfile

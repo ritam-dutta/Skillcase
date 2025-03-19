@@ -48,7 +48,7 @@ const router= createBrowserRouter(
       <Route path='projects' element={<ProjectPage/>}> </Route>
       <Route path='client/upload_project/:username' element={<UploadProject/>}> </Route>
       <Route path='client/edit_project/:username/:projectid' element={<EditProject/>}> </Route>
-      <Route path='client/view_projects/:username' element={<ViewProjects/>}> </Route>
+      <Route path='client/my_projects/:username' element={<ViewProjects/>}> </Route>
       <Route path='freelancer/view_projects/:username' element={<ViewProjects/>}> </Route>
       <Route path='client/view_project/:username/:projectid' element={<ViewProject/>}> </Route>
       <Route path='freelancer/view_project/:username/:projectid' element={<ViewProject/>}> </Route>

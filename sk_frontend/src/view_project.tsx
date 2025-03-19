@@ -1,6 +1,7 @@
 import Header from "./components/header";
-import Footer from "./components/footer";
-import Loader from "./components/loader";
+// import Footer from "./components/footer";
+import { Skeleton } from "./components/ui/skeleton";
+// import Loader from "./components/loader";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
@@ -51,7 +52,7 @@ const ViewProject: React.FC<ViewProject> = ({})=>{
             } catch (error) {
                 console.error("Fetch Projects Error:", error);
             }
-            setLoading(false);
+            setTimeout(() => setLoading(false), 200);
         };
 
         fetchProject();
@@ -135,7 +136,7 @@ const ViewProject: React.FC<ViewProject> = ({})=>{
                     </button>
                     <button
                         className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                        onClick={() => navigate(`/${currentRole}/view_projects/${username}`)}
+                        onClick={() => { currentRole === "client" ? navigate(`/client/my_projects/${username}`) : navigate(`/freelancer/view_projects/${username}`) }}
                     >
                         View All Projects
                     </button>
@@ -143,10 +144,15 @@ const ViewProject: React.FC<ViewProject> = ({})=>{
             </div>
         )
             :(
-                <div>
-                    <div className="h-[65vh] w-[50vw] flex justify-center items-center bg-slate-50 rounded-md shadow-lg mt-[-13vh]">
-                        <Loader />
-                    </div>
+                <div className="w-11/12 lg:w-3/5 h-[85vh] bg-slate-50 shadow-lg rounded-lg p-8 mt-[-13vh] flex flex-col gap-5">
+                    <Skeleton className="w-4/5 h-16" />
+                    <Skeleton className="w-3/5 h-12" />
+                    <Skeleton className="w-2/5 h-8" />
+                    <Skeleton className="w-5/6 h-20" />
+                    <Skeleton className="w-full h-14" />
+                    <Skeleton className="w-4/6 h-10" />
+                    <Skeleton className="w-4/6 h-14" />
+                    <Skeleton className="w-1/3 h-14" />
                 </div>
             )
         }

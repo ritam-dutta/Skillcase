@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "./components/header";
-import Loader from "./components/loader";
+import { Skeleton } from "./components/ui/skeleton";
+// import Loader from "./components/loader";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -111,11 +112,10 @@ const EditProject: React.FC<EditProject> = () => {
             } catch (error) {
                 console.error("Fetch Project Data Error:", error);
             }
-            setLoading(false);
-        }
-
-        fetchProjectData();
-
+          }
+          
+          fetchProjectData();
+          setTimeout(() => setLoading(false), 200);          
         
 
     }, []);
@@ -276,10 +276,15 @@ const EditProject: React.FC<EditProject> = () => {
         </form>
       </div>)
       :(
-        <div className="w-full max-w-3xl bg-slate-50 rounded-lg shadow-lg h-[77vh] mt-8">
-          <div className="w-full h-[77vh] flex justify-center items-center">
-            <Loader />
-          </div>
+        <div className="w-full max-w-3xl bg-slate-50 rounded-lg shadow-lg h-[77vh] mt-8 flex flex-col gap-3 p-8">
+          <Skeleton className="w-4/5 h-16" />
+          <Skeleton className="w-3/5 h-12" />
+          <Skeleton className="w-2/5 h-8" />
+          <Skeleton className="w-5/6 h-20" />
+          <Skeleton className="w-full h-14" />
+          <Skeleton className="w-4/6 h-10" />
+          <Skeleton className="w-4/6 h-14" />
+          <Skeleton className="w-1/3 h-14" />
         </div>
       )
     }

@@ -1,11 +1,12 @@
 import Header from "./components/header";
-import Loader from "./components/loader";
+// import Loader from "./components/loader";
+import { Skeleton } from "./components/ui/skeleton";
 import Footer from "./components/footer";
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useNotification } from "./context/notifications.context";
-import { useSocket } from "./context/socket.context";
+// import { useNotification } from "./context/notifications.context";
+// import { useSocket } from "./context/socket.context";
 interface MyRequests {}
 
 // interface Request{
@@ -46,9 +47,9 @@ const MyRequests: React.FC<MyRequests> = ({}) => {
             } catch (error) {
                 console.error("Fetch Notifications Error:", error);
             }
-            setLoading(false);
         };
         fetchRequests();
+        setTimeout(() => setLoading(false), 200);
     }, [loggedUsername, navigate]);
 
 
@@ -132,8 +133,17 @@ const MyRequests: React.FC<MyRequests> = ({}) => {
             </div>)
             :(
                 <div>
-                    <div className="h-[65vh] w-[50vw] flex justify-center items-center bg-slate-50 rounded-md shadow-lg mt-[-13vh]">
-                        <Loader />
+                    <div className="h-[65vh] w-[50vw] flex flex-col gap-3 justify-center items-start bg-slate-50 rounded-md mt-[-13vh] p-4">
+                        <Skeleton className="w-4/5 h-12" />
+                        <Skeleton className="w-3/5 h-10" />
+                        <Skeleton className="w-3/5 h-10" />
+                        <Skeleton className="w-2/5 h-8" />
+                        <Skeleton className="w-5/6 h-16" />
+                        <Skeleton className="w-5/6 h-16" />
+                        <Skeleton className="w-full h-12" />
+                        <Skeleton className="w-4/6 h-8" />
+                        <Skeleton className="w-4/6 h-10" />
+                        <Skeleton className="w-1/3 h-10" />
                     </div>
                 </div>
             )
