@@ -116,9 +116,9 @@ const UploadProject: React.FC<UploadProject> = () => {
     <body className="bg-[url('/images/background.jpg')] bg-cover bg-center">
     <Header />
     <div className="h-[15vh] w-full flex items-start px-8 bg-gradient-to-r from-blue-500 to-indigo-500">
-        <h1 className="text-3xl text-white font-bold mt-6">Upload Project</h1>
-      </div>
-      <div className="flex items-center justify-center">
+      <h1 className="text-3xl text-white font-bold mt-6">Upload Project</h1>
+    </div>
+    <div className="flex items-center justify-center">
 
   <div className="w-full h-[76.3vh] max-w-3xl bg-slate-50 rounded-lg shadow-lg p-8 mt-[-11vh] overflow-auto">
     <form onSubmit={handleSubmit} className="space-y-6">

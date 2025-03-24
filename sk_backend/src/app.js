@@ -37,6 +37,12 @@ app.use("/api/v1/client", clientRouter)
 import projectRouter from "./routes/project.routes.js"
 app.use("/api/v1/root", projectRouter)
 
+import chatRouter from "./routes/chat.routes.js"
+app.use("/api/v1/root", chatRouter)
+
+import messageRouter from "./routes/message.routes.js"
+app.use("/api/v1/root", messageRouter)
+
 import { notifications } from "./sockets/notifications.socket.js"
 notifications();
 

@@ -142,7 +142,7 @@ const Notifications: React.FC<Notifications> = ({}) => {
     }
       
     return (
-        <div className="min-h-screen w-full bg-gray-100">
+        <div className="min-h-screen w-full bg-gray-300">
             <Header/>
             <div className="h-[14vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-start px-8">
                 <h2 className="text-2xl text-white font-bold mb-4 flex items-center mt-6">
@@ -150,7 +150,7 @@ const Notifications: React.FC<Notifications> = ({}) => {
                  Notifications
                 </h2>
             </div>
-        <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-6 border border-gray-200 mt-[-8vh]">
+        <div className="max-w-2xl mx-auto bg-gray-100 shadow-lg rounded-lg p-6 border border-gray-200 mt-[-8vh]">
             <div className="flex items-center justify-between">
                 <h1 className="text-xl font-bold">New notifications</h1>
                 {notifications.length > 0 ?(

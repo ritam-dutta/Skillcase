@@ -312,7 +312,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
 
   return(
 
-    <div className="min-h-screen w-full bg-gray-100">
+    <div className="min-h-screen w-full bg-gray-300">
       {/* Header */}
       <Header/>
       <div className="h-[18vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-start px-8">
@@ -324,7 +324,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
         {/* Sidebar Profile Card */}
         {!loading ? (
         <div className="w-[25%] h-[83vh] bg-slate-50 shadow-lg rounded-lg p-6 flex flex-col items-center border border-gray-200">
-          <div className="bg-gray-100 rounded-full w-24 h-24 flex items-center justify-center border border-gray-300">
+          <div className="bg-gray-200 rounded-full w-24 h-24 flex items-center justify-center border border-gray-300">
             <img
               src={avatar || "/images/freelancer.png"}
               alt="Profile Avatar"
@@ -396,7 +396,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
         </div>) : (
             <div className="w-[25%] h-[83vh] bg-slate-50 shadow-lg rounded-lg p-6 flex flex-col items-center border border-gray-200">
                 {/* Profile Image Skeleton */}
-                <div className="bg-gray-100 rounded-full w-24 h-24 flex items-center justify-center border border-gray-300">
+                <div className="bg-gray-200 rounded-full w-24 h-24 flex items-center justify-center border border-gray-300">
                 <Skeleton className="w-full h-full rounded-full" />
                 </div>
 
@@ -472,7 +472,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
 
           {/* In Progress Projects */}
           <h2 className="text-xl font-semibold mb-3 text-black"> Projects In Progress</h2>
-        <div className="mb-8 overflow-auto bg-gray-100 px-4 py-6 rounded-lg border border-gray-200">
+        <div className="mb-8 overflow-auto bg-gray-200 px-4 py-6 rounded-lg border border-gray-200">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {inProgressProjects.length > 0 ? (
                 inProgressProjects.map((project: { _id: string; title: string; description: string; industry: string }) => (
@@ -518,7 +518,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
 
                 ))
                 ) : (
-                <div className="col-span-full bg-gray-100 rounded-lg flex items-center justify-center">
+                <div className="col-span-full bg-gray-200 rounded-lg flex items-center justify-center">
                     <p className="text-gray-600">No completed projects available</p>
                 </div>
                 )}
@@ -528,7 +528,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
 
           {/* Completed Projects */}
           <h2 className="text-xl font-semibold mb-3 text-blue-700">Completed Projects</h2>
-        <div className="mb-8 overflow-auto bg-gray-100 px-4 py-6 rounded-lg border border-gray-200">
+        <div className="mb-8 overflow-auto bg-gray-200 px-4 py-6 rounded-lg border border-gray-200">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {completedProjects.length > 0 ? (
                 completedProjects.map((project: { _id: string; title: string; description: string; industry: string }) => (
@@ -574,7 +574,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
                     </div>
                 ))
                 ) : (
-                <div className="col-span-full bg-gray-100 rounded-lg flex items-center justify-center">
+                <div className="col-span-full bg-gray-200 rounded-lg flex items-center justify-center">
                     <p className="text-gray-600">No completed projects available</p>
                 </div>
                 )}

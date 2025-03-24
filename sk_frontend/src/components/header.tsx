@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import "../App.css";
-import { Bell,User, Home, Upload , File, FileText } from "lucide-react";
+import { Bell,User, Home, Upload , File, FileText, MessageCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSocket } from "../context/socket.context";
@@ -93,6 +93,9 @@ const Header: React.FC<Header> = ({}) => {
     else if(url.includes("/my_projects")){
       activeTab="my_projects"
     }
+    else if(url.includes("/chats")){
+      activeTab="chats"
+    }
     else{
       activeTab="home"
     }
@@ -110,91 +113,101 @@ const Header: React.FC<Header> = ({}) => {
         </div>
 
         <nav className="flex justify-between items-center gap-10">
-          <div className="flex flex-col items-center mt-1">
+          <div className="mt-1">
             <Link
               to="/"
-              className="font-medium hover:text-gray-400 transition text-gray-600"
+              className="text-gray-600 flex flex-col items-center font-medium group transition "
             >
-              <Home size={24}/>
+              <Home size={24} className="group-hover:text-gray-400 transition"/>
+              <p className={`text-xs text-gray-600 font-medium group-hover:text-gray-400 transition`}>Home</p>
             </Link>
-              <p className={`text-xs text-gray-600 font-medium `}>Home</p>
           </div>
 
-          <div className="flex flex-col items-center justify mt-1">
+          <div className="mt-1">
             <Link 
               to={`/${role}/projects/${username}`}
-              className={`font-medium hover:text-gray-400 transition  ${activeTab==="projects" ? "text-gray-400" : "text-gray-600"}`}
+              className={`font-medium flex flex-col items-center group transition  ${activeTab==="projects" ? "text-gray-400" : "text-gray-600"}`}
             >
-              <File size={24}/>
-              <p className={`text-xs ${activeTab==="projects" ? "text-gray-400" : "text-gray-600"} font-medium`}>Feed</p>
+              <File size={24} className="group-hover:text-gray-400 transition"/>
+              <p className={`text-xs ${activeTab==="projects" ? "text-gray-400" : "text-gray-600"} font-medium group-hover:text-gray-400 transition `}>Feed</p>
             </Link>
           </div>
           
           
           {role==="freelancer" ? null :(
-            <div className="flex flex-col items-center mt-1">
+            <div className="mt-1">
               <Link 
                 to={`/client/upload_project/${username}`}
-                className={`font-medium hover:text-gray-400 transition  ${activeTab==="upload" ? "text-gray-400" : "text-gray-600"}`}
+                className={`flex flex-col items-center font-medium hover:text-gray-400 group transition  ${activeTab==="upload" ? "text-gray-400" : "text-gray-600"}`}
               >
-                <Upload size={24}/>
+                <Upload size={24} className="group-hover:text-gray-400 transition"/>
+              <p className={`text-xs ${activeTab==="upload" ? "text-gray-400" : "text-gray-600"} font-medium group-hover:text-gray-400 transition `}>Upload </p>
               </Link>
-              <p className={`text-xs ${activeTab==="upload" ? "text-gray-400" : "text-gray-600"} font-medium `}>Upload </p>
             </div>
           )}
-          <div className="flex flex-col items-center mt-1">
+          <div className="mt-1">
             <Link
               to={`/${role}/profile/${username}`}
-              className={` font-medium hover:text-gray-400 transition  ${activeTab==="profile" ? "text-gray-400" : "text-gray-600"}`}
+              className={`flex flex-col items-center font-medium hover:text-gray-400 group transition  ${activeTab==="profile" ? "text-gray-400" : "text-gray-600"}`}
             >
               <User size={24}/>
+            <p className={`text-xs ${activeTab==="profile" ? "text-gray-400" : "text-gray-600"} font-medium group-hover:text-gray-400 transition`}>profile</p>
             </Link>
-            <p className={`text-xs ${activeTab==="profile" ? "text-gray-400" : "text-gray-600"} font-medium`}>profile</p>
           </div>
           {
             (role === "freelancer" && loggedUsername === username) ? (
-              <div className="flex flex-col items-center mt-1">
+              <div className="mt-1">
                 <Link
                   to={`/freelancer/my_requests/${username}`}
-                  className={`font-medium hover:text-gray-400 transition  ${activeTab==="requests" ? "text-gray-400" : "text-gray-600"}`}
+                  className={`flex flex-col items-center font-medium hover:text-gray-400 group transition  ${activeTab==="requests" ? "text-gray-400" : "text-gray-600"}`}
                 >
                   <div>
-                    <FileText size={24}/>
+                    <FileText size={24} className="group-hover:text-gray-400 transition"/>
                   </div>
+                <p className={`text-xs ${activeTab==="requests" ? "text-gray-400" : "text-gray-600"} font-medium group-hover:text-gray-400 transition`}>applications</p>
                 </Link>
-                <p className={`text-xs ${activeTab==="requests" ? "text-gray-400" : "text-gray-600"} font-medium`}>applications</p>
               </div>
             ) : null
           }
           { (role === "client" && loggedUsername === username) ?
-          <div className="flex flex-col items-center mt-1 relative">
+          <div className="mt-1 relative">
             <Link
               to={`/client/my_projects/${username}`}
-              className={`font-medium hover:text-gray-400 transition  ${activeTab==="my_projects" ? "text-gray-400" : "text-gray-600"}`}
+              className={`flex flex-col items-center font-medium hover:text-gray-400 group transition  ${activeTab==="my_projects" ? "text-gray-400" : "text-gray-600"}`}
             >
             <div className="relative mt-1">
-              <FileText size={24}/>
+              <FileText size={24} className="group-hover:text-gray-400 transition"/>
               {(loggedUsername === username && (requests.length > 0 || requestsPresent)) ?  <div className="absolute rounded-full bg-red-600 h-2.5 w-2.5 -translate-y-6 translate-x-3 text-white flex justify-center items-center text-xs"></div>
               : null} 
             </div>
+            <p className={`text-xs ${activeTab==="my_projects" ? "text-gray-400" : "text-gray-600"} font-medium group-hover:text-gray-400 transition`}>My Projects</p>
             </Link>
-            <p className={`text-xs ${activeTab==="my_projects" ? "text-gray-400" : "text-gray-600"} font-medium`}>My Projects</p>
           </div>
           : null
           }
 
-          <div className="flex flex-col items-center mt-1 relative">
+          <div className="mt-1">
+            <Link 
+              to={`/${role}/chats/${username}`}
+              className={`font-medium flex flex-col items-center group transition  ${activeTab==="chats" ? "text-gray-400" : "text-gray-600"}`}
+            >
+              <MessageCircle size={24} className="group-hover:text-gray-400 transition"/>
+              <p className={`text-xs ${activeTab==="chats" ? "text-gray-400" : "text-gray-600"} font-medium group-hover:text-gray-400 transition `}>Chat</p>
+            </Link>
+          </div>
+
+          <div className="mt-1 relative">
             <Link
               to={`/${role}/notifications/${username}`}
-              className={`font-medium hover:text-gray-400 transition  ${activeTab==="notifications" ? "text-gray-400" : "text-gray-600"}`}
+              className={`flex flex-col items-center font-medium hover:text-gray-400 group transition  ${activeTab==="notifications" ? "text-gray-400" : "text-gray-600"}`}
             >
             <div className="relative mt-1">
-              <Bell size={24}/>
+              <Bell size={24} className="group-hover:text-gray-400 transition"/>
               { loggedUsername === username ? <div className="absolute rounded-full bg-red-600 h-4 w-4 -translate-y-7 translate-x-3 text-white flex justify-center items-center text-xs">{notifications.length < 10 ? notifications.length : "9+"} </div>
               : null}
             </div>
+            <p className={`text-xs ${activeTab==="notifications" ? "text-gray-400" : "text-gray-600"} font-medium group-hover:text-gray-400 transition`}>notifications</p>
             </Link>
-            <p className={`text-xs ${activeTab==="notifications" ? "text-gray-400" : "text-gray-600"} font-medium`}>notifications</p>
           </div>
             
           {/* <Link
