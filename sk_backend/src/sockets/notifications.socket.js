@@ -7,6 +7,10 @@ export const notifications = () => {
             // console.log("joinNotification", username);
             socket.join(username);
         })
+        socket.on("joinChat", (chatId) => {
+            // console.log("joinChat", chatId);
+            socket.join(chatId);
+        })
         socket.on("notification", async (data) => {
 
             // console.log("aagaye notifictaion", data);
@@ -154,6 +158,18 @@ export const notifications = () => {
                 },
             });
             socket.to(info.sender).emit("reject collaboration", response.data.data);
+        })
+
+        socket.on("new message", async (data) => {
+            const {accessToken, info} = data;
+            console.log("new message", info);
+            const response = await axios.post(`http://localhost:8000/api/v1/root/send_message/${info.chatId}`, info, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+           
+            socket.to(info.chatId).emit("new message", response.data.data.message);
         })
 
 

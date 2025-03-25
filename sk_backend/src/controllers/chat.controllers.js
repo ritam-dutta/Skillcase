@@ -7,9 +7,17 @@ import mongoose from 'mongoose';
 
 const createChatRoom = asyncHandler(async (req, res) => {
     const { users, isGroupChat, groupName } = req.body;
-    console.log("users", users);
-    const existingChat = await Chat.findOne({ users });
+    users.sort();
+    const existingChat = await Chat.findOne({
+        $and: [
+            { "users.username": users[0].username, "users.userRole": users[0].userRole },
+            { "users.username": users[1].username, "users.userRole": users[1].userRole }
+        ]
+    });
+    
+    // console.log("existingChat: ", existingChat);
     if (existingChat) {
+        console.log("existingChat");
         return res
         .status(200)
         .json(new ApiResponse("Chat room already exists", { chat: existingChat }));
@@ -19,7 +27,7 @@ const createChatRoom = asyncHandler(async (req, res) => {
         isGroupChat,
         groupName,
     });
-
+    console.log("new chat created");
     return res
     .status(201)
     .json(new ApiResponse("Chat room created", { chat: chat }));

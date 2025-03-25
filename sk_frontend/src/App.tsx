@@ -41,6 +41,7 @@ const App: React.FC<App> = ({}) => {
                 setNotifications((prevNotifications) => [...prevNotifications, notification]);
             }
         });
+        
     }, [socket]);
     // console.log("requests:", requests);
 
