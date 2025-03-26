@@ -33,4 +33,24 @@ const createChatRoom = asyncHandler(async (req, res) => {
     .json(new ApiResponse("Chat room created", { chat: chat }));
 });
 
-export  { createChatRoom };
+const getChats = asyncHandler(async (req, res) => {
+    const { username, userRole } = req.params;
+    const chats = await Chat.find({
+        "users": {
+            $elemMatch: {
+                "username": username,
+                "userRole": userRole,
+            },
+        },
+    });
+    console.log("chats: ", chats);
+    return res
+    .status(200)
+    .json(new ApiResponse("Chats retrieved", { chats: chats }));
+});
+
+export  
+{ 
+    createChatRoom,
+    getChats
+ };

@@ -119,7 +119,7 @@ const Header: React.FC<Header> = ({}) => {
               className="text-gray-600 flex flex-col items-center font-medium group transition "
             >
               <Home size={24} className="group-hover:text-gray-400 transition"/>
-              <p className={`text-xs text-gray-600 font-medium group-hover:text-gray-400 transition`}>Home</p>
+              <p className={`text-xs text-gray-600 font-medium group-hover:text-gray-400 transition`}>home</p>
             </Link>
           </div>
 
@@ -129,7 +129,7 @@ const Header: React.FC<Header> = ({}) => {
               className={`font-medium flex flex-col items-center group transition  ${activeTab==="projects" ? "text-gray-400" : "text-gray-600"}`}
             >
               <File size={24} className="group-hover:text-gray-400 transition"/>
-              <p className={`text-xs ${activeTab==="projects" ? "text-gray-400" : "text-gray-600"} font-medium group-hover:text-gray-400 transition `}>Feed</p>
+              <p className={`text-xs ${activeTab==="projects" ? "text-gray-400" : "text-gray-600"} font-medium group-hover:text-gray-400 transition `}>feed</p>
             </Link>
           </div>
           
@@ -141,7 +141,7 @@ const Header: React.FC<Header> = ({}) => {
                 className={`flex flex-col items-center font-medium hover:text-gray-400 group transition  ${activeTab==="upload" ? "text-gray-400" : "text-gray-600"}`}
               >
                 <Upload size={24} className="group-hover:text-gray-400 transition"/>
-              <p className={`text-xs ${activeTab==="upload" ? "text-gray-400" : "text-gray-600"} font-medium group-hover:text-gray-400 transition `}>Upload </p>
+              <p className={`text-xs ${activeTab==="upload" ? "text-gray-400" : "text-gray-600"} font-medium group-hover:text-gray-400 transition `}>upload </p>
               </Link>
             </div>
           )}
@@ -180,7 +180,7 @@ const Header: React.FC<Header> = ({}) => {
               {(loggedUsername === username && (requests.length > 0 || requestsPresent)) ?  <div className="absolute rounded-full bg-red-600 h-2.5 w-2.5 -translate-y-6 translate-x-3 text-white flex justify-center items-center text-xs"></div>
               : null} 
             </div>
-            <p className={`text-xs ${activeTab==="my_projects" ? "text-gray-400" : "text-gray-600"} font-medium group-hover:text-gray-400 transition`}>My Projects</p>
+            <p className={`text-xs ${activeTab==="my_projects" ? "text-gray-400" : "text-gray-600"} font-medium group-hover:text-gray-400 transition`}>my projects</p>
             </Link>
           </div>
           : null

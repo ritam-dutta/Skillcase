@@ -1,18 +1,22 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SendHorizonal } from "lucide-react";
 import { useSocket } from "./context/socket.context";
+import { MessageCircle, Search } from "lucide-react";
+import { Skeleton } from "./components/ui/skeleton";
 import Header from "./components/header";
 import axios from "axios";
+import { useSearchParams } from "react-router-dom";
 
 interface Chat {
     _id: string;
-    users: Object;
     lastMessage?: string;
+    users: Array<{ username: string; userRole: string }>,
 }
 const Chats: React.FC = () => {
     const [loading, setLoading] = useState(false);
-    const [followers, setFollowers] = useState([]);
-    const [currentChat, setCurrentChat] = useState<Chat>({_id: '', users: {}});
+    const [chatsLoading, setChatsLoading] = useState(false);
+    const [chats, setChats] = useState([]);
+    const [currentChat, setCurrentChat] = useState<Chat>({_id: '', users: []});
     // const [newReceivedMessage, setNewReceivedMessage] = useState(null);
     // const [newSentMessage, setNewSentMessage] = useState(null);
     const [message, setMessage] = useState("");
@@ -21,6 +25,11 @@ const Chats: React.FC = () => {
     const loggedUsername = localStorage.getItem('username');
     const loggedRole = localStorage.getItem('role') || "";
     const accessToken = localStorage.getItem('accessToken');
+    const [searchParams] = useSearchParams();
+    const [allChats, setAllChats] = useState([]);
+
+    const messageUsername = searchParams.get("username");
+    const messageUserRole = searchParams.get("userRole");
 
     const socket = useSocket();
 
@@ -32,9 +41,8 @@ const Chats: React.FC = () => {
     }, [socket, chatId]);
 
     useEffect(() => {
-        socket?.on("new message", (data: any) => {
-            console.log("messages agaye")
-            const {info} = data;
+        socket?.on("new message", (info: any) => {
+            console.log("messages agaye", info)
             console.log("info: ", info);
             if(info?.sender?.username !== loggedUsername) {
                 console.log("New Message: ", info);
@@ -43,6 +51,7 @@ const Chats: React.FC = () => {
             }
             else{
                 // setNewSentMessage(info.message);
+
                 setMessages((prevMessages) => [...prevMessages, info]);
             }
             console.log("messages", messages);
@@ -50,21 +59,41 @@ const Chats: React.FC = () => {
     }, [socket]);
     useEffect(() => {
         const fetchData = async () => {
-            setLoading(true);
+            setChatsLoading(true);
             try{
-                const fetchedFollowers = await axios.get(`http://localhost:8000/api/v1/${loggedRole}/getfollowers/${loggedUsername}`);
-                setFollowers(fetchedFollowers.data.data.followers);
+                const fetchedChats = await axios.get(`http://localhost:8000/api/v1/root/get_chats/${loggedUsername}/${loggedRole}`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`
+                    }
+                });
+                console.log("fetchedChats: ", fetchedChats.data.data.chats);
+                setChats(fetchedChats.data.data.chats);
+                setAllChats(fetchedChats.data.data.chats);
+                // console.log("currentchat: ", currentChat);
+                    
+                // const fetchedFollowings = await axios.get(`http://localhost:8000/api/v1/${loggedRole}/getfollowings/${loggedUsername}`);
+                // setFollowers(fetchedFollowings.data.data.followers);
             // console.log("follwers: ", response.data.data.followers);
+
             } catch (error) {
                 console.error(error);
             }
-            setLoading(false);
+            setChatsLoading(false);
         }
         fetchData();
     }, []);
 
-    const newChat = async (recipent : any) => {
-        console.log("entered newChat: ");
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+        }    }, [messages]);
+
+    const messageUser = async (users: Array<{ username: string; userRole: string }>) => {
+        setLoading(true);
+        const recipent = users[0].username !== loggedUsername ? users[0] : users[1];
+        // console.log("entered messageUser: ");
         try {
             const response = await axios.post(`http://localhost:8000/api/v1/root/create_chat`, {
                 users: [
@@ -74,7 +103,7 @@ const Chats: React.FC = () => {
                     },
                     {
                         username: recipent.username,
-                        userRole: recipent.role
+                        userRole: recipent.userRole
                     },
                 ]
             },
@@ -86,7 +115,7 @@ const Chats: React.FC = () => {
 
             setCurrentChat(response.data.data.chat);
             setChatId(response.data.data.chat._id);
-            console.log("successfully created chat: ", response.data.data.chat);
+            // console.log("successfully created chat: ", response.data.data.chat);
             const fetchedMessages = await axios.get(`http://localhost:8000/api/v1/root/get_messages/${response.data.data.chat._id}`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
@@ -94,27 +123,32 @@ const Chats: React.FC = () => {
             });
             setMessages(fetchedMessages.data.data.messages);
             console.log("successfully fetched messages for this chat: ", fetchedMessages.data.data.messages);
+            setLoading(false);
         } catch (error) {
             console.error("Chat Error:", error);
         }
     }
 
+    useEffect(() => {
+        if(messageUserRole && messageUsername){
+            const users = [
+                {
+                    username: loggedUsername || "",
+                    userRole: loggedRole
+                },
+                {
+                    username: messageUsername,
+                    userRole: messageUserRole
+                }
+            ]
+            messageUser(users);
+        }
+    }, [messageUsername, messageUserRole]);
+
     const sendNewMessage = () => {
+        setMessages([...messages, {message: message, sender: {username: loggedUsername, userRole: loggedRole}}]);
         console.log("entered sendNewMessage ");
         try {
-        //     const response = await axios.post(`http://localhost:8000/api/v1/root/create_message`, {
-        //         chatId: chatId,
-        //         message: message,
-        //         sender: {
-        //             username: loggedUsername,
-        //             userRole: loggedRole
-        //         }
-        //     },
-        // {
-        //     headers: {
-        //         Authorization: `Bearer ${accessToken}`
-        //     }
-        // });
             socket?.emit("new message", 
                 {
                     accessToken: accessToken,
@@ -133,6 +167,7 @@ const Chats: React.FC = () => {
         } catch (error) {
             console.error("Message Error:", error);
         }
+        setMessage("");
     }
 
 
@@ -145,16 +180,31 @@ const Chats: React.FC = () => {
             </div>
             <div className="flex items-center justify-center">
                 <div className="w-full max-w-7xl h-[80vh] bg-white rounded-lg shadow-lg mt-[-11vh] flex">
-                    <div className="w-2/6 bg-slate-50 rounded-tl-lg rounded-bl-lg">
-                        {/* <div className="flex items-center justify-between">
-                            <h1 className="text-2xl font-bold">Chats</h1>
-                            <button className="bg-blue-500 text-white px-4 py-2 rounded-lg">New Chat</button>
-                        </div> */}
+                    <div className="w-2/6 bg-slate-50 rounded-tl-lg rounded-bl-lg flex-col">
                         <div className="mt-4">
+                            <div className="w-full flex justify-center items-center space-x-2">
+                                <div className="w-[70%] flex">
+                                    <div className="bg-slate-200 rounded-bl-lg rounded-tl-lg flex items-center justify-center pl-2">
+                                        <Search size={18} className="text-[#5a5858] cursor-pointer" />
+                                    </div>
+                                    <input type="text" placeholder="Search for a user" className="w-full h-8 bg-slate-200 rounded-tr-lg rounded-br-lg outline-none px-3 py-2 font-sans" 
+                                    onChange={(e) => {
+                                        let filteredChats = allChats.filter((chat: any) =>chat.users[0].username!== loggedUsername ? chat.users[0].username.includes(e.target.value) : chat.users[1].username.includes(e.target.value));
+                                        setChats(filteredChats);
+                                        }
+                                    }
+                                    />
+                                </div>
+                                {/* <div className="w-[20%]">
+                                    <button className="w-full h-8 bg-blue-500 text-white rounded-md font-sans">Search</button>
+                                </div> */}
+                            </div>
+                        </div>
+                        <div className="mt-4 px-2 overflow-auto">
                         {/* <div className="bg-gray-300 h-[0.5px] mt-2"></div> */}
-
-                            {followers.map((follower: any, index) => (
-                            <div key={index} className="w-full flex-col hover:bg-[#F0F0F0]" onClick={() => newChat(follower)}>
+                            {!chatsLoading ?
+                            chats.map((chat: any, index) => (
+                            <div key={index} className="w-full flex-col hover:bg-[#F0F0F0] " onClick={() => messageUser(chat.users)}>
                                 <div className="flex items-center space-x-4 p-2">
                                     <div className="p-1">
                                         <div className="h-11 w-11 rounded-full bg-slate-300 overflow-hidden flex items-center justify-center">
@@ -163,8 +213,8 @@ const Chats: React.FC = () => {
                                     </div>
                                     <div className=" w-full">
                                         <div className=" w-full" >
-                                            <h1 className="text-lg font-bold">{follower.username}</h1>
-                                            <p className="text-sm text-gray-500">{currentChat.lastMessage}</p>
+                                            <h1 className="text-lg font-sans">{chat.users[0].username !== loggedUsername ? chat.users[0].username : chat.users[1].username}</h1>
+                                            <p className="text-sm text-gray-500 font-sans">{chat.lastMessage}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -172,41 +222,117 @@ const Chats: React.FC = () => {
                                     <div className="bg-[#F0F0F0] h-[0.5px] w-[85%] "></div>
                                 </div>
                             </div>
-                            ))}
-                        </div>
+                            )):
+                            <div className="w-full h-full p-4 flex flex-col space-y-3 animate-pulse">
+                                {
+                                    Array(7).fill(0).map((_, index) => (
+                                        <div key={index} className="w-full flex-col hover:bg-[#F0F0F0] ">
+                                            <div className="flex items-center space-x-4 p-2">
+                                                <div className="p-1">
+                                                    <div className="h-11 w-11 rounded-full bg-slate-300 overflow-hidden flex items-center justify-center">
+                                                        <Skeleton style={{ height:40, width:40}} />
+                                                    </div>
+                                                </div>
+                                                <div className=" w-full">
+                                                    <div className=" w-full" >
+                                                        <Skeleton style={{ height:20, width:100}} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="w-full flex justify-end">
+                                                <div className="bg-[#F0F0F0] h-[0.5px] w-[85%] "></div>
+                                            </div>
+                                        </div>
+                                    ))
+                                }
+                            </div>
+                        }
+                        </div> 
+
+                        
+
                     </div>
+                    {currentChat._id ? (
                     <div className="w-4/6 bg-gray-200 rounded-tr-lg rounded-br-lg">
-                        <div className="bg-[#F0F0F0] h-[10%]" tabIndex={-1}>
-                            
+                        <div className="bg-[#F0F0F0] h-[10%] flex items-center space-x-4 px-3 rounded-tr-lg" >
+                            <div className="">
+                                <div className="h-11 w-11 rounded-full bg-slate-300 overflow-hidden flex items-center justify-center">
+                                    <img src="/images/user.png" alt="avatar" className="h-6 w-6 object-cover" />
+                                </div>
+                            </div>
+                            <div className="flex-col justify-center items-center ">
+                                <p className="text-lg font-sans">{currentChat?.users[0]?.username !== loggedUsername ? currentChat?.users[0]?.username : currentChat?.users[1]?.username}</p>
+                                <p className="text-sm text-gray">{currentChat?.users[0]?.username !== loggedUsername ? currentChat?.users[0]?.userRole : currentChat?.users[1]?.userRole}</p>
+                            </div>
                         </div>
-                        <div className={`bg-[#EAE6DF] h-[80%] overflow-auto p-2`} tabIndex={-1}>
+                        {!loading ? 
+                        <div className={`bg-[#EAE6DF] h-[80%] overflow-auto p-2`} ref={messagesEndRef}>
                             {messages.map((message: any, index) => (
                                 message?.sender?.username === loggedUsername ? (
-                                    <div key={index} className="flex justify-end m-3">
-                                        <div className="bg-blue-500 text-white px-3 py-2 rounded-lg max-w-xl break-words overflow-hidden">
+                                    <div key={index} className="flex justify-end my-2">
+                                        <div className="bg-blue-500 text-white px-3 py-2 rounded-lg max-w-xl break-words overflow-hidden font-sans">
                                             {message.message}
                                         </div>
                                     </div>
 
                                 ) : (
-                                    <div key={index} className="flex justify-start m-3">
-                                        <div className="bg-gray-300 text-black px-3 py-2 rounded-lg max-w-xl break-words overflow-hidden">{message.message}</div>
+                                    <div key={index} className="flex justify-start ml-2 my-2">
+                                        <div className="bg-gray-300 text-black font-sans px-3 py-2 rounded-lg max-w-xl break-words overflow-hidden">{message.message}</div>
                                     </div>
                                 )
                             ))     
                             }
                         </div>
-                        <div className={`w-full h-[10%]  flex justify-center items-center bg-[#F0F0F0] space-x-2`}>
+                        :
+                        <div className="w-full h-full p-4 flex flex-col space-y-3 animate-pulse">
+                            {
+                                Array(9).fill(0).map((_, index) => (
+                                    <div key={index} className={index%2 == 0 ? `flex justify-end my-2 ` : `flex justify-start my-2`}>
+                                        <div className="">
+                                            <Skeleton style={{ height:40, width:250}} />
+                                        </div>
+                                    </div>
+                                ))
+                            }
+                            <div>
+                                <Skeleton style={{ height:45}} />
+                            </div>
+                            
+                    
+                        </div>
+                    
+                        }
+                        <div className="w-full h-[10%]  flex justify-center items-center bg-[#F0F0F0] space-x-2 rounded-br-lg">
                             <textarea
                                 placeholder="Type a message"
-                                className="w-[80%] h-[70%] rounded-md outline-none resize-none px-3 py-2 "
-                                onChange={(e) => setMessage(e.target.value)}               
+                                className="w-[80%] h-[70%] rounded-md outline-none resize-none px-3 py-2 font-sans"
+                                onChange={(e) => setMessage(e.target.value)}  
+                                value={message}             
                             />
                             <SendHorizonal size={24} className="text-[#5a5858] cursor-pointer" onClick={sendNewMessage} />
                         </div>
-
-
+                    </div>):
+                    (
+                        <div className="w-4/6 bg-gray-200  text-white rounded-br-lg rounded-tr-lg shadow-lg flex flex-col justify-center items-center p-8">
+    
+                        {/* Chat Icon or Illustration */}
+                        <div className="mb-4">
+                            {/* <img src="/images/chat-illustration.png" alt="Chat Illustration" className="w-32 h-32 animate-bounce" /> */}
+                            <MessageCircle size={64} className="text-blue-500 animate-bounce" />
+                        </div>
+                    
+                        {/* Welcome Message */}
+                        <h1 className="text-4xl font-bold text-gray-700 font-sans text-center drop-shadow-md animate-fade-in">
+                            Welcome to Skillcase
+                        </h1>
+                    
+                        {/* Subtitle */}
+                        <p className="text-lg text-center text-gray-600 text- font-medium font-sans mt-2 animate-fade-in">
+                            Select a chat to start messaging
+                        </p>
                     </div>
+                    
+                )}
                 </div>
             </div>
         </div>

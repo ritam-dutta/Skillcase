@@ -266,6 +266,40 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
       }
   }
 
+    const messageUser = async () => {
+        // console.log("entered newChat: ");
+        try {
+            const response = await axios.post(`http://localhost:8000/api/v1/root/create_chat`, {
+                users: [
+                    {
+                        username: loggedUsername,
+                        userRole: loggedInRole
+                    },
+                    {
+                        username: username,
+                        userRole: userType
+                    },
+                ]
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            });
+
+            console.log("successfully created chat: ", response.data.data.chat);
+            const fetchedMessages = await axios.get(`http://localhost:8000/api/v1/root/get_messages/${response.data.data.chat._id}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            });
+            console.log("successfully fetched messages for this chat: ", fetchedMessages.data.data.messages);
+            navigate(`/${loggedInRole}/chats/${loggedUsername}?username=${username}&userRole=${userType}`)
+        } catch (error) {
+            console.error("Chat Error:", error);
+        }
+    }
+
   return(
     <>
         
@@ -313,12 +347,15 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
                 <div className="flex justify-evenly">
                     <div>
                     {/* <button className={isConnected ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" : "mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition" } onClick={() => {isConnected ? handleDisconnect() : handleConnect()}}>{isConnected ? "Connected" : "Connect"}</button> */}
-                    <button className={connectionRequest ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" : isConnected ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" : "mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition" } onClick={() => {connectionRequest ? handleDisconnect() : isConnected ? handleDisconnect() : sendConnectionRequest()}}>
-                      {connectionRequest ? "Request Sent" : isConnected ? "Connected" : "Connect"}
-                    </button>
+                        <button className={connectionRequest ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" : isConnected ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" : "mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition" } onClick={() => {connectionRequest ? handleDisconnect() : isConnected ? handleDisconnect() : sendConnectionRequest()}}>
+                        {connectionRequest ? "Request Sent" : isConnected ? "Connected" : "Connect"}
+                        </button>
                     </div>
                     <div>
-                    <button className={isFollowing ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" :"mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"} onClick={() =>{isFollowing ? handleUnFollow() : handleFollow()}}>{isFollowing ? "Followed" : "Follow"}</button>
+                        <button className={isFollowing ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" :"mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"} onClick={() =>{isFollowing ? handleUnFollow() : handleFollow()}}>{isFollowing ? "Followed" : "Follow"}</button>
+                    </div>
+                    <div>
+                        <button className="mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition" onClick={messageUser}>Message</button>
                     </div>
                 </div>
                 )}
