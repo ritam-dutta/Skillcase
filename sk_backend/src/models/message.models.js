@@ -30,6 +30,22 @@ const messageSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
+    readBy:{
+        type: [
+        {
+            username: {
+                type: String,
+                required: true,
+            },
+            userRole: {
+                type: String,
+                enum: ["client", "freelancer"],
+                required: true,
+            },
+        }],
+        default: [],
+    },
+
     createdAt: {
         type: Date,
         default: Date.now,

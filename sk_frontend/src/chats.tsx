@@ -1,23 +1,33 @@
 import { useEffect, useRef, useState } from "react";
 import { SendHorizonal } from "lucide-react";
 import { useSocket } from "./context/socket.context";
-import { MessageCircle, Search } from "lucide-react";
+import { MessageCircle, Search, EllipsisVertical, CheckCheck } from "lucide-react";
 import { Skeleton } from "./components/ui/skeleton";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+  } from "./components/ui/dropdown-menu"
+  
 import Header from "./components/header";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
+import { read } from "fs";
 
 interface Chat {
     _id: string;
     lastMessage?: string;
     users: Array<{ username: string; userRole: string }>,
 }
+
 const Chats: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [chatsLoading, setChatsLoading] = useState(false);
     const [chats, setChats] = useState([]);
     const [currentChat, setCurrentChat] = useState<Chat>({_id: '', users: []});
-    // const [newReceivedMessage, setNewReceivedMessage] = useState(null);
     // const [newSentMessage, setNewSentMessage] = useState(null);
     const [message, setMessage] = useState("");
     const [chatId, setChatId] = useState("");
@@ -27,9 +37,9 @@ const Chats: React.FC = () => {
     const accessToken = localStorage.getItem('accessToken');
     const [searchParams] = useSearchParams();
     const [allChats, setAllChats] = useState([]);
-
     const messageUsername = searchParams.get("username");
     const messageUserRole = searchParams.get("userRole");
+    const [currentMessage, setCurrentMessage] = useState<any>();
 
     const socket = useSocket();
 
@@ -42,21 +52,34 @@ const Chats: React.FC = () => {
 
     useEffect(() => {
         socket?.on("new message", (info: any) => {
-            console.log("messages agaye", info)
-            console.log("info: ", info);
+            console.log("messages agaye", info);
+            console.log("currentChatid: ", currentChat);
+            // console.log("info: ", info);
             if(info?.sender?.username !== loggedUsername) {
                 console.log("New Message: ", info);
-                // setNewReceivedMessage(info.message);
+                if(info?.chatId === currentChat?._id) {
+                    info.readBy.push({username: loggedUsername, userRole: loggedRole});
+                    console.log("readinfo", info)
+                    const response = axios.post(`http://localhost:8000/api/v1/root/mark_as_read`, {
+                        messageIds: [info._id],
+                        user:{
+                            username: loggedUsername,
+                            userRole: loggedRole
+                        }
+                    },
+                    {
+                        headers:{
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    })
+                }
                 setMessages((prevMessages) => [...prevMessages, info]);
             }
-            else{
-                // setNewSentMessage(info.message);
-
-                setMessages((prevMessages) => [...prevMessages, info]);
-            }
-            console.log("messages", messages);
+            
+            
+            // console.log("messages", messages);
         });
-    }, [socket]);
+    }, [socket, currentChat]);
     useEffect(() => {
         const fetchData = async () => {
             setChatsLoading(true);
@@ -71,9 +94,7 @@ const Chats: React.FC = () => {
                 setAllChats(fetchedChats.data.data.chats);
                 // console.log("currentchat: ", currentChat);
                     
-                // const fetchedFollowings = await axios.get(`http://localhost:8000/api/v1/${loggedRole}/getfollowings/${loggedUsername}`);
-                // setFollowers(fetchedFollowings.data.data.followers);
-            // console.log("follwers: ", response.data.data.followers);
+                
 
             } catch (error) {
                 console.error(error);
@@ -122,7 +143,9 @@ const Chats: React.FC = () => {
                 }
             });
             setMessages(fetchedMessages.data.data.messages);
-            console.log("successfully fetched messages for this chat: ", fetchedMessages.data.data.messages);
+            // console.log("successfully fetched messages for this chat: ", fetchedMessages.data.data.messages);
+            console.log("currentChat useeffect: ", currentChat);  
+
             setLoading(false);
         } catch (error) {
             console.error("Chat Error:", error);
@@ -158,7 +181,8 @@ const Chats: React.FC = () => {
                         sender: {
                             username: loggedUsername,
                             userRole: loggedRole
-                        }
+                        },
+                        readBy: [],
                     }
         
                 }, 
@@ -168,8 +192,7 @@ const Chats: React.FC = () => {
             console.error("Message Error:", error);
         }
         setMessage("");
-    }
-
+    }               
 
     return (
         <>
@@ -214,7 +237,7 @@ const Chats: React.FC = () => {
                                     <div className=" w-full">
                                         <div className=" w-full" >
                                             <h1 className="text-lg font-sans">{chat.users[0].username !== loggedUsername ? chat.users[0].username : chat.users[1].username}</h1>
-                                            <p className="text-sm text-gray-500 font-sans">{chat.lastMessage}</p>
+                                            <p className="text-sm text-gray-500 font-sans">{chat.lastMessage.length > 30 ? chat.lastMessage.slice(0,30)+"..." : chat.lastMessage}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -264,20 +287,87 @@ const Chats: React.FC = () => {
                                 <p className="text-lg font-sans">{currentChat?.users[0]?.username !== loggedUsername ? currentChat?.users[0]?.username : currentChat?.users[1]?.username}</p>
                                 <p className="text-sm text-gray">{currentChat?.users[0]?.username !== loggedUsername ? currentChat?.users[0]?.userRole : currentChat?.users[1]?.userRole}</p>
                             </div>
+                            <div className=" w-full flex justify-end">
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger className="outline-none">
+                                       <div className="rounded-full h-8 w-8 flex items-center justify-center cursor-pointer hover:bg-gray-300">
+                                           <EllipsisVertical size={20}  className="text-gray-500"/> 
+                                       </div>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="w-48 mr-36">
+                                        <DropdownMenuLabel className="text-gray-500">Actions</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem className="cursor-pointer hover:bg-[#F0F0F0]">Clear Chat</DropdownMenuItem>
+                                        <DropdownMenuItem className="cursor-pointer hover:bg-[#F0F0F0]">Delete Chat</DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                
+                                </DropdownMenu>
+                               
+                            </div>
                         </div>
                         {!loading ? 
                         <div className={`bg-[#EAE6DF] h-[80%] overflow-auto p-2`} ref={messagesEndRef}>
                             {messages.map((message: any, index) => (
                                 message?.sender?.username === loggedUsername ? (
                                     <div key={index} className="flex justify-end my-2">
-                                        <div className="bg-blue-500 text-white px-3 py-2 rounded-lg max-w-xl break-words overflow-hidden font-sans">
-                                            {message.message}
+                                        <div className="bg-blue-500 px-3 py-2 rounded-lg max-w-lg flex gap-2">
+                                            <div className=" break-words overflow-hidden font-sans  text-white">
+                                                {message.message}
+                                            </div>
+                                            <div className="flex justify-end items-end gap-1">
+                                                <div>
+                                                    <p className="text-xs text-white font-sans">
+                                                        {   
+                                                            message.createdAt? 
+                                                                new Date(message.createdAt).toLocaleTimeString([], { 
+                                                                    hour: '2-digit', 
+                                                                    minute: '2-digit', 
+                                                                    hour12: false 
+                                                                })
+                                                             : 
+                                                                new Date(Date.now()).toLocaleTimeString([], {
+                                                                    hour: '2-digit', 
+                                                                    minute: '2-digit', 
+                                                                    hour12: false 
+                                                                })
+
+                                                            
+                                                    }
+                                                    </p>
+
+                                                </div>
+                                                <div className="flex justify-end items-end">
+                                                    <CheckCheck size={16} className={message.readBy?.some((user: { username: string; userRole: string }) => user.username !== message.sender.username || user.userRole !== message.sender.userRole) ? "text-white " : "text-blue-900 "} />
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
                                 ) : (
                                     <div key={index} className="flex justify-start ml-2 my-2">
-                                        <div className="bg-gray-300 text-black font-sans px-3 py-2 rounded-lg max-w-xl break-words overflow-hidden">{message.message}</div>
+                                        <div className="bg-gray-300 text-black px-3 py-2 rounded-lg max-w-xl flex gap-2">
+                                            <div className=" break-words overflow-hidden font-sans">
+                                                {message.message}
+                                            </div>
+                                            <div className="flex justify-end items-end gap-1">
+                                                <p className="text-xs text-gray-500 font-sans">
+                                                    {   
+                                                        message.createdAt? 
+                                                            new Date(message.createdAt).toLocaleTimeString([], { 
+                                                                hour: '2-digit', 
+                                                                minute: '2-digit', 
+                                                                hour12: false 
+                                                            })
+                                                        : 
+                                                            new Date(Date.now()).toLocaleTimeString([], {
+                                                                hour: '2-digit', 
+                                                                minute: '2-digit', 
+                                                                hour12: false 
+                                                            })
+                                                    }
+                                                </p>
+                                            </div>
+                                            </div>
                                     </div>
                                 )
                             ))     
@@ -304,10 +394,15 @@ const Chats: React.FC = () => {
                         }
                         <div className="w-full h-[10%]  flex justify-center items-center bg-[#F0F0F0] space-x-2 rounded-br-lg">
                             <textarea
-                                placeholder="Type a message"
+                                placeholder="Type a message..."
                                 className="w-[80%] h-[70%] rounded-md outline-none resize-none px-3 py-2 font-sans"
                                 onChange={(e) => setMessage(e.target.value)}  
-                                value={message}             
+                                value={message}   
+                                onKeyDown={(e) => {
+                                    if ( message && e.key === 'Enter') {
+                                        sendNewMessage();
+                                    }
+                                }}
                             />
                             <SendHorizonal size={24} className="text-[#5a5858] cursor-pointer" onClick={sendNewMessage} />
                         </div>

@@ -27,7 +27,7 @@ const sendMessage = asyncHandler(async (req, res) => {
         },
         { new: true }
     );
-    console.log("chat", chat);
+    // console.log("chat", chat);
     return res
     .status(201)
     .json(new ApiResponse("Message sent", { message: newMessage }));
@@ -35,8 +35,34 @@ const sendMessage = asyncHandler(async (req, res) => {
 
 const getMessages = asyncHandler(async (req, res) => {
     const { chatId } = req.params;
-    const messages = await Message.find({ chatId });
+    
 
+    await Message.updateMany(
+        { 
+            chatId,
+            "sender.username": { $ne: req.user.username }, 
+            "sender.userRole": { $ne: req.user.role },
+            "readBy": { 
+                $not: { 
+                    $elemMatch: { 
+                        username: req.user.username, 
+                        userRole: req.user.role 
+                    } 
+                }
+            }
+        },
+        { 
+            $addToSet: { 
+                readBy: { 
+                    username: req.user.username, 
+                    userRole: req.user.role 
+                }
+            }
+        },
+    );
+    
+    const messages = await Message.find({ chatId });
+    
     return res
     .status(200)
     .json(new ApiResponse("Messages retrieved", { messages }));
@@ -50,8 +76,20 @@ const getLatestMessage = asyncHandler(async (req, res) => {
     .json(new ApiResponse("Message retrieved", { message }));
 });
 
+const markMessageAsRead = asyncHandler(async (req, res) => {
+    const { messageIds, user } = req.body;
+    const messages = await Message.updateMany(
+        { _id: { $in: messageIds } },
+        { $addToSet: { readBy: user } }
+    );
+    return res
+    .status(200)
+    .json(new ApiResponse("Messages marked as read", { messages }));
+});
+
 export 
 {   sendMessage,
     getMessages,
     getLatestMessage,
+    markMessageAsRead,
  };

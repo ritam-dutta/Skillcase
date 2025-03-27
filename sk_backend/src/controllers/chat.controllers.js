@@ -43,7 +43,7 @@ const getChats = asyncHandler(async (req, res) => {
             },
         },
     });
-    console.log("chats: ", chats);
+    // console.log("chats: ", chats);
     return res
     .status(200)
     .json(new ApiResponse("Chats retrieved", { chats: chats }));
