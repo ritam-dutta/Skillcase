@@ -162,7 +162,7 @@ export const notifications = () => {
 
         socket.on("new message", async (data) => {
             const {accessToken, info} = data;
-            console.log("new message", info);
+            // console.log("new message", info);
             const response = await axios.post(`http://localhost:8000/api/v1/root/send_message/${info.chatId}`, info, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -174,7 +174,6 @@ export const notifications = () => {
 
         socket.on("message read", (data) => {
             const {info} = data;
-            console.log("listned read event", info);
             socket.to(info.chatId).emit("message read",info);
         })
 

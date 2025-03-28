@@ -11,11 +11,9 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
   } from "./components/ui/dropdown-menu"
-  
 import Header from "./components/header";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
-import { read } from "fs";
 
 interface Chat {
     _id: string;
@@ -39,13 +37,12 @@ const Chats: React.FC = () => {
     const [allChats, setAllChats] = useState([]);
     const messageUsername = searchParams.get("username");
     const messageUserRole = searchParams.get("userRole");
-    const [currentMessage, setCurrentMessage] = useState<any>();
 
     const socket = useSocket();
 
     useEffect(() => {
         if(chatId !== "") {
-            console.log("chatId: ", chatId);
+            // console.log("chatId: ", chatId);
             socket?.emit("joinChat", chatId);
         }
     }, [socket, chatId]);
@@ -55,15 +52,13 @@ const Chats: React.FC = () => {
             // console.log("info: ", info);
             if(info?.sender?.username !== loggedUsername) {
                 if(info?.chatId === currentChat?._id) {
-                    console.log("chatId by chat : ", currentChat._id);
-                    console.log("chatId by info : ", info.chatId);
+                    // console.log("chatId by chat : ", currentChat._id);
+                    // console.log("chatId by info : ", info.chatId);
                     info.readBy.push({username: loggedUsername, userRole: loggedRole});
-                    console.log("emitting read event....", info);
                     socket.emit("message read", {
                         info: info
                     });
-                    console.log("emitted read event....", info);
-                    const response = axios.post(`http://localhost:8000/api/v1/root/mark_as_read`, {
+                    axios.post(`http://localhost:8000/api/v1/root/mark_as_read`, {
                         messageIds: [info._id],
                         user:{
                             username: loggedUsername,
@@ -77,10 +72,7 @@ const Chats: React.FC = () => {
                     })
                     setMessages((prevMessages) => [...prevMessages, info]);
                 }
-            }
-            
-            
-            // console.log("messages", messages);
+            }            
         });
         return () => {
             socket?.off("new message");
@@ -90,7 +82,7 @@ const Chats: React.FC = () => {
     useEffect(() => {
         socket?.on("message read", (info: any) => {
             if(info.chatId === currentChat._id) {
-                console.log("messages read: ", info);
+                // console.log("messages read: ", info);
                 setMessages((prevMessages) => {
                     return prevMessages.map((message) => {
                         if(message._id === info.messageId) {
@@ -137,20 +129,20 @@ const Chats: React.FC = () => {
         }    }, [messages]);
 
     useEffect(() => {
-        console.log("currentChat is changed : ", currentChat);
-    }, [currentChat]);
-
-    useEffect(() => {
         socket?.on("read all", (messages) => {
-            setMessages(messages);
+            if (messages.length > 0 && messages[0]?.chatId === currentChat?._id) {
+                setMessages(messages);
+            }
         });
+    
         return () => {
             socket?.off("read all");
-        }
+        };
     }, [socket, currentChat, chatId]);
+    
 
     const messageUser = async (users: Array<{ username: string; userRole: string }>) => {
-        console.log("opening chat...")
+        // console.log("opening chat...")
         setLoading(true);
         const recipent = users[0].username !== loggedUsername ? users[0] : users[1];
         
@@ -173,12 +165,15 @@ const Chats: React.FC = () => {
                     Authorization: `Bearer ${accessToken}`
                 }
             });
-
+            if(response.data.data.chat._id === currentChat?._id) {
+                setLoading(false);
+                return;
+            }
             setCurrentChat(response.data.data.chat);
             
-            console.log("currentChat: ", response.data.data.chat);
+            // console.log("currentChat: ", response.data.data.chat);
             setChatId(response.data.data.chat._id);
-            console.log("chatId: ", response.data.data.chat._id);
+            // console.log("chatId: ", response.data.data.chat._id);
             // console.log("successfully created chat: ", response.data.data.chat);
             const fetchedMessages = await axios.get(`http://localhost:8000/api/v1/root/get_messages/${response.data.data.chat._id}`, {
                 headers: {
@@ -193,10 +188,7 @@ const Chats: React.FC = () => {
                     userRole: loggedRole
                 }
             });
-            setMessages(fetchedMessages.data.data.messages);
-            // console.log("successfully fetched messages for this chat: ", fetchedMessages.data.data.messages);
-            // console.log("currentChat useeffect: ", currentChat);  
-
+            setMessages(fetchedMessages.data.data.messages);  
             setLoading(false);
         } catch (error) {
             console.error("Chat Error:", error);
@@ -221,7 +213,7 @@ const Chats: React.FC = () => {
 
     const sendNewMessage = () => {
         setMessages([...messages, {message: message, sender: {username: loggedUsername, userRole: loggedRole}}]);
-        console.log("entered sendNewMessage ");
+        // console.log("entered sendNewMessage ");
         try {
             socket?.emit("new message", 
                 {
@@ -238,7 +230,7 @@ const Chats: React.FC = () => {
         
                 }, 
             );
-            console.log("successfully sent message: ", message);
+            // console.log("successfully sent message: ", message);
         } catch (error) {
             console.error("Message Error:", error);
         }
@@ -452,6 +444,7 @@ const Chats: React.FC = () => {
                                 onKeyDown={(e) => {
                                     if ( message && e.key === 'Enter') {
                                         sendNewMessage();
+                                        e.preventDefault();
                                     }
                                 }}
                             />

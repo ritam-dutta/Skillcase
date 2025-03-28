@@ -17,7 +17,6 @@ const createChatRoom = asyncHandler(async (req, res) => {
     
     // console.log("existingChat: ", existingChat);
     if (existingChat) {
-        console.log("existingChat");
         return res
         .status(200)
         .json(new ApiResponse("Chat room already exists", { chat: existingChat }));
@@ -27,7 +26,6 @@ const createChatRoom = asyncHandler(async (req, res) => {
         isGroupChat,
         groupName,
     });
-    console.log("new chat created");
     return res
     .status(201)
     .json(new ApiResponse("Chat room created", { chat: chat }));
