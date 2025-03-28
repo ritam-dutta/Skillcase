@@ -172,6 +172,24 @@ export const notifications = () => {
             socket.to(info.chatId).emit("new message", response.data.data.message);
         })
 
+        socket.on("message read", (data) => {
+            const {info} = data;
+            console.log("listned read event", info);
+            socket.to(info.chatId).emit("message read",info);
+        })
+
+        socket.on("read all", (data) => {
+            const {chatId, messages, user} = data;
+            messages.forEach((message) => {
+                if(message.readBy.length === 0) {
+                    message.readBy = [user];
+                }
+                else if(!message.readBy.some((readUser) => readUser.username === user.username && readUser.userRole === user.userRole)) {
+                    message.readBy.push(user);
+                }
+            })
+            socket.to(chatId).emit("read all",messages);
+        })
 
     })
 }

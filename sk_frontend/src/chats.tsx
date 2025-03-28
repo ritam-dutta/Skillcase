@@ -52,14 +52,17 @@ const Chats: React.FC = () => {
 
     useEffect(() => {
         socket?.on("new message", (info: any) => {
-            console.log("messages agaye", info);
-            console.log("currentChatid: ", currentChat);
             // console.log("info: ", info);
             if(info?.sender?.username !== loggedUsername) {
-                console.log("New Message: ", info);
                 if(info?.chatId === currentChat?._id) {
+                    console.log("chatId by chat : ", currentChat._id);
+                    console.log("chatId by info : ", info.chatId);
                     info.readBy.push({username: loggedUsername, userRole: loggedRole});
-                    console.log("readinfo", info)
+                    console.log("emitting read event....", info);
+                    socket.emit("message read", {
+                        info: info
+                    });
+                    console.log("emitted read event....", info);
                     const response = axios.post(`http://localhost:8000/api/v1/root/mark_as_read`, {
                         messageIds: [info._id],
                         user:{
@@ -72,14 +75,37 @@ const Chats: React.FC = () => {
                             Authorization: `Bearer ${accessToken}`
                         }
                     })
+                    setMessages((prevMessages) => [...prevMessages, info]);
                 }
-                setMessages((prevMessages) => [...prevMessages, info]);
             }
             
             
             // console.log("messages", messages);
         });
-    }, [socket, currentChat]);
+        return () => {
+            socket?.off("new message");
+        }
+    }, [socket, currentChat, chatId]);
+
+    useEffect(() => {
+        socket?.on("message read", (info: any) => {
+            if(info.chatId === currentChat._id) {
+                console.log("messages read: ", info);
+                setMessages((prevMessages) => {
+                    return prevMessages.map((message) => {
+                        if(message._id === info.messageId) {
+                            message.readBy = info.readBy;
+                        }
+                        return message;
+                    })
+                })
+            }
+        });
+        return () => {
+            socket?.off("message read");
+        }
+    }, [socket, currentChat, chatId]);
+
     useEffect(() => {
         const fetchData = async () => {
             setChatsLoading(true);
@@ -89,7 +115,6 @@ const Chats: React.FC = () => {
                         Authorization: `Bearer ${accessToken}`
                     }
                 });
-                console.log("fetchedChats: ", fetchedChats.data.data.chats);
                 setChats(fetchedChats.data.data.chats);
                 setAllChats(fetchedChats.data.data.chats);
                 // console.log("currentchat: ", currentChat);
@@ -111,9 +136,24 @@ const Chats: React.FC = () => {
             messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
         }    }, [messages]);
 
+    useEffect(() => {
+        console.log("currentChat is changed : ", currentChat);
+    }, [currentChat]);
+
+    useEffect(() => {
+        socket?.on("read all", (messages) => {
+            setMessages(messages);
+        });
+        return () => {
+            socket?.off("read all");
+        }
+    }, [socket, currentChat, chatId]);
+
     const messageUser = async (users: Array<{ username: string; userRole: string }>) => {
+        console.log("opening chat...")
         setLoading(true);
         const recipent = users[0].username !== loggedUsername ? users[0] : users[1];
+        
         // console.log("entered messageUser: ");
         try {
             const response = await axios.post(`http://localhost:8000/api/v1/root/create_chat`, {
@@ -135,16 +175,27 @@ const Chats: React.FC = () => {
             });
 
             setCurrentChat(response.data.data.chat);
+            
+            console.log("currentChat: ", response.data.data.chat);
             setChatId(response.data.data.chat._id);
+            console.log("chatId: ", response.data.data.chat._id);
             // console.log("successfully created chat: ", response.data.data.chat);
             const fetchedMessages = await axios.get(`http://localhost:8000/api/v1/root/get_messages/${response.data.data.chat._id}`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
                 }
             });
+            socket?.emit("read all", {
+                chatId: response.data.data.chat._id,
+                messages: fetchedMessages.data.data.messages,
+                user: {
+                    username: loggedUsername,
+                    userRole: loggedRole
+                }
+            });
             setMessages(fetchedMessages.data.data.messages);
             // console.log("successfully fetched messages for this chat: ", fetchedMessages.data.data.messages);
-            console.log("currentChat useeffect: ", currentChat);  
+            // console.log("currentChat useeffect: ", currentChat);  
 
             setLoading(false);
         } catch (error) {
