@@ -28,6 +28,19 @@ const chatSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
+    lastMessageSender: {
+        type: String,
+        required: false,
+    },
+    unreadMessages:{
+        type:[{username: String, userRole: String, count: Number}],
+        required: false,
+        default: [],
+    },
+    lastMessageTime: {
+        type: Date,
+        default: Date.now,
+    },
 }, { timestamps: true });
 
 export const Chat = mongoose.model("Chat", chatSchema);

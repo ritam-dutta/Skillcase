@@ -27,6 +27,7 @@ import MyRequests from './requests_freelancer.tsx'
 import Chats from './chats.tsx'
 import { SocketProvider } from './context/socket.context.tsx'
 import { NotificationProvider } from './context/notifications.context.tsx'
+import { ChatProvider } from './context/chats.context.tsx'
 
 
 
@@ -75,9 +76,11 @@ const router= createBrowserRouter(
 ReactDOM.createRoot(document.getElementById('root')!).render(
   // <React.StrictMode>
     <SocketProvider>
+      <ChatProvider>
       <NotificationProvider>
         <RouterProvider router={router}/>
       </NotificationProvider>
+      </ChatProvider>
     </SocketProvider>
   // </React.StrictMode>,
 )

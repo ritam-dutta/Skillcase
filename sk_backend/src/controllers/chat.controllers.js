@@ -3,20 +3,53 @@ import { asyncHandler } from '../utils/AsyncHandler.js';
 import {ApiResponse} from '../utils/ApiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
 import {Message} from '../models/message.models.js';
-import mongoose from 'mongoose';
 
 const createChatRoom = asyncHandler(async (req, res) => {
+
     const { users, isGroupChat, groupName } = req.body;
     users.sort();
-    const existingChat = await Chat.findOne({
+    console.log("entering", req.user?.username, req.user?.role);
+    const existingChat = await Chat.findOneAndUpdate({
         $and: [
             { "users.username": users[0].username, "users.userRole": users[0].userRole },
             { "users.username": users[1].username, "users.userRole": users[1].userRole }
         ]
-    });
+    },
+    {
+        $set: {
+            "unreadMessages.$[elem].count": 0,
+        },
+    },
+    {
+        new: true,
+        arrayFilters: [
+            { 
+                "elem.username": req.user?.username, 
+                "elem.userRole": req.user?.role.toLowerCase()
+            }
+        ],
+    }
+    );
+    console.log("updated")
     
     // console.log("existingChat: ", existingChat);
     if (existingChat) {
+        // console.log("existingChat: ", existingChat);
+        // const updatedExistingChat = await Chat.findByIdAndUpdate(existingChat._id, 
+        //     {
+        //         $set: {
+        //             "unreadMessages.$[elem].count": 0,
+        //         },
+        //     },
+        //     {
+        //         new: true,
+        //         arrayFilters: [{ 
+        //             "elem.username": req.user?.username, 
+        //             "elem.userRole": req.user?.role.toLowerCase()
+        //         }],
+        //     }
+        // );
+        // console.log("updatedExistingChat: ", updatedExistingChat);
         return res
         .status(200)
         .json(new ApiResponse("Chat room already exists", { chat: existingChat }));
@@ -25,6 +58,11 @@ const createChatRoom = asyncHandler(async (req, res) => {
         users,
         isGroupChat,
         groupName,
+        unreadMessages: users.map(user => ({
+            username: user.username,
+            userRole: user.userRole,
+            count: 0,
+        })),
     });
     return res
     .status(201)

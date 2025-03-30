@@ -19,18 +19,46 @@ const sendMessage = asyncHandler(async (req, res) => {
         messageType,
         fileUrl,
     });
-    const chat = await Chat.findByIdAndUpdate(chatId,
+    if (!newMessage) {
+        return res
+        .status(400)
+        .json(new ApiError("Message not sent", 400));
+    }
+
+    const chat = await Chat.findById(chatId);
+
+    if (!chat) {
+        throw new Error("Chat not found");
+    }
+
+    const unreadUsers = chat.users.filter(
+        (user) => user.username !== newMessage.sender.username || user.userRole !== newMessage.sender.userRole
+    );
+
+    const updatedChat = await Chat.findByIdAndUpdate(chatId,
         {
             $set: {
                 lastMessage: newMessage.message,
+                lastMessageSender: newMessage.sender.username,
+                lastMessageTime: newMessage.createdAt,            
+            },
+            $inc: {
+                "unreadMessages.$[elem].count": 1,
             },
         },
-        { new: true }
+        { new: true,
+            arrayFilters: unreadUsers.map(user => ({
+                "elem.username": user.username,
+                "elem.userRole": user.userRole,
+            })),
+            upsert: true,
+        }
     );
+
     // console.log("chat", chat);
     return res
     .status(201)
-    .json(new ApiResponse("Message sent", { message: newMessage }));
+    .json(new ApiResponse("Message sent", { message: newMessage, chat: updatedChat }));
 });
 
 const getMessages = asyncHandler(async (req, res) => {

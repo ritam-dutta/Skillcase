@@ -169,7 +169,7 @@ export const notifications = () => {
                 },
             });
            
-            socket.to(info.chatId).emit("new message", response.data.data.message);
+            socket.to(info.chatId).emit("new message", { message: response.data.data.message, chat: response.data.data.chat });
         })
 
         socket.on("message read", (data) => {
@@ -189,6 +189,13 @@ export const notifications = () => {
             })
             socket.to(chatId).emit("read all",messages);
         })
+
+        socket.on("all chats", (data) => {
+            const {allChats, user} = data;
+            // console.log("all chats", chats);
+            socket.to(user).emit("all chats", allChats);
+        });
+        
 
     })
 }

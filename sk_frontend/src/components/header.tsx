@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSocket } from "../context/socket.context";
 import { useNotification } from "../context/notifications.context";
+import { useChat } from "../context/chats.context"; 
 
 interface Header {}
 interface Notification {
@@ -26,15 +27,26 @@ const Header: React.FC<Header> = ({}) => {
   const loggedRole = localStorage.getItem("role");
   const accessToken = localStorage.getItem("accessToken");
   const {requests}  = useNotification();
-  const [requestsPresent, setRequestsPresent] = useState(requests.length > 0); 
-  
+  const [requestsPresent, setRequestsPresent] = useState(requests.length > 0);
   const socket = useSocket();
   const {notifications, setNotifications} = useNotification();
+  // const [isNewMessage, setIsNewMessage] = useState(false);
+  const [activeTab, setActiveTab] = useState("");
+  const {unreadChats} = useChat();
+  const [isNewMessage, setIsNewMessage] = useState(false);
+  // const [requestsPresent, setRequestsPresent] = useState(false);
   
   useEffect(() => {
     socket?.emit("joinNotification", loggedUsername);
     
   },[socket])
+
+  useEffect(() => {
+    socket?.on("new message", () => {
+      setIsNewMessage(true);
+    });
+  }, [socket]);
+  
   
   useEffect(() => {
     // setRequestsPresent(requests.length > 0);
@@ -61,8 +73,7 @@ const Header: React.FC<Header> = ({}) => {
 
           const fetchedNotifications = response.data.data.notifications;
           // console.log(fetchNotifications)
-          setNotifications(fetchedNotifications.filter((notif : Notification) => notif.type !== "apply for project" && notif.type !== "collaborate on project"));
-          
+          setNotifications(fetchedNotifications.filter((notif : Notification) => notif.type !== "apply for project" && notif.type !== "collaborate on project")); 
         } catch (error) {
             console.error("Fetch Notifications Error:", error);
         }
@@ -71,36 +82,27 @@ const Header: React.FC<Header> = ({}) => {
 }, [loggedUsername]);
 
 
-  let activeTab = "";
-    if(url.includes("/projects")){
-      activeTab="projects"
+  useEffect(() => {
+    let newActiveTab = "home";
+
+    if (url.includes("/projects")) newActiveTab = "projects";
+    else if (url.includes("/profile")) newActiveTab = "profile";
+    else if (url.includes("/upload")) newActiveTab = "upload";
+    else if (url.includes("/contact")) newActiveTab = "contact";
+    else if (url.includes("/notifications")) newActiveTab = "notifications";
+    else if (url.includes("/my_requests")) newActiveTab = "requests";
+    else if (url.includes("/my_projects")) newActiveTab = "my_projects";
+    else if (url.includes("/chats")) newActiveTab = "chats";
+
+    setActiveTab(newActiveTab);
+  }, [url]);
+
+  useEffect(() => {
+    if (activeTab === "chats") {
+      setIsNewMessage(false);
     }
-    else if(url.includes("/profile")){
-      activeTab="profile"
-    }
-    else if(url.includes("/upload")){
-      activeTab="upload"
-    }
-    else if(url.includes("/contact")){
-      activeTab="contact"
-    }
-    else if(url.includes("/notifications")){
-      activeTab="notifications"
-    }
-    else if(url.includes("/my_requests")){
-      activeTab="requests"
-    }
-    else if(url.includes("/my_projects")){
-      activeTab="my_projects"
-    }
-    else if(url.includes("/chats")){
-      activeTab="chats"
-    }
-    else{
-      activeTab="home"
-    }
-    
-    // console.log("notifications",notifications);
+  }, [activeTab]);
+
 
   return (
     <header className="h-[8vh] w-full bg-gradient-to-r from-gray-50 to-gray-200 text-white shadow-md">
@@ -186,14 +188,18 @@ const Header: React.FC<Header> = ({}) => {
           : null
           }
 
-          <div className="mt-1">
+          <div className="relative mt-1">
             <Link 
               to={`/${role}/chats/${username}`}
               className={`font-medium flex flex-col items-center group transition  ${activeTab==="chats" ? "text-gray-400" : "text-gray-600"}`}
             >
+              <div className="relative mt-1">
               <MessageCircle size={24} className="group-hover:text-gray-400 transition"/>
-              <p className={`text-xs ${activeTab==="chats" ? "text-gray-400" : "text-gray-600"} font-medium group-hover:text-gray-400 transition `}>Chat</p>
+              {isNewMessage || unreadChats.length > 0 ? <div className="absolute rounded-full bg-red-600 h-2.5 w-2.5 -translate-y-6 translate-x-3 text-white flex justify-center items-center text-xs"></div> : null}
+              </div>
+              <p className={`text-xs ${activeTab==="chats" ? "text-gray-400" : "text-gray-600"} font-medium group-hover:text-gray-400 transition `}>Chats</p>
             </Link>
+
           </div>
 
           <div className="mt-1 relative">

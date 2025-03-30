@@ -1,20 +1,20 @@
 import { createContext, useContext, useState } from "react";
 
 const ChatContext = createContext<{
-    unreadMessages: any[],
-    setUnreadMessages: React.Dispatch<React.SetStateAction<any[]>>,
+    unreadChats: any[],
+    setUnreadChats: React.Dispatch<React.SetStateAction<any[]>>,
 }>({
-    unreadMessages: [],
-    setUnreadMessages: () => {},
+    unreadChats: [],
+    setUnreadChats: () => {},
 })
 
 export const useChat = () => useContext(ChatContext);
 
 export const ChatProvider = ({ children } : { children : React.ReactNode }) => {
-    const [unreadMessages, setUnreadMessages] = useState<any[]>([]);
+    const [unreadChats, setUnreadChats] = useState<any[]>([]);
 
     return (
-        <ChatContext.Provider value={{ unreadMessages, setUnreadMessages}}> 
+        <ChatContext.Provider value={{ unreadChats, setUnreadChats}}> 
         {children}
         </ChatContext.Provider>
     );
