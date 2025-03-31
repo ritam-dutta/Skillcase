@@ -138,6 +138,7 @@ export const notifications = () => {
             const response2 = await axios.post(`http://localhost:8000/api/v1/client/delete_notification/${info.receiver}`, {
                 sender: info.sender,
                 type: "collaborate on project",
+                projectId: info.projectId,
             }, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,

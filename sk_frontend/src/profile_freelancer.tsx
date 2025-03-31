@@ -56,6 +56,10 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
               setConnectionRequest(false);
               setIsConnected(false);
           });
+          return () => {
+                socket?.off("accept connection");
+                socket?.off("reject connection");
+            }
           
       }, [socket]);
 

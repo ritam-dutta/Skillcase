@@ -1,10 +1,12 @@
 import Header from "./components/header";
+// import Loader from "./components/loader";
 import { Skeleton } from "./components/ui/skeleton";
 import Footer from "./components/footer";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-
+// import { useNotification } from "./context/notifications.context";
+// import { useSocket } from "./context/socket.context";
 
 // interface Request{
 //     sender: string;
@@ -16,9 +18,11 @@ import axios from "axios";
 //     project: string;
 // }
 
-const MyRequestsFreelancer: React.FC = ({}) => {
+const MyRequestsClient: React.FC = ({}) => {
     
     const [loading, setLoading] = useState(false);
+    // const {projectid} = useParams<{projectid : string}>();
+    // const socket = useSocket();
     const navigate = useNavigate();
     const loggedUsername = localStorage.getItem("username");
     const loggedInRole = localStorage.getItem("role") || "";
@@ -36,8 +40,8 @@ const MyRequestsFreelancer: React.FC = ({}) => {
                         Authorization: `Bearer ${accessToken}`,
                     },
                 }); 
-                const user = responseLoggedUser.data.data.freelancer;
-                setApplications(user.applications);
+                const user = responseLoggedUser.data.data.client;
+                setApplications(user.requestedCollabs);
 
             } catch (error) {
                 console.error("Fetch Notifications Error:", error);
@@ -80,7 +84,7 @@ const MyRequestsFreelancer: React.FC = ({}) => {
                                             <img src="/images/user.png" alt="" className="h-5 w-5" />
                                         </div>
                                         <div>
-                                            <p className="text-l">Application for project has been sent to</p>
+                                            <p className="text-l">Collaboration request for project has been sent to</p>
                                             <Link to={`/client/profile/${application.client}`} className="text-l">
                                                  @{application.client}!
                                             </Link>
@@ -151,4 +155,4 @@ const MyRequestsFreelancer: React.FC = ({}) => {
     );
 }
 
-export default MyRequestsFreelancer;
+export default MyRequestsClient;

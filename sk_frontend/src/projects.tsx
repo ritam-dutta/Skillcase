@@ -53,16 +53,16 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
                 });
                 const fetchedProjects = response.data.data;
                 let gotProjects = response2.data.data;
-                let appliedProjects = responseLoggedUser.data.data.freelancer?.applications;
+                let requestedProjects = loggedRole === "freelancer" ? responseLoggedUser.data.data.freelancer?.applications : responseLoggedUser.data.data.client?.collabRequests;
                 let newFetchedProjects = fetchedProjects
                                         .filter((project: Project) => project.status === "In Progress")
                                         .filter((project: Project) => 
                                             !(gotProjects || []).some((gotProject: Project) => gotProject._id === project._id) &&
-                                            !(appliedProjects || []).some((appliedProject: Project) => appliedProject._id === project._id)
+                                            !(requestedProjects || []).some((requestedProject: Project) => requestedProject._id === project._id)
                                         );
                 console.log("fetched projects",fetchedProjects)
                 console.log("GotProjects:", gotProjects);
-                console.log("AppliedProjects:", appliedProjects);
+                console.log("requestedProjects:", requestedProjects);
                 console.log("newFetchedProjects:", newFetchedProjects);
                 
                 setProjects(newFetchedProjects);
@@ -102,6 +102,7 @@ const ProjectPage: React.FC<ProjectPage> = ({}) => {
 
     const collaborateProject = (id: string, employer: string ) => {
         try {
+            setProjects(projects.filter((project: Project) => project._id !== id));
             socket?.emit("notification", { 
                 accessToken: accessToken,
                 notification: {

@@ -22,8 +22,9 @@ import Followers from './followers.tsx'
 import Followings from './followings.tsx'
 import Connections from './connections.tsx'
 import Notifications from './notifications.tsx'
-import Requests from './requests_client.tsx'
-import MyRequests from './requests_freelancer.tsx'
+import Requests from './requests_for_client.tsx'
+import MyRequestsFreelancer from './requests_freelancer.tsx'
+import MyRequestsClient from './requests_by_client.tsx'
 import Chats from './chats.tsx'
 import { SocketProvider } from './context/socket.context.tsx'
 import { NotificationProvider } from './context/notifications.context.tsx'
@@ -65,7 +66,8 @@ const router= createBrowserRouter(
       <Route path='freelancer/notifications/:username' element={<Notifications/>}> </Route>
       <Route path='client/notifications/:username' element={<Notifications/>}> </Route>
       <Route path='client/requests/:username/:projectid' element={<Requests/>}> </Route>
-      <Route path='freelancer/my_requests/:username' element={<MyRequests/>}> </Route>  
+      <Route path='freelancer/my_requests/:username' element={<MyRequestsFreelancer/>}> </Route>  
+      <Route path='client/my_requests/:username' element={<MyRequestsClient/>}> </Route>  
       <Route path='client/chats/:username' element={<Chats/>}> </Route>  
       <Route path='freelancer/chats/:username' element={<Chats/>}> </Route>  
       <Route path="*" element={<Not_found/>}></Route>

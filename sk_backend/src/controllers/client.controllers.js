@@ -496,6 +496,16 @@ const createNotification = asyncHandler(async (req, res) => {
                 throw new ApiError(404, 'Freelancer not found');
             }
         }
+        else if(notification.type === "collaborate on project") {
+            const client = await Client.findOneAndUpdate({username: notification.sender},
+                {
+                    $addToSet: {requestedCollabs: {client: notification.receiver, projectId: notification.projectId}}
+                },
+                {
+                    new: true
+                }
+            )
+        }
     }
 
     return res
@@ -552,6 +562,16 @@ const deleteNotification = asyncHandler(async (req, res) => {
             freelancer = await Freelancer.findOneAndUpdate({username: sender},
                 {
                     $pull: {applications: {client: req.user?.username, projectId: projectId}}
+                },
+                {
+                    new: true
+                }
+            );
+        }
+        else if(type === "collaborate on project") {
+            client = await Client.findOneAndUpdate({username: sender},
+                {
+                    $pull: {requestedCollabs: {client: req.user?.username, projectId: projectId}}
                 },
                 {
                     new: true

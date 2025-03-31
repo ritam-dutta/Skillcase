@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import "../App.css";
-import { Bell,User, Home, Upload , File, FileText, MessageCircle } from "lucide-react";
+import { Bell,User, Home, Upload , File, FileText, MessageCircle, Zap} from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSocket } from "../context/socket.context";
@@ -30,7 +30,6 @@ const Header: React.FC<Header> = ({}) => {
   const [requestsPresent, setRequestsPresent] = useState(requests.length > 0);
   const socket = useSocket();
   const {notifications, setNotifications} = useNotification();
-  // const [isNewMessage, setIsNewMessage] = useState(false);
   const [activeTab, setActiveTab] = useState("");
   const {unreadChats} = useChat();
   const [isNewMessage, setIsNewMessage] = useState(false);
@@ -42,10 +41,11 @@ const Header: React.FC<Header> = ({}) => {
   },[socket])
 
   useEffect(() => {
+    unreadChats.length > 0 ? setIsNewMessage(true) : setIsNewMessage(false);
     socket?.on("new message", () => {
       setIsNewMessage(true);
     });
-  }, [socket]);
+  }, [unreadChats, socket]);
   
   
   useEffect(() => {
@@ -157,22 +157,22 @@ const Header: React.FC<Header> = ({}) => {
             </Link>
           </div>
           {
-            (role === "freelancer" && loggedUsername === username) ? (
+            (loggedUsername === username) ? (
               <div className="mt-1">
                 <Link
-                  to={`/freelancer/my_requests/${username}`}
+                  to={`/${role}/my_requests/${username}`}
                   className={`flex flex-col items-center font-medium hover:text-gray-400 group transition  ${activeTab==="requests" ? "text-gray-400" : "text-gray-600"}`}
                 >
                   <div>
-                    <FileText size={24} className="group-hover:text-gray-400 transition"/>
+                    {loggedRole === "freelancer" ?<FileText size={24} className="group-hover:text-gray-400 transition"/>:<Zap size={24} className="group-hover:text-gray-400 transition"/>}
                   </div>
-                <p className={`text-xs ${activeTab==="requests" ? "text-gray-400" : "text-gray-600"} font-medium group-hover:text-gray-400 transition`}>applications</p>
+                <p className={`text-xs ${activeTab==="requests" ? "text-gray-400" : "text-gray-600"} font-medium group-hover:text-gray-400 transition`}>{ role === "freelancer" ? "applications" : "my requests"}</p>
                 </Link>
               </div>
             ) : null
           }
           { (role === "client" && loggedUsername === username) ?
-          <div className="mt-1 relative">
+          <div className="relative">
             <Link
               to={`/client/my_projects/${username}`}
               className={`flex flex-col items-center font-medium hover:text-gray-400 group transition  ${activeTab==="my_projects" ? "text-gray-400" : "text-gray-600"}`}
@@ -188,21 +188,21 @@ const Header: React.FC<Header> = ({}) => {
           : null
           }
 
-          <div className="relative mt-1">
+          <div className="relative">
             <Link 
               to={`/${role}/chats/${username}`}
               className={`font-medium flex flex-col items-center group transition  ${activeTab==="chats" ? "text-gray-400" : "text-gray-600"}`}
             >
               <div className="relative mt-1">
               <MessageCircle size={24} className="group-hover:text-gray-400 transition"/>
-              {isNewMessage || unreadChats.length > 0 ? <div className="absolute rounded-full bg-red-600 h-2.5 w-2.5 -translate-y-6 translate-x-3 text-white flex justify-center items-center text-xs"></div> : null}
+              {isNewMessage ? <div className="absolute rounded-full bg-red-600 h-2.5 w-2.5 -translate-y-6 translate-x-3 text-white flex justify-center items-center text-xs"></div> : null}
               </div>
-              <p className={`text-xs ${activeTab==="chats" ? "text-gray-400" : "text-gray-600"} font-medium group-hover:text-gray-400 transition `}>Chats</p>
+              <p className={`text-xs ${activeTab==="chats" ? "text-gray-400" : "text-gray-600"} font-medium group-hover:text-gray-400 transition `}>chats</p>
             </Link>
 
           </div>
 
-          <div className="mt-1 relative">
+          <div className="relative">
             <Link
               to={`/${role}/notifications/${username}`}
               className={`flex flex-col items-center font-medium hover:text-gray-400 group transition  ${activeTab==="notifications" ? "text-gray-400" : "text-gray-600"}`}

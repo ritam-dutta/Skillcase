@@ -79,6 +79,22 @@ const clientSchema = new mongoose.Schema({
         ref: "Project",
         required: false,
     },
+    requestedCollabs:{
+        type: [
+            {
+                client:{
+                    type: String,
+                    required: true,
+                },
+                projectId:{
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "Project",
+                    required: true,
+                }
+            }
+        ],
+            required: false,
+    },
     projects:{
         type: [mongoose.Schema.Types.ObjectId],
         ref: "Project",

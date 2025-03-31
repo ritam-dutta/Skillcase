@@ -54,6 +54,11 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
             setConnectionRequest(false);
             setIsConnected(false);
         });
+
+        return () => {
+            socket?.off("accept connection");
+            socket?.off("reject connection");
+        }
     }, [socket]);
 
     useEffect(() => {
