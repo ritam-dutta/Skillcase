@@ -178,23 +178,33 @@ export const notifications = () => {
             socket.to(info.chatId).emit("message read",info);
         })
 
-        socket.on("read all", (data) => {
-            const {chatId, messages, user} = data;
-            messages.forEach((message) => {
-                if(message.readBy.length === 0) {
-                    message.readBy = [user];
-                }
-                else if(!message.readBy.some((readUser) => readUser.username === user.username && readUser.userRole === user.userRole)) {
-                    message.readBy.push(user);
-                }
-            })
-            socket.to(chatId).emit("read all",messages);
+        socket.on("read all", async (data) => {
+            const {chatId, messages, user, accessToken} = data;
+            const messageIds = messages.map((message) => message._id);
+            const response = await axios.post(`http://localhost:8000/api/v1/root/mark_all_as_read`, {
+                chatId,
+                messageIds,
+                user,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            socket.to(chatId).emit("read all",response.data.data.messages);
         })
 
         socket.on("all chats", (data) => {
             const {allChats, user} = data;
             // console.log("all chats", chats);
             socket.to(user).emit("all chats", allChats);
+        });
+
+        socket.on("typing", (data) => {
+            socket.broadcast.emit("userTyping", data);
+        })
+
+        socket.on("stop typing", (data) => {
+            socket.broadcast.emit("userStoppedTyping", data);
         });
         
 

@@ -41,6 +41,7 @@ const Chats: React.FC = () => {
     const [searchParams] = useSearchParams();
     const messageUsername = searchParams.get("username");
     const messageUserRole = searchParams.get("userRole");
+    const [isTyping, setIsTyping] = useState(false);
 
     const {setUnreadChats} = useChat();
 
@@ -72,7 +73,7 @@ const Chats: React.FC = () => {
                         info: message
                     });
                     axios.post(`http://localhost:8000/api/v1/root/mark_as_read`, {
-                        messageIds: [message._id],
+                        messageId: message._id,
                         user:{
                             username: loggedUsername,
                             userRole: loggedRole
@@ -197,9 +198,7 @@ const Chats: React.FC = () => {
 
     useEffect(() => {
         socket?.on("read all", (messages) => {
-            if (messages.length > 0 && messages[0]?.chatId === currentChat?._id) {
-                setMessages(messages);
-            }
+            setMessages(messages);
         });
     
         return () => {
@@ -216,6 +215,48 @@ const Chats: React.FC = () => {
             )
         ));
     }, [chats]);
+
+
+    const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    const handleTyping = () => {
+        setIsTyping(true);
+        socket?.emit("typing", { user: {
+            username: loggedUsername,
+            userRole: loggedRole
+        } });
+    
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current);
+        }
+    
+        typingTimeoutRef.current = setTimeout(() => {
+          setIsTyping(false);
+          socket?.emit("stop typing", { user: {
+            username: loggedUsername,
+            userRole: loggedRole
+          } }); 
+        }, 2000);
+      };
+
+      useEffect(() => {
+        socket?.on("userTyping", (data) => {
+            if(data.user.username !== loggedUsername && data.user.userRole !== loggedRole) {
+                setIsTyping(true);
+            }
+        });
+        socket?.on("userStoppedTyping", (data) => {
+            if(data.user.username !== loggedUsername && data.user.userRole !== loggedRole) {
+                setIsTyping(false);
+            }
+        });
+    
+        return () => {
+          socket?.off("userTyping");
+          socket?.off("userStoppedTyping");
+        };
+      }, []);
+
     
 
     const messageUser = async (users: Array<{ username: string; userRole: string }>) => {
@@ -268,8 +309,14 @@ const Chats: React.FC = () => {
                 }
             });
             socket?.emit("read all", {
+                accessToken: accessToken,
                 chatId: response.data.data.chat._id,
-                messages: fetchedMessages.data.data.messages,
+                messages: fetchedMessages.data.data.messages.filter(
+                    (message: any) =>
+                      !message.readBy.some(
+                        (reader: any) => reader.username === loggedUsername && reader.userRole === loggedRole
+                      )
+                  ),
                 user: {
                     username: loggedUsername,
                     userRole: loggedRole
@@ -441,7 +488,10 @@ const Chats: React.FC = () => {
                             </div>
                             <div className="flex-col justify-center items-center ">
                                 <p className="text-lg font-sans">{currentChat?.users[0]?.username !== loggedUsername ? currentChat?.users[0]?.username : currentChat?.users[1]?.username}</p>
-                                <p className="text-sm text-gray">{currentChat?.users[0]?.username !== loggedUsername ? currentChat?.users[0]?.userRole : currentChat?.users[1]?.userRole}</p>
+                                {isTyping ? 
+                                    <p className="text-sm text-gray">Typing...</p> : 
+                                    <p className="text-sm text-gray">{currentChat?.users[0]?.username !== loggedUsername ? currentChat?.users[0]?.userRole : currentChat?.users[1]?.userRole}</p>
+                                }                            
                             </div>
                             <div className=" w-full flex justify-end">
                                 <DropdownMenu>
@@ -553,7 +603,11 @@ const Chats: React.FC = () => {
                             <textarea
                                 placeholder="Type a message..."
                                 className="w-[80%] h-[70%] rounded-md outline-none resize-none px-3 py-2 font-sans"
-                                onChange={(e) => setMessage(e.target.value)}  
+                                onChange={(e) => {
+                                    setMessage(e.target.value)
+                                    handleTyping(); 
+                                    }
+                                }  
                                 value={message}   
                                 onKeyDown={(e) => {
                                     if ( message && e.key === 'Enter') {
