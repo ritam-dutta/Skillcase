@@ -14,7 +14,7 @@ interface Follower{
 const Followers: React.FC<Followers> = ({}) => {
 
     const [loading, setLoading] = useState(false);
-    const [followers, setFollowers] = useState([]);
+    // const [followers, setFollowers] = useState([]);
     const [clientFollowers, setClientFollowers] = useState<any[]>([]);
     const [freelancerFollowers, setFreelancerFollowers] = useState<any[]>([]);
     const [isAlreadyFollowing, setIsAlreadyFollowing] = useState(false);
@@ -31,7 +31,7 @@ const Followers: React.FC<Followers> = ({}) => {
                 const response = await axios.get(`http://localhost:8000/api/v1/${currentRole}/getfollowers/${username}`);
 
                 const fetchedFollowers = response.data.data.followers;
-                setFollowers(fetchedFollowers);
+                // setFollowers(fetchedFollowers);
                 let clientList: any[] = [];
                 let freelancerList: any[] = [];
                 let alreadyFollowing = false;

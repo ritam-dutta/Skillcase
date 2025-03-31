@@ -122,7 +122,7 @@ const EditProject: React.FC<EditProject> = () => {
         
     const handleEditProject = async () => {
         try {
-            const response = await axios.post(`http://localhost:8000/api/v1/root/updateproject/`, {
+            await axios.post(`http://localhost:8000/api/v1/root/updateproject/`, {
                 title: projectTitle || project.title ,
                 description: description || project.description,
                 industry: industry || project.industry,

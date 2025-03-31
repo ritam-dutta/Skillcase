@@ -4,7 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Header from "./components/header";
 // import Loader from "./components/loader";
-import { Bell, CheckCircle, Key, Trash2, User } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 import { useSocket } from "./context/socket.context";
 import { useNotification } from "./context/notifications.context";
 
@@ -21,7 +21,7 @@ const Notifications: React.FC<Notifications> = ({}) => {
     const [loading, setLoading] = useState(false);
     const socket = useSocket();
     const { notifications, setNotifications} = useNotification();
-    const {unreadNotifications, setUnreadNotifications} = useNotification();
+    const {setUnreadNotifications} = useNotification();
     const {username} = useParams<{ username: string }>();
     const role = window.location.href.includes("client") ? "client" : "freelancer";
     // const [messages, setMessages] = useState([]);

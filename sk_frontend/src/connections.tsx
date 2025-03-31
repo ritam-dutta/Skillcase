@@ -13,7 +13,7 @@ const Connections: React.FC<Connections> = ({}) => {
         role: string;
     }
     const [loading, setLoading] = useState(false);
-    const [connections, setConnections] = useState([]);
+    // const [connections, setConnections] = useState([]);
     const [clientConnections, setClientConnections] = useState<any[]>([]);
     const [freelancerConnections, setFreelancerConnections] = useState<any[]>([]);
     const [isAlreadyConnected, setIsAlreadyConnected] = useState(false);
@@ -29,7 +29,7 @@ const Connections: React.FC<Connections> = ({}) => {
             try {
                 const response = await axios.get(`http://localhost:8000/api/v1/${currentRole}/getconnections/${username}`);
                 const fetchedConnections = response.data.data.connections;
-                setConnections(fetchedConnections);
+                // setConnections(fetchedConnections);
                 let clientList: any[] = [];
                 let freelancerList: any[] = [];
                 let alreadyConnected = false;

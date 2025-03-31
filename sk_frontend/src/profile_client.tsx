@@ -173,7 +173,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
     const handleFollow = async () => {
         try {
             const accessToken = localStorage.getItem("accessToken");
-            const response = await axios.post(`http://localhost:8000/api/v1/client/follow/${username}`, {
+            await axios.post(`http://localhost:8000/api/v1/client/follow/${username}`, {
                 username: username,
                 followerRole: localStorage.getItem("role"),
             }, {
@@ -204,7 +204,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
         try {
             const accessToken = localStorage.getItem("accessToken");
             // console.log(")
-            const response = await axios.post(`http://localhost:8000/api/v1/client/unfollow/${username}`, {
+            await axios.post(`http://localhost:8000/api/v1/client/unfollow/${username}`, {
                 username: username,
                 unFollowerRole: localStorage.getItem("role"),
             }, {
@@ -260,7 +260,7 @@ const ClientProfile : React.FC<ClientProfile> = ({})=>{
             }
             else if(window.confirm("Are you sure you want to disconnect?")){
                 const accessToken = localStorage.getItem("accessToken");
-                const response = await axios.post(`http://localhost:8000/api/v1/client/disconnect/${username}`, {
+                await axios.post(`http://localhost:8000/api/v1/client/disconnect/${username}`, {
                     username: username,
                     disConnectorRole: localStorage.getItem("role"),
                 }, {

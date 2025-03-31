@@ -10,7 +10,7 @@ interface ViewProject{}
 
 const ViewProject: React.FC<ViewProject> = ({})=>{
 
-    const [project, setProject] = useState<any>();
+    // const [project, setProject] = useState<any>();
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [industry, setIndustry] = useState("");
@@ -39,7 +39,7 @@ const ViewProject: React.FC<ViewProject> = ({})=>{
                 );
                 const project = response.data.data;
                 console.log(project)
-                setProject(project);
+                // setProject(project);
                 setTitle(project.title);
                 setEmployer(project.employer);
                 setDescription(project.description);

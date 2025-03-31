@@ -10,7 +10,7 @@ import "./App.css"
 import { useSocket } from "./context/socket.context";
 interface FreelancerProfile {}
 const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
-    const [user, setUser] = useState<any>();
+    // const [user, setUser] = useState<any>();
 
     const url = window.location.href;
     let userType="";
@@ -39,7 +39,7 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
     const [completedProjects, setCompletedProjects] = useState([]);
     const [isFollowing, setIsFollowing] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [projects, setProjects] = useState([]);
+    // const [projects, setProjects] = useState([]);
     const navigate = useNavigate();
     const accessToken = localStorage.getItem("accessToken");
     const loggedInRole = localStorage.getItem("role") || "";
@@ -129,7 +129,7 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
                 // localStorage.setItem("username",fetchedUser.username);
                 // console.log(fetchedUser)
               
-                setUser(fetchedUser);
+                // setUser(fetchedUser);
                 setFullname(fetchedUser?.fullname || "");
                 setFollowing(fetchedUser?.following.length || 0);
                 setFollowers(fetchedUser?.followers.length || 0);
@@ -156,7 +156,7 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
 
                 const projects = response.data.data;
                 // console.log("prj",projects)
-                setProjects(projects);
+                // setProjects(projects);
                 let cp = projects.filter((project: any) => project.status === "Completed");
                 let ip = projects.filter((project: any) => project.status === "In Progress");
                 setCompletedProjects(cp);
@@ -172,7 +172,7 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
 
     const handleFollow = async () => {
       try {
-          const response = await axios.post(`http://localhost:8000/api/v1/freelancer/follow/${username}`, {
+            await axios.post(`http://localhost:8000/api/v1/freelancer/follow/${username}`, {
               username: username,
               followerRole: localStorage.getItem("role"),
           }, {
@@ -202,7 +202,7 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
   const handleUnFollow = async () => {
       try {
           // console.log(")
-          const response = await axios.post(`http://localhost:8000/api/v1/freelancer/unfollow/${username}`, {
+            await axios.post(`http://localhost:8000/api/v1/freelancer/unfollow/${username}`, {
               username: username,
               unFollowerRole: localStorage.getItem("role"),
           }, {
@@ -253,7 +253,7 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
               setConnectionRequest(false);
           }
           else if(window.confirm("Are you sure you want to disconnect?")){
-          const response = await axios.post(`http://localhost:8000/api/v1/freelancer/disconnect/${username}`, {
+            await axios.post(`http://localhost:8000/api/v1/freelancer/disconnect/${username}`, {
               username: username,
               disConnectorRole: localStorage.getItem("role"),
           }, {

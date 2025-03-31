@@ -10,14 +10,14 @@ interface ViewFeedProject{}
 
 const ViewFeedProject: React.FC<ViewFeedProject> = ({})=>{
 
-    const [project, setProject] = useState<any>();
+    // const [project, setProject] = useState<any>();
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [industry, setIndustry] = useState("");
     const [budget, setBudget] = useState("");
     const [duration, setDuration] = useState("");
     const [status, setStatus] = useState("");
-    const [username, setUsername] = useState("");
+    // const [username, setUsername] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const {projectid} = useParams();
@@ -39,13 +39,13 @@ const ViewFeedProject: React.FC<ViewFeedProject> = ({})=>{
                 );
                 const project = response.data.data;
                 console.log(project)
-                setProject(project);
+                // setProject(project);
                 setTitle(project.title);
                 setDescription(project.description);
                 setIndustry(project.industry);
                 setBudget(project.budget);
                 setDuration(project.duration);
-                setUsername(project.employer);
+                // setUsername(project.employer);
                 setStatus(project.status);
                 console.log("Projects:", project);
             } catch (error) {

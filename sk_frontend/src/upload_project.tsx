@@ -24,7 +24,7 @@ const UploadProject: React.FC<UploadProject> = () => {
   const [loading, setLoading] = useState(false);
   const url = window.location.href;
   const role = url.includes("freelancer") ? "freelancer" : "client";
-  const accessToken = localStorage.getItem("accessToken");
+  // const accessToken = localStorage.getItem("accessToken");
 
   useEffect(() => {
 
