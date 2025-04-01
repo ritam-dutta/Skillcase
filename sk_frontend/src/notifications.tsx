@@ -143,85 +143,79 @@ const Notifications: React.FC<Notifications> = ({}) => {
       
     return (
         <div className="min-h-screen w-full bg-gray-300">
-            <Header/>
-            <div className="h-[14vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-start px-8">
-                <h2 className="text-2xl text-white font-bold mb-4 flex items-center mt-6">
-                {/* <Bell className="mr-2 text-white" /> */}
-                 Notifications
-                </h2>
-            </div>
-        <div className="max-w-2xl mx-auto bg-gray-100 shadow-lg rounded-lg p-6 border border-gray-200 mt-[-8vh]">
-            <div className="flex items-center justify-between">
-                <h1 className="text-xl font-bold">New notifications</h1>
-                {notifications.length > 0 ?(
-                <button className="flex text-green-500 hover:text-green-700" onClick={deleteAllNotifications}>
-                    <CheckCircle size={20}/>
-                    <p> All </p>
-                </button>)
-                : null}
-            </div>
-          {loading ? (
-            <p className="text-gray-600">Loading notifications...</p>
-          ) : notifications.length === 0 ? (
-            <p className="text-gray-600">No new notifications</p>
-          ) : (
-            <div className="space-y-4">
-              {notifications.map((notif,index) => (
-                <div key={index}
-                  className={`flex items-center justify-between px-3 py-2 rounded-lg border border-gray-300 shadow-sm mt-2
-                    ${notif.markAsRead ? "bg-gray-100" : "bg-blue-100"}`}
-                >
-                  <div className="flex gap-4">
-                    <Link to={`/${notif.senderRole}/profile/${notif.sender}`}>
-                        <div className="flex justify-center items-center rounded-full h-6 w-6 bg-gray-400">
-                            <img src="/images/user.png" alt="User" className="h-4 w-4" />
-                        </div>
-                    </Link>
-                    <p className="text-sm font-medium">{notif.message}</p>
-                    {/* <p className="text-xs text-gray-500">{new Date(notif.createdAt).toLocaleString()}</p> */}
-                  </div>
-                  <div className="flex space-x-3">
-                    {(notif.type === "connection_request") && !notif.markAsRead ? (
-                        <div className="flex gap-4 w-full">
-                            
-                        <button
-                            onClick={() => {handleConnect(notif.sender, notif.senderRole)}}
-                            className=" bg-blue-500 text-white text-center px-3 py-1 rounded-lg shadow-md hover:bg-blue-600 transition">
-                                Accept
-                        </button>
-
-                        <button
-                            onClick={() => {handleReject(notif.sender, notif.type)}}
-                            className=" bg-gray-200 text-blue-950 text-center px-3 py-1  rounded-lg shadow-md hover:bg-gray-300 transition">
-                                Reject
-                        </button>
-
-                        </div>
-                    )
-                    :(
-                        <div className="flex gap-4 w-full">
-                        <button
-                            onClick={() => {deleteNotification( notif.sender, notif.type)}}
-                            className="text-green-500 hover:text-green-700"
-                        >
-                            <CheckCircle size={18} />
-                        </button>
-                        {/* <button
-                        //   onClick={() => deleteNotification(notif._id)}
-                        className="text-red-500 hover:text-red-700"
-                        >
-                        <Trash2 size={18} />
-                        </button> */}
-                        </div>)
-                        
-                    }
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+        <Header />
+        <div className="h-[14vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-start px-6 sm:px-8">
+            <h2 className="text-2xl sm:text-3xl text-white font-bold mb-4 flex items-center mt-6">
+                Notifications
+            </h2>
         </div>
-      </div>
+    
+        <div className="max-w-2xl mx-auto bg-gray-100 shadow-lg rounded-lg p-6 border border-gray-200 lg:mt-[-8vh]">
+            <div className="flex items-center justify-between">
+                <h1 className="text-xl sm:text-2xl font-bold">New notifications</h1>
+                {notifications.length > 0 ? (
+                    <button className="flex text-green-500 hover:text-green-700" onClick={deleteAllNotifications}>
+                        <CheckCircle size={20} />
+                        <p> All </p>
+                    </button>
+                ) : null}
+            </div>
+    
+            {loading ? (
+                <p className="text-gray-600">Loading notifications...</p>
+            ) : notifications.length === 0 ? (
+                <p className="text-gray-600">No new notifications</p>
+            ) : (
+                <div className="space-y-4">
+                    {notifications.map((notif, index) => (
+                        <div
+                            key={index}
+                            className={`flex items-center justify-between px-3 py-2 rounded-lg border border-gray-300 shadow-sm mt-2
+                                ${notif.markAsRead ? "bg-gray-100" : "bg-blue-100"}`}
+                        >
+                            <div className="flex gap-4">
+                                <Link to={`/${notif.senderRole}/profile/${notif.sender}`}>
+                                    <div className="flex justify-center items-center rounded-full h-6 w-6 bg-gray-400">
+                                        <img src="/images/user.png" alt="User" className="h-4 w-4" />
+                                    </div>
+                                </Link>
+                                <p className="text-sm sm:text-base font-medium">{notif.message}</p>
+                            </div>
+                            <div className="flex space-x-3">
+                                {(notif.type === "connection_request") && !notif.markAsRead ? (
+                                    <div className="flex gap-4 w-full">
+                                        <button
+                                            onClick={() => { handleConnect(notif.sender, notif.senderRole) }}
+                                            className="bg-blue-500 text-white text-center px-3 py-1 rounded-lg shadow-md hover:bg-blue-600 transition w-full sm:w-auto"
+                                        >
+                                            Accept
+                                        </button>
+    
+                                        <button
+                                            onClick={() => { handleReject(notif.sender, notif.type) }}
+                                            className="bg-gray-200 text-blue-950 text-center px-3 py-1 rounded-lg shadow-md hover:bg-gray-300 transition w-full sm:w-auto"
+                                        >
+                                            Reject
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="flex gap-4 w-full sm:w-auto">
+                                        <button
+                                            onClick={() => { deleteNotification(notif.sender, notif.type) }}
+                                            className="text-green-500 hover:text-green-700"
+                                        >
+                                            <CheckCircle size={18} />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    </div>
+    
     )
 }
 

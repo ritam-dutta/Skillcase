@@ -8,7 +8,7 @@ const createChatRoom = asyncHandler(async (req, res) => {
 
     const { users, isGroupChat, groupName } = req.body;
     users.sort();
-    console.log("entering", req.user?.username, req.user?.role);
+    // console.log("entering", req.user?.username, req.user?.role);
     const existingChat = await Chat.findOneAndUpdate({
         $and: [
             { "users.username": users[0].username, "users.userRole": users[0].userRole },
@@ -30,26 +30,10 @@ const createChatRoom = asyncHandler(async (req, res) => {
         ],
     }
     );
-    console.log("updated")
+    // console.log("updated")
     
     // console.log("existingChat: ", existingChat);
     if (existingChat) {
-        // console.log("existingChat: ", existingChat);
-        // const updatedExistingChat = await Chat.findByIdAndUpdate(existingChat._id, 
-        //     {
-        //         $set: {
-        //             "unreadMessages.$[elem].count": 0,
-        //         },
-        //     },
-        //     {
-        //         new: true,
-        //         arrayFilters: [{ 
-        //             "elem.username": req.user?.username, 
-        //             "elem.userRole": req.user?.role.toLowerCase()
-        //         }],
-        //     }
-        // );
-        // console.log("updatedExistingChat: ", updatedExistingChat);
         return res
         .status(200)
         .json(new ApiResponse("Chat room already exists", { chat: existingChat }));

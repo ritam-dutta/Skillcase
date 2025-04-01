@@ -13,7 +13,7 @@ import {
   } from "./components/ui/dropdown-menu"
 import Header from "./components/header";
 import axios from "axios";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useChat } from "./context/chats.context";
 
 interface Chat {
@@ -36,12 +36,16 @@ const Chats: React.FC = () => {
     // const [chatId, setChatId] = useState("");
     const [messages, setMessages] = useState<any[]>([]);
     const loggedUsername = localStorage.getItem('username');
+    const {username} = useParams<{username: string}>();
     const loggedRole = localStorage.getItem('role') || "";
+    const role = window.location.href.includes("freelancer") ? "freelancer" : "client";
     const accessToken = localStorage.getItem('accessToken');
     const [searchParams] = useSearchParams();
     const messageUsername = searchParams.get("username");
     const messageUserRole = searchParams.get("userRole");
     const [isTyping, setIsTyping] = useState(false);
+    const [typingChatId, setTypingChatId] = useState("");
+    const navigate = useNavigate();
 
     const {setUnreadChats} = useChat();
 
@@ -61,9 +65,7 @@ const Chats: React.FC = () => {
             // console.log("info: ", info);
             console.log("entered new message");
             const {message} = data;
-           
-            // console.log("updated chats", chats);
-            
+                       
             if(message?.sender?.username !== loggedUsername) {
                 if(message?.chatId === currentChat?._id) {
                     // console.log("chatId by chat : ", currentChat._id);
@@ -109,12 +111,6 @@ const Chats: React.FC = () => {
                     
                 }
             }   
-            console.log("exited if else")
-            // socket.emit("all chats",{
-            //     user: loggedUsername,
-            //     allChats: chats,
-            // })
-
 
             setChats((prevChats) => {
                 const updatedChats = prevChats.map((chat) =>
@@ -123,16 +119,7 @@ const Chats: React.FC = () => {
                         : chat
                 );
             
-                setAllChats(updatedChats); // ✅ Ensure allChats updates with latest chats
-            
-                // ✅ Move setUnreadChats inside to use updatedChats
-                // setUnreadChats(updatedChats.filter((chat: any) =>
-                //     chat.unreadMessages?.some((user: any) =>
-                //         user.count !== 0 &&
-                //         user.username === loggedUsername &&
-                //         user.userRole === loggedRole
-                //     )
-                // ));
+                setAllChats(updatedChats); 
 
                 console.log('working', updatedChats);
             
@@ -166,6 +153,7 @@ const Chats: React.FC = () => {
     }, [socket, currentChat, currentChat._id]);
 
     useEffect(() => {
+        loggedUsername !== username && navigate(`/${role}/profile/${username}`);
         const fetchData = async () => {
             setChatsLoading(true);
             try{
@@ -220,42 +208,52 @@ const Chats: React.FC = () => {
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleTyping = () => {
-        setIsTyping(true);
-        socket?.emit("typing", { user: {
-            username: loggedUsername,
-            userRole: loggedRole
-        } });
+        socket?.emit("typing", { 
+            user: {
+                username: loggedUsername,
+                userRole: loggedRole
+            },
+            chatId: currentChat._id
+        });
     
         if (typingTimeoutRef.current) {
           clearTimeout(typingTimeoutRef.current);
         }
     
         typingTimeoutRef.current = setTimeout(() => {
-          setIsTyping(false);
-          socket?.emit("stop typing", { user: {
-            username: loggedUsername,
-            userRole: loggedRole
-          } }); 
-        }, 2000);
-      };
+          socket?.emit("stop typing", { 
+            user: {
+                username: loggedUsername,
+                userRole: loggedRole
+            },
+            chatId: currentChat._id
+        }); 
+        }, 1200);
+    };
 
-      useEffect(() => {
-        socket?.on("userTyping", (data) => {
-            if(data.user.username !== loggedUsername && data.user.userRole !== loggedRole) {
-                setIsTyping(true);
-            }
-        });
-        socket?.on("userStoppedTyping", (data) => {
-            if(data.user.username !== loggedUsername && data.user.userRole !== loggedRole) {
-                setIsTyping(false);
-            }
-        });
-    
-        return () => {
-          socket?.off("userTyping");
-          socket?.off("userStoppedTyping");
-        };
-      }, []);
+    useEffect(() => {
+    socket?.on("userTyping", (data) => {
+        if(!data || !data.user || !data.chatId) return;
+        const {user, chatId} = data;
+        if( chatId === currentChat?._id && (user.username !== loggedUsername || user.userRole !== loggedRole)) {
+            setTypingChatId(chatId);
+            setIsTyping(true);
+        }
+    });
+    socket?.on("userStoppedTyping", (data) => {
+        if(!data || !data.user || !data.chatId) return;
+        const {user, chatId} = data;
+        if( chatId === currentChat?._id && (user.username !== loggedUsername || user.userRole !== loggedRole)) {
+            setTypingChatId("");
+            setIsTyping(false);
+        }
+    });
+
+    return () => {
+        socket?.off("userTyping");
+        socket?.off("userStoppedTyping");
+    };
+    }, []);
 
     
 
@@ -387,7 +385,7 @@ const Chats: React.FC = () => {
                 <h1 className="text-3xl text-white font-bold mt-6">Chats</h1>
             </div>
             <div className="flex items-center justify-center">
-                <div className="w-full max-w-7xl h-[80vh] bg-white rounded-lg shadow-lg mt-[-11vh] flex">
+                <div className="w-full max-w-7xl h-[80vh] bg-white rounded-lg shadow-lg lg:mt-[-11vh] flex">
                     <div className="w-2/6 bg-slate-50 rounded-tl-lg rounded-bl-lg flex-col">
                         <div className="mt-4">
                             <div className="w-full flex justify-center items-center space-x-2">
@@ -410,7 +408,7 @@ const Chats: React.FC = () => {
                         </div>
                         <div className="mt-4 px-2 overflow-auto">
                         {/* <div className="bg-gray-300 h-[0.5px] mt-2"></div> */}
-                            {!chatsLoading ?
+                            {!chatsLoading && chats ?
                             chats.map((chat: any, index) => (
                             <div key={index} className={`w-full flex-col  ${currentChat._id === chat._id ? "bg-[#EAEAEA]" : "hover:bg-[#F0F0F0]"} ` } onClick={() => messageUser(chat.users)}>
                                 <div className="flex items-center space-x-4 p-2">
@@ -488,9 +486,9 @@ const Chats: React.FC = () => {
                             </div>
                             <div className="flex-col justify-center items-center ">
                                 <p className="text-lg font-sans">{currentChat?.users[0]?.username !== loggedUsername ? currentChat?.users[0]?.username : currentChat?.users[1]?.username}</p>
-                                {isTyping ? 
-                                    <p className="text-sm text-gray">Typing...</p> : 
-                                    <p className="text-sm text-gray">{currentChat?.users[0]?.username !== loggedUsername ? currentChat?.users[0]?.userRole : currentChat?.users[1]?.userRole}</p>
+                                { (isTyping && typingChatId === currentChat?._id) ? 
+                                    <p className="text-sm text-gray">typing...</p> : 
+                                    <p className="text-sm text-gray">{currentChat?.users[0]?.username !== loggedUsername ? currentChat?.users[0]?.userRole : currentChat?.users[0]?.userRole === loggedRole ? currentChat?.users[1]?.userRole : currentChat?.users[0]?.userRole}</p>
                                 }                            
                             </div>
                             <div className=" w-full flex justify-end">

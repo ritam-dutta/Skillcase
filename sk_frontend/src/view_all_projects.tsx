@@ -123,48 +123,48 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
 
         {/* Main Content Area */}
 
-        <div className="h-[18vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-start px-8">
-            <h1 className="text-3xl text-white font-bold mt-6">All Projects</h1>
+        <div className="lg:h-[18vh] sm:h-[10vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center px-8">
+            <h1 className="text-3xl text-white font-bold">All Projects</h1>
         </div>
 
-        <div className="flex flex-row justify-center mt-[-10vh]">
+        <div className="flex flex-col md:flex-row justify-center lg:mt-[-10vh] px-4 md:px-0">
         
             {!loading ? (
-            <div className="w-[65%] h-[83vh] bg-slate-50 shadow-lg rounded-lg p-8 ml-6 border border-gray-200 overflow-auto">
+            <div className="w-full md:w-[65%] h-auto bg-slate-50 shadow-lg rounded-lg p-8 border border-gray-200 overflow-auto">
             <h2 className="text-2xl font-bold mb-4">Projects Status</h2>
 
             {/* Stats Cards */}
 
             {loggedInRole === "client" ? (
-                <div className="grid grid-cols-3 gap-4 mb-8">
-                    <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-full flex justify-center items-center">
                     <h3 className="text-lg font-semibold text-gray-700">Completed: {completed}</h3>
                     </div>
-                    <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+                    <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-full flex justify-center items-center">
                     <h3 className="text-lg font-semibold text-gray-700">In Progress: {inProgress}</h3>
                     </div>
-                    <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+                    <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-full flex justify-center items-center">
                     <h3 className="text-lg font-semibold text-gray-700">Not Started: {notStarted}</h3>
                     </div>
-                    <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+                    <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-full flex justify-center items-center">
                     <h3 className="text-lg font-semibold text-gray-700">On Hold: {onHold}</h3>
                     </div>
-                    <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+                    <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-full flex justify-center items-center">
                     <h3 className="text-lg font-semibold text-gray-700">Cancelled: {cancelled}</h3>
                     </div>
-                    <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+                    <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-full flex justify-center items-center">
                     <h3 className="text-lg font-semibold text-gray-700">Total: {total}</h3>
                     </div>
                 </div>)
             :(
-                <div className="grid grid-cols-3 gap-4 mb-8">
-                    <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-full flex justify-center items-center">
                     <h3 className="text-lg font-semibold text-gray-700">Completed: {completed}</h3>
                     </div>
-                    <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+                    <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-full flex justify-center items-center">
                     <h3 className="text-lg font-semibold text-gray-700">In Progress: {inProgress}</h3>
                     </div>
-                    <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+                    <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-full flex justify-center items-center">
                     <h3 className="text-lg font-semibold text-gray-700">Total: {total}</h3>
                     </div>
             </div>
@@ -488,7 +488,7 @@ const ViewProjects : React.FC<ViewProjects> = ({})=>{
             </div>
       </div>)
       :(
-        <div className="w-[60vw] h-[83vh] flex flex-col justify-center items-start bg-slate-50 rounded-md shadow-lg p-6 space-y-4">
+        <div className="w-full md:w-[60vw] h-auto flex flex-col justify-center items-start bg-slate-50 rounded-md shadow-lg p-6 space-y-4">
             <Skeleton className="w-4/5 h-16" />
             <Skeleton className="w-3/5 h-12" />
             <Skeleton className="w-2/5 h-8" />

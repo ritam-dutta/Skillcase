@@ -200,11 +200,11 @@ export const notifications = () => {
         });
 
         socket.on("typing", (data) => {
-            socket.broadcast.emit("userTyping", data);
+            socket.to(data.chatId).emit("userTyping", data);
         })
 
         socket.on("stop typing", (data) => {
-            socket.broadcast.emit("userStoppedTyping", data);
+            socket.to(data.chatId).emit("userStoppedTyping", data);
         });
         
 

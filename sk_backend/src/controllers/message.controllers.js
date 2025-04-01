@@ -106,7 +106,7 @@ const getLatestMessage = asyncHandler(async (req, res) => {
 
 const markMessageAsRead = asyncHandler(async (req, res) => {
     const { messageId, user } = req.body;
-    console.log("messageIds", messageId);
+    // console.log("messageId", messageId);
     const message = await Message.findByIdAndUpdate(
         { _id: messageId },
         { $addToSet: { readBy: user } },
@@ -134,14 +134,14 @@ const markMessageAsRead = asyncHandler(async (req, res) => {
 
     const markMessagesAsRead = asyncHandler(async (req, res) => {
         const {chatId, messageIds, user } = req.body;
-        console.log("messageIds", messageIds);
+        // console.log("messageIds", messageIds);
         await Message.updateMany(
             { _id: { $in: messageIds } },
             { $addToSet: { readBy: user } },
             { new: true }
         );
         const messages = await Message.find({ chatId: chatId })
-        console.log("messages", messages);
+        // console.log("messages", messages);
 
     return res
     .status(200)

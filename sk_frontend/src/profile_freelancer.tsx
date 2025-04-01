@@ -310,153 +310,144 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
         <div className="min-h-screen w-full bg-gray-300">
       {/* Header */}
       <Header/>
-      <div className="h-[18vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-start px-8">
-        <h1 className="text-3xl text-white font-bold mt-6">Profile</h1>
+      <div className="lg:h-[18vh] sm:h-[10vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center lg:items-start px-8">
+        <h1 className="text-3xl text-white font-bold lg:mt-6">Profile</h1>
       </div>
+      {/* <Skeleton className="w-[100px] h-[20px] rounded-full" /> */}
 
-      <div className="flex flex-row justify-center mt-[-10vh]">
+      <div className="flex lg:flex-row flex-col justify-center md:items-center sm:items-center lg:mt-[-10vh] sm:gap-2 ">
         {/* Sidebar Profile Card */}
-        {!loading ? (
-          
-        <div className="w-[25%] bg-slate-50 shadow-lg rounded-lg p-6 flex flex-col items-center border border-gray-200">
+{!loading ? (
+  <div className="w-full sm:w-[75%] md:w-[50%] lg:w-[25%] h-auto lg:h-[83vh] bg-slate-50 shadow-lg rounded-lg p-6 flex flex-col items-center border border-gray-200">
+    {/* Profile Image */}
+    <div className="bg-gray-200 rounded-full w-24 h-24 flex items-center justify-center border border-gray-300">
+      <img
+        src={avatar || "/images/freelancer.png"}
+        alt="Profile Avatar"
+        className="w-full h-full rounded-full object-cover"
+      />
+    </div>
+    
+    {/* User Info */}
+    <p className="text-xl font-semibold mt-4">{fullname}</p>
+    <p className="text-gray-600">@{username}</p>
+    <p className="text-gray-500 mt-2">Freelancer</p>
 
-          <div className="bg-gray-200 rounded-full w-24 h-24 flex items-center justify-center border border-gray-300">
-            <img
-              src={avatar || "/images/freelancer.png"}
-              alt="Profile Avatar"
-              className="w-full h-full rounded-full object-cover"
-            />
-          </div>
-          <p className="text-xl font-semibold mt-4">{fullname}</p>
-          <p className="text-gray-600">@{username}</p>
-          <p className="text-gray-500 mt-2">Freelancer</p>
+    {/* Stats Section */}
+    <div className="flex justify-center sm:justify-evenly w-full mt-4 text-center">
+      <div>
+        <p className="font-semibold text-gray-700">{connections}</p>
+        <Link to={`/freelancer/connections/${username}`} className="text-gray-500 text-sm">Connections</Link>
+      </div>
+      <div>
+        <p className="font-semibold text-gray-700">{following}</p>
+        <Link to={`/freelancer/followings/${username}`} className="text-gray-500 text-sm">Followings</Link>
+      </div>
+      <div>
+        <p className="font-semibold text-gray-700">{followers}</p>
+        <Link to={`/freelancer/followers/${username}`} className="text-gray-500 text-sm">Followers</Link>
+      </div>
+    </div>
 
-            <div className="flex flex-col justify-evenly w-full mt-4 text-center">
-                <div className="flex justify-evenly">
-                    <div>
-                    <p className="font-semibold text-gray-700">{connections}</p>
-                    <Link to={`/freelancer/connections/${username}`} className="text-gray-500 text-sm">Connections</Link>
-                    </div>
-                    <div>
-                    <p className="font-semibold text-gray-700">{following}</p>
-                    <Link to={`/freelancer/followings/${username}`} className="text-gray-500 text-sm">Followings</Link>
-                    </div>
-                    <div>
-                    <p className="font-semibold text-gray-700">{followers}</p>
-                    <Link to={`/freelancer/followers/${username}`} className="text-gray-500 text-sm">Followers</Link>
-                    </div>
-                </div>
-                
-                {username === loggedUsername ? null : (
-                <div className="flex justify-evenly">
-                    <div>
-                    {/* <button className={isConnected ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" : "mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition" } onClick={() => {isConnected ? handleDisconnect() : handleConnect()}}>{isConnected ? "Connected" : "Connect"}</button> */}
-                        <button className={connectionRequest ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" : isConnected ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" : "mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition" } onClick={() => {connectionRequest ? handleDisconnect() : isConnected ? handleDisconnect() : sendConnectionRequest()}}>
-                        {connectionRequest ? "Request Sent" : isConnected ? "Connected" : "Connect"}
-                        </button>
-                    </div>
-                    <div>
-                        <button className={isFollowing ? "mt-6 bg-gray-200 text-blue-950 text-center px-4 py-2 rounded-lg shadow-md" :"mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"} onClick={() =>{isFollowing ? handleUnFollow() : handleFollow()}}>{isFollowing ? "Followed" : "Follow"}</button>
-                    </div>
-                    <div>
-                        <button className="mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition" onClick={messageUser}>Message</button>
-                    </div>
-                </div>
-                )}
-                
-          </div>
+    {/* Action Buttons */}
+    {loggedUsername && username !== loggedUsername && (
+      <div className="flex flex-wrap justify-center gap-3 mt-4">
+        <button className={connectionRequest ? "bg-gray-200 text-blue-950 px-4 py-2 rounded-lg shadow-md" : isConnected ? "bg-gray-200 text-blue-950 px-4 py-2 rounded-lg shadow-md" : "bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"} onClick={() => {connectionRequest ? handleDisconnect() : isConnected ? handleDisconnect() : sendConnectionRequest()}}>
+          {connectionRequest ? "Request Sent" : isConnected ? "Connected" : "Connect"}
+        </button>
+        <button className={isFollowing ? "bg-gray-200 text-blue-950 px-4 py-2 rounded-lg shadow-md" :"bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"} onClick={() =>{isFollowing ? handleUnFollow() : handleFollow()}}>
+          {isFollowing ? "Followed" : "Follow"}
+        </button>
+        <button className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition" onClick={messageUser}>
+          Message
+        </button>
+      </div>
+    )}
 
-          <div className="w-full mt-6">
-            <h3 className="font-semibold text-gray-800">About</h3>
-            <textarea
-              readOnly
-              value={about}
-              className="w-full mt-2 p-3 text-sm bg-gray-200 border border-gray-200 rounded-md resize-none"
-            ></textarea>
-          </div>
+    {/* About & Experience Sections */}
+    <div className="w-full mt-3">
+      <h3 className="font-semibold text-gray-800">About</h3>
+      <textarea
+        readOnly
+        value={about}
+        className="w-full mt-2 p-3 text-sm bg-gray-200 border border-gray-200 rounded-md resize-none outline-none h-24"
+      ></textarea>
+    </div>
 
-          <div className="w-full mt-6">
-            <h3 className="font-semibold text-gray-800">Skills</h3>
-            <textarea
-              readOnly
-              value={skills.join("\n")}
-              className="w-full mt-2 p-3 text-sm bg-gray-200 border border-gray-200 rounded-md resize-none"
-            ></textarea>
-          </div>
-          {username === loggedUsername ?
-            (<Link
-                to={`/${userType}/edit/${username}`}
-                className="mt-6 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"
-            >
-                Edit Profile
-            </Link>)
-            :null
-          }
-        </div>):(
-            <div className="w-[25%] h-[83vh] bg-slate-50 shadow-lg rounded-lg p-6 flex flex-col items-center border border-gray-200">
-                {/* Profile Image Skeleton */}
-                <div className="bg-gray-100 rounded-full w-24 h-24 flex items-center justify-center border border-gray-300">
-                <Skeleton className="w-full h-full rounded-full" />
-                </div>
+    <div className="w-full mt-3">
+      <h3 className="font-semibold text-gray-800">Experience</h3>
+      <textarea
+        readOnly
+        value={skills.join("\n")}
+        className="w-full mt-2 p-3 text-sm bg-gray-200 border border-gray-200 rounded-md resize-none outline-none h-24"
+      ></textarea>
+    </div>
 
-                {/* Name & Username Skeleton */}
-                <Skeleton className="w-3/5 h-6 mt-4" />
-                <Skeleton className="w-2/5 h-4 mt-2" />
-                <Skeleton className="w-1/4 h-4 mt-2" />
+    {/* Edit Profile Button */}
+    {loggedUsername && username === loggedUsername && (
+      <Link
+        to={`/${userType}/edit/${username}`}
+        className="mt-3 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"
+      >
+        Edit Profile
+      </Link>
+    )}
+  </div>
+) : (
+  // Skeleton Loader
+  <div className="w-full sm:w-[75%] md:w-[50%] lg:w-[25%] h-auto lg:h-[83vh] bg-slate-50 shadow-lg rounded-lg p-6 flex flex-col items-center border border-gray-200">
+    <div className="bg-gray-200 rounded-full w-24 h-24 flex items-center justify-center border border-gray-300">
+      <Skeleton className="w-full h-full rounded-full" />
+    </div>
+    <Skeleton className="w-3/5 h-6 mt-4" />
+    <Skeleton className="w-2/5 h-4 mt-2" />
+    <Skeleton className="w-1/4 h-4 mt-2" />
+    <div className="flex justify-evenly w-full mt-4 text-center">
+      <div className="flex flex-col items-center">
+        <Skeleton className="w-8 h-6" />
+        <Skeleton className="w-16 h-4 mt-1" />
+      </div>
+      <div className="flex flex-col items-center">
+        <Skeleton className="w-8 h-6" />
+        <Skeleton className="w-16 h-4 mt-1" />
+      </div>
+      <div className="flex flex-col items-center">
+        <Skeleton className="w-8 h-6" />
+        <Skeleton className="w-16 h-4 mt-1" />
+      </div>
+    </div>
+    <div className="flex justify-evenly w-full mt-4">
+      <Skeleton className="w-24 h-10 rounded-lg" />
+      <Skeleton className="w-24 h-10 rounded-lg" />
+    </div>
+    <div className="w-full mt-6">
+      <Skeleton className="w-1/3 h-5" />
+      <Skeleton className="w-full h-20 mt-2" />
+    </div>
+    <div className="w-full mt-6">
+      <Skeleton className="w-1/3 h-5" />
+      <Skeleton className="w-full h-20 mt-2" />
+    </div>
+    <Skeleton className="w-32 h-10 mt-6 rounded-lg" />
+  </div>
+)}
 
-                {/* Stats Skeleton */}
-                <div className="flex justify-evenly w-full mt-4 text-center">
-                <div className="flex flex-col items-center">
-                    <Skeleton className="w-8 h-6" />
-                    <Skeleton className="w-16 h-4 mt-1" />
-                </div>
-                <div className="flex flex-col items-center">
-                    <Skeleton className="w-8 h-6" />
-                    <Skeleton className="w-16 h-4 mt-1" />
-                </div>
-                <div className="flex flex-col items-center">
-                    <Skeleton className="w-8 h-6" />
-                    <Skeleton className="w-16 h-4 mt-1" />
-                </div>
-                </div>
-
-                {/* Buttons Skeleton */}
-                <div className="flex justify-evenly w-full mt-4">
-                <Skeleton className="w-24 h-10 rounded-lg" />
-                <Skeleton className="w-24 h-10 rounded-lg" />
-                </div>
-
-                {/* About & Experience Sections */}
-                <div className="w-full mt-6">
-                <Skeleton className="w-1/3 h-5" />
-                <Skeleton className="w-full h-20 mt-2" />
-                </div>
-
-                <div className="w-full mt-6">
-                <Skeleton className="w-1/3 h-5" />
-                <Skeleton className="w-full h-20 mt-2" />
-                </div>
-
-                {/* Edit Profile Button Skeleton */}
-                <Skeleton className="w-32 h-10 mt-6 rounded-lg" />
-                </div>
-        )}
 
         {/* Main Content Area */}
         {!loading ? (
-        <div className="w-[65%] h-[83vh] bg-slate-50 shadow-lg rounded-lg p-8 ml-6 border border-gray-200 overflow-auto">
+        <div className="w-full sm:w-[90%] md:w-[75%] lg:w-[65%] h-auto lg:h-[83vh] bg-slate-50 shadow-lg rounded-lg p-6 sm:p-8 border border-gray-200 overflow-auto">
           <h2 className="text-2xl font-bold mb-4">Projects Status</h2>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-3 gap-4 mb-8">
-            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
-              <h3 className="text-lg font-semibold text-gray-700">Completed: {0}</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg flex justify-center items-center">
+              <h3 className="text-lg font-semibold text-gray-700">Completed: {completedProjects.length}</h3>
             </div>
-            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
-              <h3 className="text-lg font-semibold text-gray-700">In Progress: {0}</h3>
+            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg flex justify-center items-center">
+              <h3 className="text-lg font-semibold text-gray-700">In Progress: {inProgressProjects.length}</h3>
             </div>
-            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
-              <h3 className="text-lg font-semibold text-gray-700">Total: {0}</h3>
+            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg flex justify-center items-center">
+              <h3 className="text-lg font-semibold text-gray-700">Total: {completedProjects.length + inProgressProjects.length}</h3>
             </div>
           </div>
 
@@ -476,7 +467,7 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
                                     {project.title}
                                 </h3>
                                 <p className="text-sm text-gray-600 mt-1 truncate">
-                                    {(project.description.length > 15 ? project.description.slice(0,15)+"..." : project.description) || "No description provided."}
+                                    {(project.description.length > 5 ? project.description.slice(0,5)+"..." : project.description)|| "No description provided."}
                                 </p>
                             </div>
                             <div>
@@ -488,8 +479,9 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
                                 </button>
                             </div>
                         </div>
-                        
                     </div>
+                    
+
                 ))
                 ) : (
                 <div className="col-span-full bg-gray-200 rounded-lg flex items-center justify-center">
@@ -516,7 +508,7 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
                                     {project.title}
                                 </h3>
                                 <p className="text-sm text-gray-600 mt-1 truncate">
-                                    {(project.description.length > 15 ? project.description.slice(0,15)+"..." : project.description) || "No description provided."}
+                                    {(project.description.length > 10 ? project.description.slice(0,10)+"..." : project.description) || "No description provided."}
                                 </p>
                             </div>
                             <div>
@@ -539,89 +531,84 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
                 </div>
                 )}
             </div>
-            </div>
-            <div className="w-full flex justify-center items-center">
+        </div>
+        { loggedUsername && loggedUsername !== username ? 
+            (<div className="w-full flex justify-center items-center">
                 <button
                     className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-1/6"
                     onClick={() => navigate(`/freelancer/view_projects/${username}`)}
                     >
                     View All Projects
                 </button>
-                {/* <button
-                    className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-1/6"
-                    onClick={demo}
-                    >
-                    demo
-                </button> */}
-            </div>
+            </div>)
+            : null
+        }
       </div>)
-      :
-      (
-                <div className="w-[65%] h-[83vh] bg-slate-50 shadow-lg rounded-lg p-8 ml-6 border border-gray-200 flex flex-col gap-4 overflow-auto">
-                    <div className="grid grid-cols-3 gap-4 mb-8">
-                    {Array(6).fill(0).map((_, index) => (
-                        <div key={index} className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
-                        <Skeleton className="w-3/5 h-6" />
-                        </div>
-                    ))}
+      :(
+        <div className="w-[65%] h-[83vh] bg-slate-50 shadow-lg rounded-lg p-8 ml-6 border border-gray-200 flex flex-col gap-4 overflow-auto">
+            <div className="grid grid-cols-3 gap-4 mb-8">
+            {Array(6).fill(0).map((_, index) => (
+                <div key={index} className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+                <Skeleton className="w-3/5 h-6" />
+                </div>
+            ))}
+            </div>
+            <div className="mb-3">
+                <Skeleton className="w-1/3 h-8 bg-gray-300 rounded-md" />
+            </div>
+            <div className="mb-8 bg-gray-100 px-4 py-6 rounded-lg border border-gray-200">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array(3).fill(0).map((_, index) => (
+                <div
+                    key={index}
+                    className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition flex flex-col gap-3"
+                >
+                    <div className="flex justify-between items-start">
+                    <div className="w-3/4">
+                        <Skeleton className="w-full h-6 mb-2" />
+                        <Skeleton className="w-4/5 h-4" />
                     </div>
-                    <div className="mb-3">
-                        <Skeleton className="w-1/3 h-8 bg-gray-300 rounded-md" />
+                    <Skeleton className="w-24 h-8" />
                     </div>
-                    <div className="mb-8 bg-gray-100 px-4 py-6 rounded-lg border border-gray-200">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {Array(3).fill(0).map((_, index) => (
-                        <div
-                            key={index}
-                            className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition flex flex-col gap-3"
-                        >
-                            <div className="flex justify-between items-start">
-                            <div className="w-3/4">
-                                <Skeleton className="w-full h-6 mb-2" />
-                                <Skeleton className="w-4/5 h-4" />
-                            </div>
-                            <Skeleton className="w-24 h-8" />
-                            </div>
-                            <div className="mt-2 flex items-center justify-between">
-                            <Skeleton className="w-1/4 h-5" />
-                            <Skeleton className="w-2/4 h-8" />
-                            </div>
-                        </div>
-                        ))}
-                    </div>
-                    </div>
-        
-        
-                    <div className="mb-3">
-                        <Skeleton className="w-1/3 h-8 bg-gray-300 rounded-md" />
-                    </div>
-                    <div className="mb-8 bg-gray-100 px-4 py-6 rounded-lg border border-gray-200">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {Array(3).fill(0).map((_, index) => (
-                        <div
-                            key={index}
-                            className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition flex flex-col gap-3"
-                        >
-                            <div className="flex justify-between items-start">
-                            <div className="w-3/4">
-                                <Skeleton className="w-full h-6 mb-2" />
-                                <Skeleton className="w-4/5 h-4" />
-                            </div>
-                            <Skeleton className="w-24 h-8" />
-                            </div>
-                            <div className="mt-2 flex items-center justify-between">
-                            <Skeleton className="w-1/4 h-5" />
-                            <Skeleton className="w-2/4 h-8" />
-                            </div>
-                        </div>
-                        ))}
-                    </div>
+                    <div className="mt-2 flex items-center justify-between">
+                    <Skeleton className="w-1/4 h-5" />
+                    <Skeleton className="w-2/4 h-8" />
                     </div>
                 </div>
-      )
-    }
+                ))}
+            </div>
+            </div>
 
-      </div>
+
+            <div className="mb-3">
+                <Skeleton className="w-1/3 h-8 bg-gray-300 rounded-md" />
+            </div>
+            <div className="mb-8 bg-gray-100 px-4 py-6 rounded-lg border border-gray-200">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array(3).fill(0).map((_, index) => (
+                <div
+                    key={index}
+                    className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition flex flex-col gap-3"
+                >
+                    <div className="flex justify-between items-start">
+                    <div className="w-3/4">
+                        <Skeleton className="w-full h-6 mb-2" />
+                        <Skeleton className="w-4/5 h-4" />
+                    </div>
+                    <Skeleton className="w-24 h-8" />
+                    </div>
+                    <div className="mt-2 flex items-center justify-between">
+                    <Skeleton className="w-1/4 h-5" />
+                    <Skeleton className="w-2/4 h-8" />
+                    </div>
+                </div>
+                ))}
+            </div>
+            </div>
+        </div>
+      )
+}
+    </div>
     </div>
 
     </>

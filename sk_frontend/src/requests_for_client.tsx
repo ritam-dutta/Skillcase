@@ -121,71 +121,71 @@ const Requests: React.FC<Requests> = ({}) => {
 
     return (
         <>
-           <Header />
-        <div className="h-[85vh] w-screen bg-[url('/images/background.jpg')] bg-cover bg-center flex flex-col justify-between">
-        {/* Title Section */}
-        <div className="h-[15vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center px-8">
-            <h1 className="text-3xl text-white font-bold">Requests</h1>
-        </div>
+          <Header />
+<div className="h-[85vh] w-screen bg-[url('/images/background.jpg')] bg-cover bg-center flex flex-col justify-between">
+    {/* Title Section */}
+    <div className="h-[15vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center px-4 sm:px-8">
+        <h1 className="text-3xl sm:text-4xl text-white font-bold">Requests</h1>
+    </div>
 
-        {/* Main Content */}
-        <main className="h-[72vh] flex-grow w-full flex justify-center items-start py-6">
-            {!loading ? (
-            <div className="w-11/12 lg:w-1/2 bg-slate-50 shadow-lg rounded-lg p-8 mt-[-13vh]">
+    {/* Main Content */}
+    <main className="h-[72vh] flex-grow w-full flex justify-center items-start py-6">
+        {!loading ? (
+        <div className="w-11/12 sm:w-10/12 md:w-3/4 lg:w-1/2 bg-slate-50 shadow-lg rounded-lg p-6 sm:p-8 lg:mt-[-13vh]">
             {/* Form Content */}
-                <div className="space-y-6">
-                    {/* Description */}
-                    <div>
-                        <div>
-                        <div className="flex items-center justify-center">
-                            <p className="font-bold mb-2">Applications </p>
-                        </div>
-                        {filteredRequests.length > 0 ? (
-                            filteredRequests
-                            .map((application, index) => (
-                                <div key={index} className="flex items-center justify-between bg-slate-100 p-4 shadow-md">
-                                    <div className="flex items-center gap-4">
-                                        <div className="rounded-full bg-gray-300 p-2">
-                                            <img src="/images/user.png" alt="" className="h-5 w-5" />
-                                        </div>
-                                        <div>
-                                            <Link to={`/${application.senderRole}/profile/${application.sender}`} className="text-xl">
-                                                @{application.sender}
-                                            </Link>
-                                        </div>
+            <div className="space-y-6">
+                {/* Description */}
+                <div>
+                    <div className="flex items-center justify-center">
+                        <p className="font-bold mb-2 text-lg sm:text-xl">Applications</p>
+                    </div>
+                    {filteredRequests.length > 0 ? (
+                        filteredRequests.map((application, index) => (
+                            <div key={index} className="flex items-center justify-between bg-slate-100 p-4 shadow-md rounded-md">
+                                <div className="flex items-center gap-4">
+                                    <div className="rounded-full bg-gray-300 p-2">
+                                        <img src="/images/user.png" alt="" className="h-5 w-5" />
                                     </div>
-                                    <div className="flex gap-2">
-                                        <button
-                                            className="bg-blue-500 text-white text-center px-3 py-1 rounded-lg shadow-md hover:bg-blue-600 transition"
-                                            onClick={() => acceptApplication(application.sender, application.projectId)}
-                                        >
-                                            Accept
-                                        </button>
-                                        <button
-                                            className="bg-gray-200 text-blue-950 text-center px-3 py-1 rounded-lg shadow-md hover:bg-gray-300 transition"
-                                            onClick={() => rejectApplication(application.sender, application.projectId)}
-                                        >
-                                            Reject
-                                        </button>
+                                    <div>
+                                        <Link to={`/${application.senderRole}/profile/${application.sender}`} className="text-xl">
+                                            @{application.sender}
+                                        </Link>
                                     </div>
                                 </div>
-                            ))
+                                <div className="flex gap-2">
+                                    <button
+                                        className="bg-blue-500 text-white text-center px-3 py-1 rounded-lg shadow-md hover:bg-blue-600 transition"
+                                        onClick={() => acceptApplication(application.sender, application.projectId)}
+                                    >
+                                        Accept
+                                    </button>
+                                    <button
+                                        className="bg-gray-200 text-blue-950 text-center px-3 py-1 rounded-lg shadow-md hover:bg-gray-300 transition"
+                                        onClick={() => rejectApplication(application.sender, application.projectId)}
+                                    >
+                                        Reject
+                                    </button>
+                                </div>
+                            </div>
+                        ))
                     ) : (
                         <div className="flex items-center justify-center bg-slate-100 p-4 rounded-md shadow-md">
                             <h3 className="text-xl">No Applications Yet</h3>
                         </div>
                     )}
+                </div>
 
+                {/* Collaborations */}
+                <div className="mt-6">
+                    <div className="flex items-center justify-center">
+                        <p className="font-bold mb-2 text-lg sm:text-xl">Collaborations</p>
                     </div>
-                    <div className="mt-6">	
-                        <div className="flex items-center justify-center">
-                            <p className="font-bold mb-2">Collaborations</p>
-                        </div>
-                        {filteredCollaborations.length > 0 ? (filteredCollaborations.map((collaboration, index) => (
-                            <div key={index} className="flex items-center justify-between bg-slate-100 p-4 shadow-md">
-                                <div className="flex items-center gap-4"> 
+                    {filteredCollaborations.length > 0 ? (
+                        filteredCollaborations.map((collaboration, index) => (
+                            <div key={index} className="flex items-center justify-between bg-slate-100 p-4 shadow-md rounded-md">
+                                <div className="flex items-center gap-4">
                                     <div className="rounded-full bg-gray-300 p-2">
-                                        <img src="/images/user.png" alt=""  className="h-5 w-5"/>
+                                        <img src="/images/user.png" alt="" className="h-5 w-5" />
                                     </div>
                                     <div>
                                         <Link to={`/${collaboration.senderRole}/profile/${collaboration.sender}`} className="text-xl">@{collaboration.sender}</Link>
@@ -193,63 +193,58 @@ const Requests: React.FC<Requests> = ({}) => {
                                 </div>
                                 <div className="flex gap-2">
                                     <button
-                                    className=" bg-blue-500 text-white text-center px-3 py-1 rounded-lg shadow-md hover:bg-blue-600 transition"
-                                    onClick={() => acceptCollaboration(collaboration.sender, collaboration.projectId)}
+                                        className="bg-blue-500 text-white text-center px-3 py-1 rounded-lg shadow-md hover:bg-blue-600 transition"
+                                        onClick={() => acceptCollaboration(collaboration.sender, collaboration.projectId)}
                                     >
-                                    Accept
+                                        Accept
                                     </button>
                                     <button
-                                    className=" bg-gray-200 text-blue-950 text-center px-3 py-1  rounded-lg shadow-md hover:bg-gray-300 transition"
-                                    onClick={() => rejectCollaboration(collaboration.sender, collaboration.projectId)}
+                                        className="bg-gray-200 text-blue-950 text-center px-3 py-1 rounded-lg shadow-md hover:bg-gray-300 transition"
+                                        onClick={() => rejectCollaboration(collaboration.sender, collaboration.projectId)}
                                     >
-                                    Reject
+                                        Reject
                                     </button>
                                 </div>
                             </div>
                         ))
-                        ) : (
-                            <div className="flex items-center justify-center bg-slate-100 p-4 rounded-md shadow-md">
-                                <h3 className="text-xl ">No Collaborations Yet</h3>
-                            </div>
+                    ) : (
+                        <div className="flex items-center justify-center bg-slate-100 p-4 rounded-md shadow-md">
+                            <h3 className="text-xl">No Collaborations Yet</h3>
+                        </div>
                     )}
-                    </div>
-                    </div>
-
-                    
-                    {/* Action Buttons */}
-                    <div className="mt-6 flex gap-10 justify-center items-center">
-                        
-                        <button
-                        className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                        onClick={() => navigate(`/${loggedRole}/my_projects/${loggedUsername}`)}
-                        >
-                        Go Back
-                        </button>
-
-                    </div>
                 </div>
-            </div>)
-            :(
-                <div>
-                    <div className="h-[65vh] w-[50vw] flex flex-col gap-3 justify-center items-start bg-slate-50 rounded-md mt-[-13vh] p-4">
-                        <Skeleton className="w-4/5 h-12" />
-                        <Skeleton className="w-3/5 h-10" />
-                        <Skeleton className="w-3/5 h-10" />
-                        <Skeleton className="w-2/5 h-8" />
-                        <Skeleton className="w-5/6 h-16" />
-                        <Skeleton className="w-5/6 h-16" />
-                        <Skeleton className="w-full h-12" />
-                        <Skeleton className="w-4/6 h-8" />
-                        <Skeleton className="w-4/6 h-10" />
-                        <Skeleton className="w-1/3 h-10" />
-                    </div>
-                </div>
-            )
-        }
-        
-        </main>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="mt-6 flex flex-col gap-4 justify-center items-center sm:flex-row">
+                <button
+                    className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                    onClick={() => navigate(`/${loggedRole}/my_projects/${loggedUsername}`)}
+                >
+                    Go Back
+                </button>
+            </div>
         </div>
-        <Footer />
+        ) : (
+            <div>
+                <div className="h-[65vh] w-[80%] sm:w-[60%] lg:w-[50%] flex flex-col gap-3 justify-center items-start bg-slate-50 rounded-md mt-[-13vh] p-4">
+                    <Skeleton className="w-4/5 h-12" />
+                    <Skeleton className="w-3/5 h-10" />
+                    <Skeleton className="w-3/5 h-10" />
+                    <Skeleton className="w-2/5 h-8" />
+                    <Skeleton className="w-5/6 h-16" />
+                    <Skeleton className="w-5/6 h-16" />
+                    <Skeleton className="w-full h-12" />
+                    <Skeleton className="w-4/6 h-8" />
+                    <Skeleton className="w-4/6 h-10" />
+                    <Skeleton className="w-1/3 h-10" />
+                </div>
+            </div>
+        )}
+    </main>
+</div>
+<Footer />
+
         </>
     );
 }
