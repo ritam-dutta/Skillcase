@@ -1,7 +1,6 @@
 import Header from "./components/header";
 // import Loader from "./components/loader";
 import { Skeleton } from "./components/ui/skeleton";
-import Footer from "./components/footer";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -122,32 +121,32 @@ const Requests: React.FC<Requests> = ({}) => {
     return (
         <>
           <Header />
-<div className="h-[85vh] w-screen bg-[url('/images/background.jpg')] bg-cover bg-center flex flex-col justify-between">
+<div className="h-[92vh] w-screen bg-gray-200 dark:bg-gray-600 flex flex-col justify-between">
     {/* Title Section */}
-    <div className="h-[15vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center px-4 sm:px-8">
+    <div className="h-[15vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 dark:from-blue-800 dark:to-slate-900 flex items-center px-4 sm:px-8">
         <h1 className="text-3xl sm:text-4xl text-white font-bold">Requests</h1>
     </div>
 
     {/* Main Content */}
     <main className="h-[72vh] flex-grow w-full flex justify-center items-start py-6">
         {!loading ? (
-        <div className="w-11/12 sm:w-10/12 md:w-3/4 lg:w-1/2 bg-slate-50 shadow-lg rounded-lg p-6 sm:p-8 lg:mt-[-13vh]">
+        <div className="w-11/12 sm:w-10/12 md:w-3/4 lg:w-1/2 bg-slate-50 dark:bg-slate-900 dark:border-gray-600 shadow-lg rounded-lg p-6 sm:p-8 lg:mt-[-13vh]">
             {/* Form Content */}
             <div className="space-y-6">
                 {/* Description */}
                 <div>
                     <div className="flex items-center justify-center">
-                        <p className="font-bold mb-2 text-lg sm:text-xl">Applications</p>
+                        <p className="font-bold mb-2 text-lg sm:text-xl dark:text-gray-100">Applications</p>
                     </div>
                     {filteredRequests.length > 0 ? (
                         filteredRequests.map((application, index) => (
-                            <div key={index} className="flex items-center justify-between bg-slate-100 p-4 shadow-md rounded-md">
+                            <div key={index} className="flex items-center justify-between bg-slate-100 dark:bg-slate-800 p-4 shadow-md rounded-md">
                                 <div className="flex items-center gap-4">
                                     <div className="rounded-full bg-gray-300 p-2">
                                         <img src="/images/user.png" alt="" className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <Link to={`/${application.senderRole}/profile/${application.sender}`} className="text-xl">
+                                        <Link to={`/${application.senderRole}/profile/${application.sender}`} className="text-xl dark:text-gray-200">
                                             @{application.sender}
                                         </Link>
                                     </div>
@@ -169,8 +168,8 @@ const Requests: React.FC<Requests> = ({}) => {
                             </div>
                         ))
                     ) : (
-                        <div className="flex items-center justify-center bg-slate-100 p-4 rounded-md shadow-md">
-                            <h3 className="text-xl">No Applications Yet</h3>
+                        <div className="flex items-center justify-center bg-slate-100 dark:bg-slate-800 p-4 rounded-md shadow-md">
+                            <h3 className="text-xl dark:text-gray-200">No Applications Yet</h3>
                         </div>
                     )}
                 </div>
@@ -178,17 +177,17 @@ const Requests: React.FC<Requests> = ({}) => {
                 {/* Collaborations */}
                 <div className="mt-6">
                     <div className="flex items-center justify-center">
-                        <p className="font-bold mb-2 text-lg sm:text-xl">Collaborations</p>
+                        <p className="font-bold mb-2 text-lg sm:text-xl dark:text-gray-200">Collaborations</p>
                     </div>
                     {filteredCollaborations.length > 0 ? (
                         filteredCollaborations.map((collaboration, index) => (
-                            <div key={index} className="flex items-center justify-between bg-slate-100 p-4 shadow-md rounded-md">
+                            <div key={index} className="flex items-center justify-between bg-slate-100 dark:bg-slate-800 p-4 shadow-md rounded-md">
                                 <div className="flex items-center gap-4">
                                     <div className="rounded-full bg-gray-300 p-2">
                                         <img src="/images/user.png" alt="" className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <Link to={`/${collaboration.senderRole}/profile/${collaboration.sender}`} className="text-xl">@{collaboration.sender}</Link>
+                                        <Link to={`/${collaboration.senderRole}/profile/${collaboration.sender}`} className="text-xl dark:text-gray-200">@{collaboration.sender}</Link>
                                     </div>
                                 </div>
                                 <div className="flex gap-2">
@@ -199,7 +198,7 @@ const Requests: React.FC<Requests> = ({}) => {
                                         Accept
                                     </button>
                                     <button
-                                        className="bg-gray-200 text-blue-950 text-center px-3 py-1 rounded-lg shadow-md hover:bg-gray-300 transition"
+                                        className="bg-gray-200  text-blue-950 text-center px-3 py-1 rounded-lg shadow-md hover:bg-gray-300 transition"
                                         onClick={() => rejectCollaboration(collaboration.sender, collaboration.projectId)}
                                     >
                                         Reject
@@ -208,8 +207,8 @@ const Requests: React.FC<Requests> = ({}) => {
                             </div>
                         ))
                     ) : (
-                        <div className="flex items-center justify-center bg-slate-100 p-4 rounded-md shadow-md">
-                            <h3 className="text-xl">No Collaborations Yet</h3>
+                        <div className="flex items-center justify-center bg-slate-100 dark:bg-slate-800 p-4 rounded-md shadow-md">
+                            <h3 className="text-xl dark:text-gray-200">No Collaborations Yet</h3>
                         </div>
                     )}
                 </div>
@@ -226,25 +225,21 @@ const Requests: React.FC<Requests> = ({}) => {
             </div>
         </div>
         ) : (
-            <div>
-                <div className="h-[65vh] w-[80%] sm:w-[60%] lg:w-[50%] flex flex-col gap-3 justify-center items-start bg-slate-50 rounded-md mt-[-13vh] p-4">
-                    <Skeleton className="w-4/5 h-12" />
-                    <Skeleton className="w-3/5 h-10" />
-                    <Skeleton className="w-3/5 h-10" />
-                    <Skeleton className="w-2/5 h-8" />
-                    <Skeleton className="w-5/6 h-16" />
-                    <Skeleton className="w-5/6 h-16" />
-                    <Skeleton className="w-full h-12" />
-                    <Skeleton className="w-4/6 h-8" />
-                    <Skeleton className="w-4/6 h-10" />
-                    <Skeleton className="w-1/3 h-10" />
-                </div>
+            <div className="h-[65vh] w-[80%] sm:w-[60%] lg:w-[50%] flex flex-col gap-3 justify-center items-start bg-slate-50 dark:bg-slate-800 rounded-md mt-[-13vh] p-4">
+                <Skeleton className="w-4/5 h-12 dark:bg-slate-700" />
+                <Skeleton className="w-3/5 h-10 dark:bg-slate-700" />
+                <Skeleton className="w-3/5 h-10 dark:bg-slate-700" />
+                <Skeleton className="w-2/5 h-8 dark:bg-slate-700" />
+                <Skeleton className="w-5/6 h-16 dark:bg-slate-700" />
+                <Skeleton className="w-5/6 h-16 dark:bg-slate-700" />
+                <Skeleton className="w-full h-12 dark:bg-slate-700" />
+                <Skeleton className="w-4/6 h-8 dark:bg-slate-700" />
+                <Skeleton className="w-4/6 h-10 dark:bg-slate-700" />
+                <Skeleton className="w-1/3 h-10 dark:bg-slate-700" />
             </div>
         )}
     </main>
 </div>
-<Footer />
-
         </>
     );
 }

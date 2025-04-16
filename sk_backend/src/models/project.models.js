@@ -45,6 +45,19 @@ const projectSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    likedBy: [
+        {
+          username: {
+            type: String,
+            required: true,
+          },
+          role: {
+            type: String,
+            enum: ['Client', 'Freelancer'],
+            required: true,
+          },
+        }
+    ],      
 }, { timestamps: true });
 
 export const Project = mongoose.model("Project", projectSchema);

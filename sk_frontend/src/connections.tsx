@@ -1,6 +1,5 @@
 import Header from "./components/header";
 import { Skeleton } from "./components/ui/skeleton";
-import Footer from "./components/footer";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -60,30 +59,30 @@ const Connections: React.FC<Connections> = ({}) => {
     return (
         <>
         <Header />
-<div className="h-[85vh] w-screen bg-[url('/images/background.jpg')] bg-cover bg-center flex flex-col justify-between">
+<div className="h-[92vh] w-screen bg-gray-200 dark:bg-slate-600 flex flex-col justify-between">
     {/* Title Section */}
-    <div className="h-[15vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center px-8">
-        <h1 className="text-3xl text-white font-bold">Connections</h1>
+    <div className="h-[15vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 dark:from-blue-800 dark:to-slate-900 flex items-center px-8">
+        <h1 className="text-3xl text-white font-bold dark:text-gray-100">Connections</h1>
     </div>
 
     {/* Main Content */}
     <main className="h-[72vh] flex-grow w-full flex justify-center items-start py-6">
         {!loading ? (
-            <div className="w-11/12 sm:w-10/12 md:w-8/12 lg:w-3/5 bg-slate-50 shadow-lg rounded-lg p-8 lg:mt-[-13vh] mt-0">
+            <div className="w-11/12 sm:w-10/12 md:w-8/12 lg:w-3/5 bg-slate-50 dark:bg-slate-900 shadow-lg rounded-lg p-8 lg:mt-[-13vh] mt-0">
                 {/* Form Content */}
                 <div className="space-y-6">
                     {/* Description */}
                     <div>
                         {isAlreadyConnected && alreadyConnectedUser ? (
-                            <div className="bg-slate-100 p-4 rounded-md shadow-md flex flex-col items-center justify-center gap-4 mb-5">
-                                <p className="font-bold">You are connected with each other </p>
+                            <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-md shadow-md flex flex-col items-center justify-center gap-4 mb-5">
+                                <p className="font-bold dark:text-gray-200">You are connected with each other </p>
                                 <div className="flex justify-between w-full -mt-4">
                                     <div className="flex gap-4 items-center"> 
-                                        <div className="rounded-full bg-gray-300 p-2">
+                                        <div className="rounded-full bg-gray-300 dark:bg-gray-400 p-2">
                                             <img src="/images/user.png" alt="" className="h-5 w-5"/>
                                         </div>
                                         <div>
-                                            <Link to={`/${alreadyConnectedUser.role}/profile/${alreadyConnectedUser.username}`} className="text-xl">@{alreadyConnectedUser.username}</Link>
+                                            <Link to={`/${alreadyConnectedUser.role}/profile/${alreadyConnectedUser.username}`} className="text-xl dark:text-gray-200">@{alreadyConnectedUser.username}</Link>
                                         </div>
                                     </div>
                                     <div>
@@ -100,16 +99,16 @@ const Connections: React.FC<Connections> = ({}) => {
 
                         <div>
                             <div className="flex items-center justify-center">
-                                <p className="font-bold">Clients</p>
+                                <p className="font-bold dark:text-gray-200">Clients</p>
                             </div>
                             {clientConnections.length > 0 ? clientConnections.map(connection => (
-                                <div key={connection._id} className="flex items-center justify-between bg-slate-100 p-4 shadow-md mb-4">
+                                <div key={connection._id} className="flex items-center justify-between bg-slate-100 dark:bg-slate-800 dark:border-gray-600 p-4 shadow-md mb-4 rounded-md">
                                     <div className="flex items-center gap-4"> 
-                                        <div className="rounded-full bg-gray-300 p-2">
+                                        <div className="rounded-full bg-gray-300 dark:bg-gray-400 p-2">
                                             <img src="/images/user.png" alt="" className="h-5 w-5"/>
                                         </div>
                                         <div>
-                                            <Link to={`/client/profile/${connection.username}`} className="text-xl">@{connection.username}</Link>
+                                            <Link to={`/client/profile/${connection.username}`} className="text-xl dark:text-gray-200">@{connection.username}</Link>
                                         </div>
                                     </div>
                                     <div>
@@ -122,24 +121,24 @@ const Connections: React.FC<Connections> = ({}) => {
                                     </div>
                                 </div>
                             )) : (
-                                <div className="flex items-center justify-center bg-slate-100 p-4 rounded-md shadow-md">
-                                    <h3 className="text-xl">No Client Connections Yet</h3>
+                                <div className="flex items-center justify-center bg-slate-100 dark:bg-slate-800 p-4 rounded-md shadow-md">
+                                    <h3 className="text-xl dark:text-gray-200">No Client Connections Yet</h3>
                                 </div>
                             )}
                         </div>
 
                         <div className="mt-6">
                             <div className="flex items-center justify-center">
-                                <p className="font-bold mb-2">Freelancers</p>
+                                <p className="font-bold mb-2 dark:text-gray-200">Freelancers</p>
                             </div>
                             {freelancerConnections.length > 0 ? freelancerConnections.map(connection => (
-                                <div key={connection._id} className="flex items-center justify-between bg-slate-100 p-4 shadow-md mb-4">
+                                <div key={connection._id} className="flex items-center justify-between bg-slate-100 dark:bg-slate-800 dark:border-gray-600 p-4 shadow-md mb-4 rounded-md">
                                     <div className="flex items-center gap-4"> 
-                                        <div className="rounded-full bg-gray-300 p-2">
+                                        <div className="rounded-full bg-gray-300 dark:bg-gray-400 p-2">
                                             <img src="/images/user.png" alt="" className="h-5 w-5"/>
                                         </div>
                                         <div>
-                                            <Link to={`/${connection.role}/profile/${connection.username}`} className="text-xl">@{connection.username}</Link>
+                                            <Link to={`/${connection.role}/profile/${connection.username}`} className="text-xl dark:text-gray-200">@{connection.username}</Link>
                                         </div>
                                     </div>
                                     <div>
@@ -152,8 +151,8 @@ const Connections: React.FC<Connections> = ({}) => {
                                     </div>
                                 </div>
                             )) : (
-                                <div className="flex items-center justify-center bg-slate-100 p-4 rounded-md shadow-md">
-                                    <h3 className="text-xl">No Freelancer Connections Yet</h3>
+                                <div className="flex items-center justify-center bg-slate-100 dark:bg-slate-800 p-4 rounded-md shadow-md">
+                                    <h3 className="text-xl dark:text-gray-200">No Freelancer Connections Yet</h3>
                                 </div>
                             )}
                         </div>
@@ -171,54 +170,46 @@ const Connections: React.FC<Connections> = ({}) => {
                 </div>
             </div>
         ) : (
-            <div className="w-11/12 sm:w-10/12 md:w-8/12 lg:w-3/5 bg-slate-50 shadow-lg rounded-lg p-8 mt-[-13vh] sm:mt-[-5vh]">
+            <div className="w-11/12 sm:w-10/12 md:w-8/12 lg:w-3/5 bg-slate-50 dark:bg-slate-800 shadow-lg rounded-lg p-8 mt-[-13vh] sm:mt-[-5vh]">
                 <div className="space-y-6">
-                    {/* Skeleton for "You both follow each other" section */}
-                    <div className="bg-slate-100 p-4 rounded-md shadow-md flex flex-col items-center justify-center gap-4 mb-5">
-                        <Skeleton className="h-4 w-40" />
+                    <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-md shadow-md flex flex-col items-center justify-center gap-4 mb-5">
+                        <Skeleton className="h-4 w-40 dark:bg-slate-700" />
                         <div className="flex justify-between w-full -mt-4">
                             <div className="flex gap-4 items-center"> 
-                                <Skeleton className="rounded-full h-10 w-10" />
-                                <Skeleton className="h-4 w-24" />
+                                <Skeleton className="rounded-full h-10 w-10 dark:bg-slate-700" />
+                                <Skeleton className="h-4 w-24 dark:bg-slate-700" />
                             </div>
-                            <Skeleton className="h-10 w-28" />
+                            <Skeleton className="h-10 w-28 dark:bg-slate-700" />
                         </div>
                     </div>
-
-                    {/* Skeleton for Clients Section */}
                     <div className="flex items-center justify-center">
-                        <Skeleton className="h-4 w-20" />
+                        <Skeleton className="h-4 w-20 dark:bg-slate-700" />
                     </div>
-                    <div className="bg-slate-100 p-4 shadow-md rounded-md mt-1 flex justify-between">
+                    <div className="bg-slate-100 dark:bg-slate-900 p-4 shadow-md rounded-md mt-1 flex justify-between">
                         <div className="flex items-center gap-4"> 
-                            <Skeleton className="rounded-full h-10 w-10" />
-                            <Skeleton className="h-4 w-24" />
+                            <Skeleton className="rounded-full h-10 w-10 dark:bg-slate-700" />
+                            <Skeleton className="h-4 w-24 dark:bg-slate-700" />
                         </div>
-                        <Skeleton className="h-10 w-28" />
+                        <Skeleton className="h-10 w-28 dark:bg-slate-700" />
                     </div>
-
-                    {/* Skeleton for Freelancers Section */}
                     <div className="flex items-center justify-center mt-6">
-                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-4 w-24 dark:bg-slate-700" />
                     </div>
-                    <div className="bg-slate-100 p-4 shadow-md rounded-md mt-1 flex justify-between">
+                    <div className="bg-slate-100 dark:bg-slate-900 p-4 shadow-md rounded-md mt-1 flex justify-between">
                         <div className="flex items-center gap-4"> 
-                            <Skeleton className="rounded-full h-10 w-10" />
-                            <Skeleton className="h-4 w-24" />
+                            <Skeleton className="rounded-full h-10 w-10 dark:bg-slate-700" />
+                            <Skeleton className="h-4 w-24 dark:bg-slate-700" />
                         </div>
-                        <Skeleton className="h-10 w-28" />
+                        <Skeleton className="h-10 w-28 dark:bg-slate-700" />
                     </div>
-
-                    {/* Skeleton for Buttons */}
                     <div className="mt-6 flex gap-10 justify-center items-center">
-                        <Skeleton className="h-10 w-32" />
+                        <Skeleton className="h-10 w-32 dark:bg-slate-700" />
                     </div>
                 </div>
             </div>
         )}
     </main>
 </div>
-<Footer />
 
         </>
     );

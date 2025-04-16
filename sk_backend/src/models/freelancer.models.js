@@ -90,6 +90,16 @@ const freelancerSchema = new mongoose.Schema({
         ref: "Project",
         required: false,
     },
+    savedProjects:{
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "Project",
+        required: false,
+    },
+    likedProjects:{
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "Project",
+        required: false,
+    },
     refreshToken:{
         type: String,
         required: false,

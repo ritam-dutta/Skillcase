@@ -21,8 +21,13 @@ import {
     deleteAllNotifications,
     acceptApplication,
     acceptCollaboration,
+    saveProject,
+    unSaveProject,
+    likeProject,
+    unLikeProject,
     // demo
 } from "../controllers/client.controllers.js"
+import { upload } from "../middlewares/multer.middlewares.js";
 import { verifyJWT } from "../middlewares/auth.middlewares.js";
 
 const clientRouter = Router();
@@ -31,7 +36,7 @@ clientRouter.route("/register").post(registerClient);
 
 clientRouter.route("/login").post(loginClient);
 
-clientRouter.route("/logout").post(verifyJWT, logoutClient);
+clientRouter.route("/logout/:username").post(verifyJWT, logoutClient);
 
 clientRouter.route("/refresh_token").post(refreshAccessToken);
 
@@ -68,6 +73,14 @@ clientRouter.route("/delete_all_notifications/:username").post(verifyJWT, delete
 clientRouter.route("/accept_application/:username").post(verifyJWT, acceptApplication);
 
 clientRouter.route("/accept_collaboration/:username").post(verifyJWT, acceptCollaboration);
+
+clientRouter.route("/save_project/:username").post(verifyJWT, saveProject);
+
+clientRouter.route("/unsave_project/:username").post(verifyJWT, unSaveProject);
+
+clientRouter.route("/like_project/:username").post(verifyJWT, likeProject);
+
+clientRouter.route("/unlike_project/:username").post(verifyJWT, unLikeProject);
 
 // clientRouter.route("/demo").get(verifyJWT,demo);
 

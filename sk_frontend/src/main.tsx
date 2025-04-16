@@ -26,6 +26,8 @@ import Requests from './requests_for_client.tsx'
 import MyRequestsFreelancer from './requests_freelancer.tsx'
 import MyRequestsClient from './requests_by_client.tsx'
 import Chats from './chats.tsx'
+import SavedProjects from './saved_projects.tsx'
+import LikedProjects from './liked_projects.tsx'
 import { SocketProvider } from './context/socket.context.tsx'
 import { NotificationProvider } from './context/notifications.context.tsx'
 import { ChatProvider } from './context/chats.context.tsx'
@@ -70,6 +72,10 @@ const router= createBrowserRouter(
       <Route path='client/my_requests/:username' element={<MyRequestsClient/>}> </Route>  
       <Route path='client/chats/:username' element={<Chats/>}> </Route>  
       <Route path='freelancer/chats/:username' element={<Chats/>}> </Route>  
+      <Route path='client/saved_projects/:username' element={<SavedProjects/>}> </Route>  
+      <Route path='freelancer/saved_projects/:username' element={<SavedProjects/>}> </Route>  
+      <Route path='client/liked_projects/:username' element={<LikedProjects/>}> </Route>  
+      <Route path='freelancer/liked_projects/:username' element={<LikedProjects/>}> </Route>  
       <Route path="*" element={<Not_found/>}></Route>
     </Route>
   )

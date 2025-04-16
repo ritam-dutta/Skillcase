@@ -19,7 +19,11 @@ import {
     createNotification,
     getNotifications,
     deleteNotification,
-    deleteAllNotifications
+    deleteAllNotifications,
+    saveProject,
+    unSaveProject,
+    likeProject,
+    unLikeProject,
 } from "../controllers/freelancer.controllers.js";
 import {upload} from "../middlewares/multer.middlewares.js"
 import { verifyJWT } from "../middlewares/auth.middlewares.js";
@@ -42,7 +46,7 @@ freelancerRouter.route("/register").post(
 );
 freelancerRouter.route("/login").post(loginFreelancer);
 
-freelancerRouter.route("/logout").post(verifyJWT, logoutFreelancer);
+freelancerRouter.route("/logout/:username").post(verifyJWT, logoutFreelancer);
 
 freelancerRouter.route("/refresh_token").post(refreshAccessToken);
 
@@ -77,6 +81,14 @@ freelancerRouter.route("/get_notifications/:username").get(verifyJWT, getNotific
 freelancerRouter.route("/delete_notification/:username").post(verifyJWT, deleteNotification);
 
 freelancerRouter.route("/delete_all_notifications/:username").post(verifyJWT, deleteAllNotifications);
+
+freelancerRouter.route("/save_project/:username").post(verifyJWT, saveProject);
+
+freelancerRouter.route("/unsave_project/:username").post(verifyJWT, unSaveProject);
+
+freelancerRouter.route("/like_project/:username").post(verifyJWT, likeProject);
+
+freelancerRouter.route("/unlike_project/:username").post(verifyJWT, unLikeProject);
 
 freelancerRouter.route("/update_avatar/:username").post(verifyJWT, upload.single("avatar"), updateFreelancerAvatar);
 export default freelancerRouter;

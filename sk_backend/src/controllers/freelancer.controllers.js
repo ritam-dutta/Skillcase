@@ -1,6 +1,7 @@
 import { asyncHandler } from '../utils/AsyncHandler.js';
 import { Freelancer } from '../models/freelancer.models.js';
 import { Client } from '../models/client.models.js';
+import { Project } from '../models/project.models.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
 import jwt from 'jsonwebtoken';
@@ -571,6 +572,100 @@ const deleteAllNotifications = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {freelancer}, 'All notifications deleted successfully'));
 }); 
 
+const saveProject = asyncHandler(async (req, res) => {
+    const {projectId} = req.body;
+    const freelancer = await Freelancer.findByIdAndUpdate(req.user?._id,
+        {
+            $addToSet: {savedProjects: projectId}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!freelancer) {
+        throw new ApiError(404, 'Freelancer not found');
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {freelancer}, 'Project saved successfully'));
+});
+
+const unSaveProject = asyncHandler(async (req, res) => {
+    const {projectId} = req.body;
+    const freelancer = await Freelancer.findByIdAndUpdate(req.user?._id,
+        {
+            $pull: {savedProjects: projectId}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!freelancer) {
+        throw new ApiError(404, 'Freelancer not found');
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {freelancer}, 'Project unsaved successfully'));
+});
+
+const likeProject = asyncHandler(async (req, res) => {
+    const {projectId} = req.body;
+    const freelancer = await Freelancer.findByIdAndUpdate(req.user?._id,
+        {
+            $addToSet: {likedProjects: projectId}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!freelancer) {
+        throw new ApiError(404, 'Client not found');
+    }
+    const project = await Project.findByIdAndUpdate(projectId,
+        {
+            $addToSet: {likedBy:{username: req.user?.username, role:req.user?.role}}
+        },
+        {
+            new: true
+        }
+    );
+    if (!project) {
+        throw new ApiError(404, 'Project not found');
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {freelancer,project}, 'Project liked successfully'));
+});
+
+const unLikeProject = asyncHandler(async (req, res) => {
+    const {projectId} = req.body;
+    const freelancer = await Freelancer.findByIdAndUpdate(req.user?._id,
+        {
+            $pull: {likedProjects: projectId}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!freelancer) {
+        throw new ApiError(404, 'Client not found');
+    }
+    const project = await Project.findByIdAndUpdate(projectId,
+        {
+            $pull: {likedBy: {username: req.user?.username, role:req.user?.role}}
+        },
+        {
+            new: true
+        }
+    );
+    if (!project) {
+        throw new ApiError(404, 'Project not found');
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {freelancer, project}, 'Project unliked successfully'));
+});
+
 // const updateFreelancerCoverImage = asyncHandler(async (req, res) => {
 //     const coverImageLocalPath = req.file?.path;
 //     if (!coverImageLocalPath) {
@@ -619,5 +714,9 @@ export {
     getNotifications,
     deleteNotification,
     deleteAllNotifications,
+    saveProject,
+    unSaveProject,
+    likeProject,
+    unLikeProject,
     // updateFreelancerCoverImage
 }

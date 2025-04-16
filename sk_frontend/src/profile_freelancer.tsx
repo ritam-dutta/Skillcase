@@ -3,8 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Header from "./components/header";
 import { Skeleton } from "./components/ui/skeleton";
-// import Loader from "./components/loader";
-// import Footer from "./components/footer";
 import axios from "axios";
 import "./App.css"
 import { useSocket } from "./context/socket.context";
@@ -307,96 +305,95 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
   return(
     <>
         
-        <div className="min-h-screen w-full bg-gray-300">
-      {/* Header */}
-      <Header/>
-      <div className="lg:h-[18vh] sm:h-[10vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center lg:items-start px-8">
-        <h1 className="text-3xl text-white font-bold lg:mt-6">Profile</h1>
-      </div>
-      {/* <Skeleton className="w-[100px] h-[20px] rounded-full" /> */}
-
-      <div className="flex lg:flex-row flex-col justify-center md:items-center sm:items-center lg:mt-[-10vh] sm:gap-2 ">
-        {/* Sidebar Profile Card */}
-{!loading ? (
-  <div className="w-full sm:w-[75%] md:w-[50%] lg:w-[25%] h-auto lg:h-[83vh] bg-slate-50 shadow-lg rounded-lg p-6 flex flex-col items-center border border-gray-200">
-    {/* Profile Image */}
-    <div className="bg-gray-200 rounded-full w-24 h-24 flex items-center justify-center border border-gray-300">
-      <img
-        src={avatar || "/images/freelancer.png"}
-        alt="Profile Avatar"
-        className="w-full h-full rounded-full object-cover"
-      />
-    </div>
-    
-    {/* User Info */}
-    <p className="text-xl font-semibold mt-4">{fullname}</p>
-    <p className="text-gray-600">@{username}</p>
-    <p className="text-gray-500 mt-2">Freelancer</p>
-
-    {/* Stats Section */}
-    <div className="flex justify-center sm:justify-evenly w-full mt-4 text-center">
-      <div>
-        <p className="font-semibold text-gray-700">{connections}</p>
-        <Link to={`/freelancer/connections/${username}`} className="text-gray-500 text-sm">Connections</Link>
-      </div>
-      <div>
-        <p className="font-semibold text-gray-700">{following}</p>
-        <Link to={`/freelancer/followings/${username}`} className="text-gray-500 text-sm">Followings</Link>
-      </div>
-      <div>
-        <p className="font-semibold text-gray-700">{followers}</p>
-        <Link to={`/freelancer/followers/${username}`} className="text-gray-500 text-sm">Followers</Link>
-      </div>
-    </div>
-
-    {/* Action Buttons */}
-    {loggedUsername && username !== loggedUsername && (
-      <div className="flex flex-wrap justify-center gap-3 mt-4">
-        <button className={connectionRequest ? "bg-gray-200 text-blue-950 px-4 py-2 rounded-lg shadow-md" : isConnected ? "bg-gray-200 text-blue-950 px-4 py-2 rounded-lg shadow-md" : "bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"} onClick={() => {connectionRequest ? handleDisconnect() : isConnected ? handleDisconnect() : sendConnectionRequest()}}>
-          {connectionRequest ? "Request Sent" : isConnected ? "Connected" : "Connect"}
-        </button>
-        <button className={isFollowing ? "bg-gray-200 text-blue-950 px-4 py-2 rounded-lg shadow-md" :"bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"} onClick={() =>{isFollowing ? handleUnFollow() : handleFollow()}}>
-          {isFollowing ? "Followed" : "Follow"}
-        </button>
-        <button className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition" onClick={messageUser}>
-          Message
-        </button>
-      </div>
-    )}
-
-    {/* About & Experience Sections */}
-    <div className="w-full mt-3">
-      <h3 className="font-semibold text-gray-800">About</h3>
-      <textarea
-        readOnly
-        value={about}
-        className="w-full mt-2 p-3 text-sm bg-gray-200 border border-gray-200 rounded-md resize-none outline-none h-24"
-      ></textarea>
-    </div>
-
-    <div className="w-full mt-3">
-      <h3 className="font-semibold text-gray-800">Experience</h3>
-      <textarea
-        readOnly
-        value={skills.join("\n")}
-        className="w-full mt-2 p-3 text-sm bg-gray-200 border border-gray-200 rounded-md resize-none outline-none h-24"
-      ></textarea>
-    </div>
-
-    {/* Edit Profile Button */}
-    {loggedUsername && username === loggedUsername && (
-      <Link
-        to={`/${userType}/edit/${username}`}
-        className="mt-3 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"
-      >
-        Edit Profile
-      </Link>
-    )}
+        <div className="min-h-screen w-full bg-gray-300 dark:bg-gray-600">
+  {/* Header */}
+  <Header />
+  <div className="lg:h-[18vh] sm:h-[10vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 dark:from-blue-800 dark:to-slate-900 flex items-center lg:items-start px-8">
+    <h1 className="text-3xl text-white font-bold lg:mt-6">Profile</h1>
   </div>
-) : (
-  // Skeleton Loader
-  <div className="w-full sm:w-[75%] md:w-[50%] lg:w-[25%] h-auto lg:h-[83vh] bg-slate-50 shadow-lg rounded-lg p-6 flex flex-col items-center border border-gray-200">
-    <div className="bg-gray-200 rounded-full w-24 h-24 flex items-center justify-center border border-gray-300">
+
+  <div className="flex lg:flex-row flex-col justify-center md:items-center sm:items-center lg:mt-[-10vh] sm:gap-2">
+    {/* Sidebar Profile Card */}
+    {!loading ? (
+      <div className="w-full sm:w-[75%] md:w-[50%] lg:w-[25%] h-auto lg:h-[83vh] bg-slate-50 dark:bg-gray-800 shadow-lg rounded-lg p-6 flex flex-col items-center border border-gray-200 dark:border-gray-700">
+        {/* Profile Image */}
+        <div className="bg-gray-200 dark:bg-slate-600 rounded-full w-24 h-24 flex items-center justify-center border border-gray-300 dark:border-gray-600">
+          <img
+            src={avatar || "/images/freelancer.png"}
+            alt="Profile Avatar"
+            className="w-full h-full rounded-full object-cover"
+          />
+        </div>
+
+        {/* User Info */}
+        <p className="text-xl font-semibold mt-4 text-gray-900 dark:text-gray-100">{fullname}</p>
+        <p className="text-gray-600 dark:text-gray-300">@{username}</p>
+        <p className="text-gray-500 dark:text-gray-400 mt-2">Freelancer</p>
+
+        {/* Stats Section */}
+        <div className="flex justify-center sm:justify-evenly w-full mt-4 text-center">
+          <div>
+            <p className="font-semibold text-gray-700 dark:text-gray-200">{connections}</p>
+            <Link to={`/freelancer/connections/${username}`} className="text-gray-500 dark:text-gray-300 text-sm">Connections</Link>
+          </div>
+          <div>
+            <p className="font-semibold text-gray-700 dark:text-gray-200">{following}</p>
+            <Link to={`/freelancer/followings/${username}`} className="text-gray-500 dark:text-gray-300 text-sm">Followings</Link>
+          </div>
+          <div>
+            <p className="font-semibold text-gray-700 dark:text-gray-200">{followers}</p>
+            <Link to={`/freelancer/followers/${username}`} className="text-gray-500 dark:text-gray-300 text-sm">Followers</Link>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        {loggedUsername && username !== loggedUsername && (
+          <div className="flex flex-wrap justify-center gap-3 mt-4">
+            <button className={connectionRequest ? "bg-gray-200 dark:bg-gray-700 text-blue-950 dark:text-gray-300 px-4 py-2 rounded-lg shadow-md" : isConnected ? "bg-gray-200 dark:bg-gray-700 text-blue-950 dark:text-gray-300 px-4 py-2 rounded-lg shadow-md" : "bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"} onClick={() => {connectionRequest ? handleDisconnect() : isConnected ? handleDisconnect() : sendConnectionRequest()}}>
+              {connectionRequest ? "Request Sent" : isConnected ? "Connected" : "Connect"}
+            </button>
+            <button className={isFollowing ? "bg-gray-200 dark:bg-gray-700 text-blue-950 dark:text-gray-300 px-4 py-2 rounded-lg shadow-md" :"bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"} onClick={() =>{isFollowing ? handleUnFollow() : handleFollow()}}>
+              {isFollowing ? "Followed" : "Follow"}
+            </button>
+            <button className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition" onClick={messageUser}>
+              Message
+            </button>
+          </div>
+        )}
+
+        {/* About & Experience Sections */}
+        <div className="w-full mt-3">
+          <h3 className="font-semibold text-gray-800 dark:text-gray-200">About</h3>
+          <textarea
+            readOnly
+            value={about}
+            className="w-full mt-2 p-3 text-sm bg-gray-200 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md resize-none outline-none h-24 text-gray-900 dark:text-gray-100"
+          ></textarea>
+        </div>
+
+        <div className="w-full mt-3">
+          <h3 className="font-semibold text-gray-800 dark:text-gray-200">Skills</h3>
+          <textarea
+            readOnly
+            value={skills.join("\n")}
+            className="w-full mt-2 p-3 text-sm bg-gray-200 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md resize-none outline-none h-24 text-gray-900 dark:text-gray-100"
+          ></textarea>
+        </div>
+
+        {/* Edit Profile Button */}
+        {loggedUsername && username === loggedUsername && (
+          <Link
+            to={`/${userType}/edit/${username}`}
+            className="mt-3 bg-blue-500 text-white text-center px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"
+          >
+            Edit Profile
+          </Link>
+        )}
+      </div>
+    ) : (
+      // Skeleton Loader
+      <div className="w-full sm:w-[75%] md:w-[50%] lg:w-[25%] h-auto lg:h-[83vh] bg-slate-50 dark:bg-gray-800 shadow-lg rounded-lg p-6 flex flex-col items-center border border-gray-200 dark:border-gray-700">
+        <div className="bg-gray-200 rounded-full w-24 h-24 flex items-center justify-center border border-gray-300">
       <Skeleton className="w-full h-full rounded-full" />
     </div>
     <Skeleton className="w-3/5 h-6 mt-4" />
@@ -429,44 +426,44 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
       <Skeleton className="w-full h-20 mt-2" />
     </div>
     <Skeleton className="w-32 h-10 mt-6 rounded-lg" />
-  </div>
-)}
+      </div>
+    )}
 
 
         {/* Main Content Area */}
         {!loading ? (
-        <div className="w-full sm:w-[90%] md:w-[75%] lg:w-[65%] h-auto lg:h-[83vh] bg-slate-50 shadow-lg rounded-lg p-6 sm:p-8 border border-gray-200 overflow-auto">
-          <h2 className="text-2xl font-bold mb-4">Projects Status</h2>
+      <div className="w-full sm:w-[90%] md:w-[75%] lg:w-[65%] h-auto lg:h-[83vh] bg-slate-50 dark:bg-gray-800 shadow-lg rounded-lg p-6 sm:p-8 border border-gray-200 dark:border-gray-700 overflow-auto">
+        <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-200">Projects Status</h2>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
-            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg flex justify-center items-center">
-              <h3 className="text-lg font-semibold text-gray-700">Completed: {completedProjects.length}</h3>
-            </div>
-            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg flex justify-center items-center">
-              <h3 className="text-lg font-semibold text-gray-700">In Progress: {inProgressProjects.length}</h3>
-            </div>
-            <div className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg flex justify-center items-center">
-              <h3 className="text-lg font-semibold text-gray-700">Total: {completedProjects.length + inProgressProjects.length}</h3>
-            </div>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+          <div className="bg-gray-200 dark:bg-gray-700 p-4 shadow-sm border border-gray-200 dark:border-gray-600 rounded-lg flex justify-center items-center">
+            <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-100">Completed: {completedProjects.length}</h3>
           </div>
+          <div className="bg-gray-200 dark:bg-gray-700 p-4 shadow-sm border border-gray-200 dark:border-gray-600 rounded-lg flex justify-center items-center">
+            <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-100">In Progress: {inProgressProjects.length}</h3>
+          </div>
+          <div className="bg-gray-200 dark:bg-gray-700 p-4 shadow-sm border border-gray-200 dark:border-gray-600 rounded-lg flex justify-center items-center">
+            <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-100">Total: {completedProjects.length + inProgressProjects.length}</h3>
+          </div>
+        </div>
 
-          {/* In Progress Projects */}
-          <h2 className="text-xl font-semibold mb-3 text-black"> Projects In Progress</h2>
-        <div className="mb-8 overflow-auto bg-gray-200 px-4 py-6 rounded-lg border border-gray-200">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* In Progress Projects */}
+        <h2 className="text-xl font-semibold mb-3 text-black dark:text-gray-200"> Projects In Progress</h2>
+        <div className="mb-8 overflow-auto bg-gray-200 dark:bg-gray-700 px-4 py-6 rounded-lg border border-gray-200 dark:border-gray-600">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {inProgressProjects.length > 0 ? (
                 inProgressProjects.map((project: { _id: string; title: string; description: string; industry: string }) => (
                     <div
                         key={project._id}
-                        className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
+                        className="bg-slate-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-md rounded-lg p-4 hover:shadow-lg transition"
                     >
                         <div className="w-full flex justify-between items-end ">
                             <div>
-                                <h3 className="text-lg font-semibold text-gray-800 truncate">
-                                    {project.title}
+                                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 truncate">
+                                    {project.title?.length > 10 ? project.title.slice(0,10)+"..." : project.title}
                                 </h3>
-                                <p className="text-sm text-gray-600 mt-1 truncate">
+                                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 truncate">
                                     {(project.description.length > 5 ? project.description.slice(0,5)+"..." : project.description)|| "No description provided."}
                                 </p>
                             </div>
@@ -484,30 +481,29 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
 
                 ))
                 ) : (
-                <div className="col-span-full bg-gray-200 rounded-lg flex items-center justify-center">
-                    <p className="text-gray-600">No completed projects available</p>
+                <div className="col-span-full bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                    <p className="text-gray-600 dark:text-gray-200">No in-progress projects available</p>
                 </div>
                 )}
             </div>
         </div>
 
-
-          {/* Completed Projects */}
-          <h2 className="text-xl font-semibold mb-3 text-blue-700">Completed Projects</h2>
-        <div className="mb-8 overflow-auto bg-gray-200 px-4 py-6 rounded-lg border border-gray-200">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Completed Projects */}
+        <h2 className="text-xl font-semibold mb-3 text-blue-700 dark:text-gray-200">Completed Projects</h2>
+        <div className="mb-8 overflow-auto bg-gray-200 dark:bg-gray-700 px-4 py-6 rounded-lg border border-gray-200 dark:border-gray-600">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {completedProjects.length > 0 ? (
                 completedProjects.map((project: { _id: string; title: string; description: string; industry: string }) => (
                     <div
                         key={project._id}
-                        className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition"
+                        className="bg-slate-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-md rounded-lg p-4 hover:shadow-lg transition"
                     >
                         <div className="w-full flex justify-between items-end">
                             <div>
-                                <h3 className="text-lg font-semibold text-gray-800 truncate">
+                                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 truncate">
                                     {project.title}
                                 </h3>
-                                <p className="text-sm text-gray-600 mt-1 truncate">
+                                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 truncate">
                                     {(project.description.length > 10 ? project.description.slice(0,10)+"..." : project.description) || "No description provided."}
                                 </p>
                             </div>
@@ -526,44 +522,44 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
                     </div>
                 ))
                 ) : (
-                <div className="col-span-full bg-gray-200 rounded-lg flex items-center justify-center">
-                    <p className="text-gray-600">No completed projects available</p>
+                <div className="col-span-full bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                    <p className="text-gray-600 dark:text-gray-200">No completed projects available</p>
                 </div>
                 )}
             </div>
         </div>
+
         { loggedUsername && loggedUsername !== username ? 
-            (<div className="w-full flex justify-center items-center">
-                <button
-                    className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-1/6"
-                    onClick={() => navigate(`/freelancer/view_projects/${username}`)}
-                    >
-                    View All Projects
-                </button>
-            </div>)
-            : null
+          (<div className="w-full flex justify-center items-center">
+              <button
+                  className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition w-1/6"
+                  onClick={() => navigate(`/freelancer/view_projects/${username}`)}
+                  >
+                  View All Projects
+              </button>
+          </div>)
+          : null
         }
-      </div>)
-      :(
-        <div className="w-[65%] h-[83vh] bg-slate-50 shadow-lg rounded-lg p-8 ml-6 border border-gray-200 flex flex-col gap-4 overflow-auto">
+      </div>) : (
+        <div className="w-[65%] h-[83vh] bg-slate-50 dark:bg-gray-800 shadow-lg rounded-lg p-8 ml-6 border border-gray-200 dark:border-gray-700 flex flex-col gap-4 overflow-auto">
             <div className="grid grid-cols-3 gap-4 mb-8">
             {Array(6).fill(0).map((_, index) => (
-                <div key={index} className="bg-gray-200 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
-                <Skeleton className="w-3/5 h-6" />
+                <div key={index} className="bg-gray-200 dark:bg-slate-900 dark:border-gray-600 p-4 shadow-sm border border-gray-200 rounded-lg w-4/5 flex justify-center items-center">
+                <Skeleton className="w-3/5 h-6 dark:bg-slate-700" />
                 </div>
             ))}
             </div>
             <div className="mb-3">
-                <Skeleton className="w-1/3 h-8 bg-gray-300 rounded-md" />
+                <Skeleton className="w-1/3 h-8 bg-gray-300 rounded-md dark:bg-slate-700" />
             </div>
-            <div className="mb-8 bg-gray-100 px-4 py-6 rounded-lg border border-gray-200">
+            <div className="mb-8 bg-gray-100 dark:bg-slate-900 dark:border-gray-600 px-4 py-6 rounded-lg border border-gray-200">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {Array(3).fill(0).map((_, index) => (
                 <div
                     key={index}
-                    className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition flex flex-col gap-3"
+                    className="bg-slate-50 border border-gray-200 dark:bg-slate-700 dark:border-gray-600 shadow-md rounded-lg p-4 hover:shadow-lg transition flex flex-col gap-3"
                 >
-                    <div className="flex justify-between items-start">
+                    <div className="flex justify-between items-start gap-2">
                     <div className="w-3/4">
                         <Skeleton className="w-full h-6 mb-2" />
                         <Skeleton className="w-4/5 h-4" />
@@ -581,16 +577,16 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
 
 
             <div className="mb-3">
-                <Skeleton className="w-1/3 h-8 bg-gray-300 rounded-md" />
+                <Skeleton className="w-1/3 h-8 bg-gray-300 rounded-md dark:bg-slate-700" />
             </div>
-            <div className="mb-8 bg-gray-100 px-4 py-6 rounded-lg border border-gray-200">
+            <div className="mb-8 bg-gray-100 dark:bg-slate-900 dark:border-gray-600 px-4 py-6 rounded-lg border border-gray-200">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {Array(3).fill(0).map((_, index) => (
                 <div
                     key={index}
-                    className="bg-slate-50 border border-gray-200 shadow-md rounded-lg p-4 hover:shadow-lg transition flex flex-col gap-3"
+                    className="bg-slate-50 border border-gray-200 dark:bg-slate-700 dark:border-gray-600 shadow-md rounded-lg p-4 hover:shadow-lg transition flex flex-col gap-3"
                 >
-                    <div className="flex justify-between items-start">
+                    <div className="flex justify-between items-start gap-2">
                     <div className="w-3/4">
                         <Skeleton className="w-full h-6 mb-2" />
                         <Skeleton className="w-4/5 h-4" />
@@ -606,10 +602,10 @@ const FreelancerProfile : React.FC<FreelancerProfile> = ({})=>{
             </div>
             </div>
         </div>
-      )
-}
-    </div>
-    </div>
+      )}
+  </div>
+</div>
+
 
     </>
   )

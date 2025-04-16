@@ -187,20 +187,20 @@ const EditClient: React.FC<EditClient> = ({})=> {
     }
 
     return (
-        <div className="h-full w-full bg-[url('/images/background.jpg')] bg-cover bg-center">
+        <div className="h-full w-full bg-gray-200 dark:bg-gray-600">
     <Header />
-    <div className="h-[14vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-start px-6 sm:px-8">
-        <h1 className="text-2xl sm:text-3xl text-white font-bold mt-6">Edit Profile</h1>
+    <div className="h-[14vh] w-full bg-gradient-to-r from-blue-500 to-indigo-500 dark:from-blue-800 dark:to-slate-900 flex items-start px-6 sm:px-8">
+        <h1 className="text-2xl sm:text-3xl text-white dark:text-gray-100 font-bold mt-6">Edit Profile</h1>
     </div>
 
     <div className="flex flex-col lg:flex-row justify-center lg:mt-[-10vh] px-6">
         {/* Main Content Area */}
         <div className="min-h-[88vh] w-full flex flex-col items-center py-6">
             {!loading ? (
-                <div className="w-full lg:w-3/5 bg-slate-100 shadow-lg rounded-lg p-8">
+                <div className="w-full lg:w-3/5 bg-slate-100 dark:bg-slate-900 shadow-lg rounded-lg p-8">
                     <div className="flex flex-col lg:flex-row justify-between items-start">
                         <div className="w-full lg:w-1/3 flex flex-col items-center gap-4 mb-6 lg:mb-0">
-                            <div className="h-32 w-32 rounded-full overflow-hidden border-gray-300 border-[2px]">
+                            <div className="h-32 w-32 rounded-full overflow-hidden dark:bg-slate-600 dark:border-gray-500 border-gray-300 border-[2px]">
                                 <img src={avatar || "/images/freelancer.png"} alt="Avatar" className="h-full w-full object-cover" />
                             </div>
                             <button 
@@ -217,56 +217,56 @@ const EditClient: React.FC<EditClient> = ({})=> {
                         <div className="w-full lg:w-2/3 px-6">
                             <div className="space-y-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Full Name</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Full Name</label>
                                     <input 
                                         type="text" 
-                                        className="mt-1 block w-full rounded-md bg-slate-50 border-blue-300 border-[1px] shadow-sm focus:outline-none focus:shadow-md px-1" 
+                                        className="mt-1 block w-full rounded-md bg-slate-50 dark:bg-slate-700 dark:border-gray-600 border-blue-300 border-[1px] shadow-sm focus:outline-none focus:shadow-md px-2 py-1 text-sm" 
                                         value={fullname}
                                         onChange={(e) => setFullname(e.target.value)}
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Phone Number</label>
                                     <input 
                                         type="text" 
-                                        className="mt-1 block w-full rounded-md bg-slate-50 border-blue-300 border-[1px] shadow-sm focus:outline-none focus:shadow-md px-1" 
+                                        className="mt-1 block w-full rounded-md bg-slate-50 dark:bg-slate-700 dark:border-gray-600 border-blue-300 border-[1px] shadow-sm focus:outline-none focus:shadow-md px-2 py-1 text-sm" 
                                         value={phone}
                                         onChange={(e) => setPhone(e.target.value)}
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Date of Birth</label>
                                     <input 
                                         type="date" 
-                                        className="mt-1 block w-full rounded-md bg-slate-50 border-blue-300 border-[1px] shadow-sm focus:outline-none focus:shadow-md px-1" 
+                                        className="mt-1 block w-full rounded-md bg-slate-50 dark:bg-slate-700 dark:border-gray-600 border-blue-300 border-[1px] shadow-sm focus:outline-none focus:shadow-md px-2 py-1 text-sm" 
                                         value={dob}
                                         onChange={(e) => setDob(e.target.value)}
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Industry</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Industry</label>
                                     <input 
                                         type="text" 
-                                        className="mt-1 block w-full rounded-md bg-slate-50 border-blue-300 border-[1px] shadow-sm focus:outline-none focus:shadow-md px-1" 
+                                        className="mt-1 block w-full rounded-md bg-slate-50 dark:bg-slate-700 dark:border-gray-600 border-blue-300 border-[1px] shadow-sm focus:outline-none focus:shadow-md px-2 py-1 text-sm" 
                                         value={industry}
                                         onChange={(e) => setIndustry(e.target.value)}
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">About</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">About</label>
                                     <textarea 
-                                        className="mt-1 block w-full rounded-md bg-slate-50 border-blue-300 border-[1px] shadow-sm focus:outline-none focus:shadow-md px-1 resize-none" 
+                                        className="mt-1 block w-full rounded-md bg-slate-50 dark:bg-slate-700 dark:border-gray-600 border-blue-300 border-[1px] shadow-sm focus:outline-none focus:shadow-md px-2 py-1 text-sm resize-none" 
                                         value={about} 
                                         onChange={(e) => setAbout(e.target.value)}
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Experience</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Experience</label>
                                     <textarea 
-                                        className="mt-1 block w-full rounded-md bg-slate-50 border-blue-300 border-[1px] shadow-sm focus:outline-none focus:shadow-md px-1 resize-none" 
+                                        className="mt-1 block w-full rounded-md bg-slate-50 dark:bg-slate-700 dark:border-gray-600 border-blue-300 border-[1px] shadow-sm focus:outline-none focus:shadow-md px-2 py-1 text-sm resize-none" 
                                         value={experience} 
                                         onChange={(e) => setExperience(e.target.value)}
                                     />
@@ -288,27 +288,27 @@ const EditClient: React.FC<EditClient> = ({})=> {
                     </div>
                 </div>
             ) : (
-                <div className="w-full lg:w-3/5 bg-white shadow-lg rounded-lg p-8">
+                <div className="w-full lg:w-3/5 bg-slate-100 dark:bg-slate-800 shadow-lg rounded-lg p-8">
                     <div className="flex flex-col lg:flex-row justify-between items-start">
                         <div className="w-full lg:w-1/3 flex flex-col items-center gap-4 mb-6 lg:mb-0">
-                            <Skeleton style={{ height: 128, width: 128, borderRadius: '50%' }} />
-                            <Skeleton style={{ height: 40, width: 120 }} />
-                            <Skeleton style={{ height: 40, width: 120 }} />
+                            <Skeleton style={{ height: 128, width: 128, borderRadius: '50%' }} className="dark:bg-slate-700" />
+                            <Skeleton style={{ height: 40, width: 120 }} className="dark:bg-slate-700" />
+                            <Skeleton style={{ height: 40, width: 120 }} className="dark:bg-slate-700" />
                         </div>
                         <div className="w-full lg:w-2/3 px-6 space-y-2">
-                            <Skeleton style={{ height: 20, width: 100 }} />
-                            <Skeleton style={{ height: 40, width: "100%" }} />
-                            <Skeleton style={{ height: 20, width: 100 }} />
-                            <Skeleton style={{ height: 40, width: "100%" }} />
-                            <Skeleton style={{ height: 20, width: 100 }} />
-                            <Skeleton style={{ height: 40, width: "100%" }} />
-                            <Skeleton style={{ height: 20, width: 100 }} />
-                            <Skeleton style={{ height: 40, width: "100%" }} />
-                            <Skeleton style={{ height: 20, width: 100 }} />
-                            <Skeleton style={{ height: 80, width: "100%" }} />
+                            <Skeleton style={{ height: 20, width: 100 }} className="dark:bg-slate-700" />
+                            <Skeleton style={{ height: 40, width: "100%" }} className="dark:bg-slate-700" />
+                            <Skeleton style={{ height: 20, width: 100 }} className="dark:bg-slate-700" />
+                            <Skeleton style={{ height: 40, width: "100%" }} className="dark:bg-slate-700" />
+                            <Skeleton style={{ height: 20, width: 100 }} className="dark:bg-slate-700" />
+                            <Skeleton style={{ height: 40, width: "100%" }} className="dark:bg-slate-700" />
+                            <Skeleton style={{ height: 20, width: 100 }} className="dark:bg-slate-700" />
+                            <Skeleton style={{ height: 40, width: "100%" }} className="dark:bg-slate-700" />
+                            <Skeleton style={{ height: 20, width: 100 }} className="dark:bg-slate-700" />
+                            <Skeleton style={{ height: 80, width: "100%" }} className="dark:bg-slate-700" />
                             <div className="mt-6 flex justify-end gap-4">
-                                <Skeleton style={{ height: 40, width: 100 }} />
-                                <Skeleton style={{ height: 40, width: 120 }} />
+                                <Skeleton style={{ height: 40, width: 100 }} className="dark:bg-slate-700" />
+                                <Skeleton style={{ height: 40, width: 120 }} className="dark:bg-slate-700" />
                             </div>
                         </div>
                     </div>

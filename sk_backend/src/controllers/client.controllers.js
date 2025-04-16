@@ -210,6 +210,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
         department,
         phone,
         about,
+        experience,
     }= req.body;
 
     if(!fullname || !dob || !industry || !phone){
@@ -219,7 +220,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     const client = await Client.findByIdAndUpdate(
         req.user?._id,
         {
-            $set: {fullname, dob, companyname, industry, department, phone, about}
+            $set: {fullname, dob, companyname, industry, department, phone, about, experience}
         },
         {
             new: true
@@ -665,8 +666,102 @@ const acceptCollaboration = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {client, project}, 'Collaboration accepted successfully'));
 });
 
+const saveProject = asyncHandler(async (req, res) => {
+    const {projectId} = req.body;
+    const client = await Client.findByIdAndUpdate(req.user?._id,
+        {
+            $addToSet: {savedProjects: projectId}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!client) {
+        throw new ApiError(404, 'Client not found');
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {client}, 'Project saved successfully'));
+});
 
+const unSaveProject = asyncHandler(async (req, res) => {
+    const {projectId} = req.body;
+    const client = await Client.findByIdAndUpdate(req.user?._id,
+        {
+            $pull: {savedProjects: projectId}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!client) {
+        throw new ApiError(404, 'Client not found');
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {client}, 'Project unsaved successfully'));
+});
 
+const likeProject = asyncHandler(async (req, res) => {
+    const {projectId} = req.body;
+    const client = await Client.findByIdAndUpdate(req.user?._id,
+        {
+            $addToSet: {likedProjects: projectId}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!client) {
+        throw new ApiError(404, 'Client not found');
+    }
+    const project = await Project.findByIdAndUpdate(
+        projectId,
+        {
+          $addToSet: {
+            likedBy: {
+              username: req.user?.username,
+              role: req.user?.role,
+            }
+          }
+        },
+        { new: true }
+    );      
+    if (!project) {
+        throw new ApiError(404, 'Project not found');
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {client,project}, 'Project liked successfully'));
+});
+const unLikeProject = asyncHandler(async (req, res) => {
+    const {projectId} = req.body;
+    const client = await Client.findByIdAndUpdate(req.user?._id,
+        {
+            $pull: {likedProjects: projectId}
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken');
+    if (!client) {
+        throw new ApiError(404, 'Client not found');
+    }
+    const project = await Project.findByIdAndUpdate(projectId,
+        {
+            $pull: {likedBy: {username: req.user?.username, role: req.user?.role}}
+        },
+        {
+            new: true
+        }
+    );
+    if (!project) {
+        throw new ApiError(404, 'Project not found');
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {client, project}, 'Project unliked successfully'));
+});
 
 // const demo = asyncHandler(async (req, res) => {
 //     const client = await Client.findByIdAndUpdate(req.user?._id,
@@ -706,5 +801,9 @@ export {
     deleteAllNotifications,
     acceptApplication,
     acceptCollaboration,
+    saveProject,
+    unSaveProject,
+    likeProject,
+    unLikeProject,
     // demo
 }

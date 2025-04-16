@@ -101,7 +101,7 @@ const Login : React.FC<Login> = ({})=>{
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
-          className="pl-9 sm:pl-10 pr-4 py-2 sm:py-3 w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-blue-500 focus:outline-none text-sm sm:text-base"
+          className="pl-9 sm:pl-10 pr-4 py-2 sm:py-3 dark:text-black w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-blue-500 focus:outline-none text-sm sm:text-base"
         />
       </div>
 
@@ -117,7 +117,7 @@ const Login : React.FC<Login> = ({})=>{
           onChange={(e) => setPassword(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleLogin()}
           required
-          className="pl-9 sm:pl-10 pr-4 py-2 sm:py-3 w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-blue-500 focus:outline-none text-sm sm:text-base"
+          className="pl-9 sm:pl-10 pr-4 py-2 sm:py-3 dark:text-black w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-blue-500 focus:outline-none text-sm sm:text-base"
         />
         <div className="absolute right-3 cursor-pointer">
           <img src={`/images/${showImage}.png`} alt="Show Password Icon" className="h-4 w-4 sm:h-5 sm:w-5" onClick={showHide} />
@@ -159,7 +159,6 @@ const Login : React.FC<Login> = ({})=>{
     </p>
   </div>
 
-  {/* Footer */}
   <Footer />
 </div>
     </>
